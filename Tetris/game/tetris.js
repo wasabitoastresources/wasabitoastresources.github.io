@@ -209,6 +209,7 @@ var redirCode;
 
 function redirectToScore() {
     window.location.replace('/scoreScreen.html?tempRef=' + redirCode);
+    window.location.reload();
 }
 
 function sendScoreRequest(score) {
