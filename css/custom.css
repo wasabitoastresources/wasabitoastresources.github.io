@@ -1,10 +1,11 @@
 body {
 	padding-top: 50px;
 	color: #959595;
+	background-color: #202124;
 	}
 	
 h1, h2, h3, h4, h5, h6 {
-	color: black;
+	color: #b0b0b0;
 	}
 	
 .feature {
@@ -19,7 +20,7 @@ h1, h2, h3, h4, h5, h6 {
 .footer-blurb {
     padding: 30px 0;
     background-color: goldenrod;
-    color: black;
+    color: #b0b0b0;
 }
     
 .footer-blurb-item {
