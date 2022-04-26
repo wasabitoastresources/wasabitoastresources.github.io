@@ -1,18 +1,7 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-// extract from chromium source code by @liuwayong
 (function () {
     'use strict';
-    /**
-     * T-Rex runner.
-     * @param {string} outerContainerId Outer containing element id.
-     * @param {Object} opt_config
-     * @constructor
-     * @export
-     */
     function Runner(outerContainerId, opt_config) {
-        // Singleton
+        
         if (Runner.instance_) {
             return Runner.instance_;
         }
@@ -98,10 +87,6 @@
     /** @const */
     var IS_TOUCH_ENABLED = 'ontouchstart' in window;
 
-    /**
-     * Default game configuration.
-     * @enum {number}
-     */
     Runner.config = {
         ACCELERATION: 0.001,
         BG_CLOUD_SPEED: 0.2,
@@ -126,21 +111,11 @@
         SPEED_DROP_COEFFICIENT: 3
     };
 
-
-    /**
-     * Default dimensions.
-     * @enum {string}
-     */
     Runner.defaultDimensions = {
         WIDTH: DEFAULT_WIDTH,
         HEIGHT: 150
     };
 
-
-    /**
-     * CSS class names.
-     * @enum {string}
-     */
     Runner.classes = {
         CANVAS: 'runner-canvas',
         CONTAINER: 'runner-container',
@@ -229,25 +204,16 @@
 
 
     Runner.prototype = {
-        /**
-         * Whether the easter egg has been disabled. CrOS enterprise enrolled devices.
-         * @return {boolean}
-         */
         isDisabled: function () {
-            // return loadTimeData && loadTimeData.valueExists('disabledEasterEgg');
             return false;
         },
 
-        /**
-         * For disabled instances, set up a snackbar with the disabled message.
-         */
         setupDisabledRunner: function () {
             this.containerEl = document.createElement('div');
             this.containerEl.className = Runner.classes.SNACKBAR;
             this.containerEl.textContent = loadTimeData.getValue('disabledEasterEgg');
             this.outerContainerEl.appendChild(this.containerEl);
 
-            // Show notification when the activation key is pressed.
             document.addEventListener(Runner.events.KEYDOWN, function (e) {
                 if (Runner.keycodes.JUMP[e.keyCode]) {
                     this.containerEl.classList.add(Runner.classes.SNACKBAR_SHOW);
@@ -256,11 +222,6 @@
             }.bind(this));
         },
 
-        /**
-         * Setting individual settings for debugging.
-         * @param {string} setting
-         * @param {*} value
-         */
         updateConfigSetting: function (setting, value) {
             if (setting in this.config && value != undefined) {
                 this.config[setting] = value;
