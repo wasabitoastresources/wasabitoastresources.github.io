@@ -2244,7 +2244,7 @@ function MineKhan() {
     {
       name: "face",
       textures: ["faceTop","face"]
-    },//*/
+    },
     {
       name: "cow",
       textures: "egg",
@@ -2253,7 +2253,7 @@ function MineKhan() {
       onuse: function(){
         playSound("block.glass.dig1")
         world.entities.push(new Cow(p2.x, p2.y, p2.z))
-      },
+      },//*/
     },
 	];
 
@@ -9042,9 +9042,9 @@ class Generator {
             
           }
           //cows
-          if (random() < 0.001 && this.getBlock(i, ground, k) === blockIds.grass) {
-          world.entities.push(new Cow(wx, ground+1, wz))
-          }
+          //if (random() < 0.001 && this.getBlock(i, ground, k) === blockIds.grass) {
+          //world.entities.push(new Cow(wx, ground+1, wz))
+          //}
           //flowers and vines
           if (random() < 0.05 && this.getBlock(i, ground, k) === blockIds.grass) {
             var flower = flowers[Math.round(random(flowers.length-1))]
