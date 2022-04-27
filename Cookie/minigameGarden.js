@@ -7,18 +7,6 @@ M.launch=function()
 	M.name=M.parent.minigameName;
 	M.init=function(div)
 	{
-		//populate div with html and initialize values
-		
-		/*
-			plants age from 0 to 100
-			at one point in its lifespan, the plant becomes mature
-			plants have 4 life stages once planted : bud, sprout, bloom, mature
-			a plant may age faster by having a higher .ageTick
-			if a plant has .ageTickR, a random number between 0 and that amount is added to .ageTick
-			a plant may mature faster by having a lower .mature
-			a plant's effects depend on how mature it is
-			a plant can only reproduce when mature
-		*/
 		M.plants={
 			'bakerWheat':{
 				name:'Baker\'s wheat',
@@ -632,8 +620,6 @@ M.launch=function()
 		
 		M.getMuts=function(neighs,neighsM)
 		{
-			//get possible mutations given a list of neighbors
-			//note : neighs stands for neighbors, not horsey noises
 			var muts=[];
 			
 			if (neighsM['bakerWheat']>=2) muts.push(['bakerWheat',0.2],['thumbcorn',0.05],['bakeberry',0.001]);
@@ -692,13 +678,10 @@ M.launch=function()
 		
 		M.computeBoostPlot=function()
 		{
-			//some plants apply effects to surrounding tiles
-			//this function computes those effects by creating a grid in which those effects stack
 			for (var y=0;y<6;y++)
 			{
 				for (var x=0;x<6;x++)
 				{
-					//age mult, power mult, weed mult
 					M.plotBoost[y][x]=[1,1,1];
 				}
 			}
@@ -742,16 +725,7 @@ M.launch=function()
 						else if (stage==2) mult*=0.25;
 						else if (stage==3) mult*=0.5;
 						else mult*=1;
-						
-						//age mult, power mult, weed mult
-						/*if (name=='elderwort') effectOn(x,y,1,[1+0.03*mult,1,1]);
-						else if (name=='queenbeetLump') effectOn(x,y,1,[1,1-0.2*mult,1]);
-						else if (name=='nursetulip') effectOn(x,y,1,[1,1+0.2*mult,1]);
-						else if (name=='shriekbulb') effectOn(x,y,1,[1,1-0.05*mult,1]);
-						else if (name=='tidygrass') effectOn(x,y,2,[1,1,0]);
-						else if (name=='everdaisy') effectOn(x,y,1,[1,1,0]);
-						else if (name=='ichorpuff') effectOn(x,y,1,[1-0.5*mult,1-0.5*mult,1]);*/
-						
+					
 						var ageMult=1;
 						var powerMult=1;
 						var weedMult=1;
@@ -765,7 +739,6 @@ M.launch=function()
 						else if (name=='everdaisy') {weedMult=0;range=1;}
 						else if (name=='ichorpuff') {ageMult=0.5;powerMult=0.5;range=1;}
 						
-						//by god i hope these are right
 						if (ageMult>=1) ageMult=(ageMult-1)*mult+1; else if (mult>=1) ageMult=1/((1/ageMult)*mult); else ageMult=1-(1-ageMult)*mult;
 						if (powerMult>=1) powerMult=(powerMult-1)*mult+1; else if (mult>=1) powerMult=1/((1/powerMult)*mult); else powerMult=1-(1-powerMult)*mult;
 						
@@ -985,7 +958,6 @@ M.launch=function()
 				descFunc:function(){return 'Instantly harvest all plants in your garden.<div class="line"></div>'+((Game.keys[16] && Game.keys[17])?'<b>You are holding shift+ctrl.</b> Only mature, mortal plants will be harvested.':'Shift+ctrl+click to harvest only mature, mortal plants.');},
 				func:function(){
 					PlaySound('snd/toneTick.mp3');
-					/*if (M.freeze){return false;}*/
 					if (Game.keys[16] && Game.keys[17]) M.harvestAll(0,1,1);//ctrl & shift, harvest only mature non-immortal plants
 					else M.harvestAll();
 				},
@@ -998,7 +970,6 @@ M.launch=function()
 					return 'Cryogenically preserve your garden.<br>Plants no longer grow, spread or die; they provide no benefits.<br>Soil cannot be changed.<div class="line"></div>Using this will effectively pause your garden.<div class="line"></div>';//<span class="red">'+((M.nextFreeze>Date.now())?'You will be able to freeze your garden again in '+Game.sayTime((M.nextFreeze-Date.now())/1000*30+30,-1)+'.':'After unfreezing your garden, you must wait 10 minutes to freeze it again.')+'</span>
 				},
 				func:function(){
-					//if (!M.freeze && M.nextFreeze>Date.now()) return false;
 					PlaySound('snd/toneTick.mp3');
 					M.freeze=(M.freeze?0:1);
 					if (M.freeze)
@@ -1030,7 +1001,6 @@ M.launch=function()
 					}
 					else
 					{
-						//M.nextFreeze=Date.now()+(Game.Has('Turbo-charged soil')?1:(1000*60*10));
 						M.computeEffs();
 						this.classList.remove('on');
 						l('gardenContent').classList.remove('gardenFrozen');
@@ -1047,8 +1017,6 @@ M.launch=function()
 			},
 		};
 		M.toolsById=[];var n=0;for (var i in M.tools){M.tools[i].id=n;M.tools[i].key=i;M.toolsById[n]=M.tools[i];n++;}
-
-		
 		M.plot=[];
 		for (var y=0;y<6;y++)
 		{
@@ -1064,38 +1032,27 @@ M.launch=function()
 			M.plotBoost[y]=[];
 			for (var x=0;x<6;x++)
 			{
-				//age mult, power mult, weed mult
 				M.plotBoost[y][x]=[1,1,1];
 			}
 		}
-		
 		M.tileSize=40;
-		
 		M.seedSelected=-1;
-		
 		M.soil=0;
-		M.nextSoil=0;//timestamp for when soil will be ready to change again
-		
-		M.stepT=1;//in seconds
-		M.nextStep=0;//timestamp for next step tick
-		
+		M.nextSoil=0;
+		M.stepT=1;
+		M.nextStep=0;
 		M.harvests=0;
 		M.harvestsTotal=0;
-		
 		M.loopsMult=1;
-		
 		M.toRebuild=false;
 		M.toCompute=false;
-		
 		M.freeze=0;
-		M.nextFreeze=0;//timestamp for when we can freeze again; unused, but still stored
-		
+		M.nextFreeze=0;
 		M.getCost=function(me)
 		{
 			if (Game.Has('Turbo-charged soil')) return 0;
 			return Math.max(me.costM,Game.cookiesPs*me.cost*60)*(Game.HasAchiev('Seedless to nay')?0.95:1);
 		}
-		
 		M.getPlantDesc=function(me)
 		{
 			var children='';
@@ -1114,7 +1071,6 @@ M.launch=function()
 				}
 				children+='</div>';
 			}
-			
 			return '<div class="description">'+
 						(!me.immortal?('<div style="margin:6px 0px;font-size:11px;"><b>Average lifespan :</b> '+Game.sayTime(((100/(me.ageTick+me.ageTickR/2))*M.stepT)*30,-1)+' <small>('+Beautify(Math.ceil((100/((me.ageTick+me.ageTickR/2)))*(1)))+' ticks)</small></div>'):'')+
 						'<div style="margin:6px 0px;font-size:11px;"><b>Average maturation :</b> '+Game.sayTime(((100/((me.ageTick+me.ageTickR/2)))*(me.mature/100)*M.stepT)*30,-1)+' <small>('+Beautify(Math.ceil((100/((me.ageTick+me.ageTickR/2)))*(me.mature/100)))+' ticks)</small></div>'+
@@ -1258,7 +1214,6 @@ M.launch=function()
 							):'')+
 						'</div>'+
 						'<div class="line"></div>'+
-						//'<div style="text-align:center;">Click to harvest'+(M.seedSelected>=0?', planting <b>'+M.plantsById[M.seedSelected].name+'</b><br>for <span class="price'+(M.canPlant(me)?'':' disabled')+'">'+Beautify(Math.round(M.getCost(M.plantsById[M.seedSelected])))+'</span> in its place':'')+'.</div>'+
 						'<div style="text-align:center;">Click to '+(stage==4?'harvest':'unearth')+'.</div>'+
 						'<div class="line"></div>'+
 						M.getPlantDesc(me)+
@@ -1267,13 +1222,11 @@ M.launch=function()
 				}
 			};
 		}
-		
 		M.refillTooltip=function(){
 			return '<div style="padding:8px;width:300px;font-size:11px;text-align:center;">Click to refill your soil timer and trigger <b>1</b> plant growth tick with <b>x3</b> spread and mutation rate for <span class="price lump">1 sugar lump</span>.'+
 				(Game.canRefillLump()?'<br><small>(can be done once every '+Game.sayTime(Game.getLumpRefillMax(),-1)+')</small>':('<br><small class="red">(usable again in '+Game.sayTime(Game.getLumpRefillRemaining()+Game.fps,-1)+')</small>'))+
 			'</div>';
 		};
-		
 		M.buildPanel=function()
 		{
 			if (!l('gardenSeeds')) return false;
@@ -1287,16 +1240,14 @@ M.launch=function()
 				str+='</div>';
 			}
 			l('gardenSeeds').innerHTML=str;
-			
 			for (var i in M.plants)
 			{
 				var me=M.plants[i];
 				me.l=l('gardenSeed-'+me.id);
 				AddEvent(me.l,'click',function(me){return function()
 				{
-					if (/* !M.freeze && */Game.keys[16] && Game.keys[17])//shift & ctrl
+					if (Game.keys[16] && Game.keys[17])
 					{
-						//harvest all mature of type
 						M.harvestAll(me,1);
 						return false;
 					}
@@ -1325,7 +1276,6 @@ M.launch=function()
 				str+='</div>';
 			}
 			l('gardenTools').innerHTML=str;
-			
 			for (var i in M.tools)
 			{
 				var me=M.tools[i];
@@ -1333,7 +1283,6 @@ M.launch=function()
 				AddEvent(l('gardenTool-'+me.id),'mouseover',M.hideCursor);
 				AddEvent(l('gardenTool-'+me.id),'mouseout',M.showCursor);
 			}
-
 			var str='';
 			for (var i in M.soils)
 			{
@@ -1344,7 +1293,6 @@ M.launch=function()
 				str+='</div>';
 			}
 			l('gardenSoils').innerHTML=str;
-			
 			for (var i in M.soils)
 			{
 				var me=M.soils[i];
@@ -1358,7 +1306,6 @@ M.launch=function()
 				AddEvent(l('gardenSoil-'+me.id),'mouseover',M.hideCursor);
 				AddEvent(l('gardenSoil-'+me.id),'mouseout',M.showCursor);
 			}
-			
 			M.cursorL=l('gardenCursor');
 		}
 		M.buildPlot=function()
@@ -1521,7 +1468,7 @@ M.launch=function()
 		M.harvestAll=function(type,mature,mortal)
 		{
 			var harvested=0;
-			for (var i=0;i<2;i++)//we do it twice to take care of whatever spawns on kill
+			for (var i=0;i<2;i++)
 			{
 				for (var y=0;y<6;y++)
 				{
@@ -1595,11 +1542,9 @@ M.launch=function()
 		'.gardenFrozen{box-shadow:0px 0px 16px rgba(255,255,255,1) inset,0px 0px 48px 24px rgba(200,255,225,0.5) inset;}'+
 		'#gardenPanel{text-align:center;margin:0px;padding:0px;position:absolute;left:4px;top:4px;bottom:4px;right:65%;overflow-y:auto;overflow-x:hidden;box-shadow:8px 0px 8px rgba(0,0,0,0.5);}'+
 		'#gardenSeeds{}'+
-		'#gardenField{text-align:center;position:absolute;right:0px;top:0px;bottom:0px;overflow-x:auto;overflow:hidden;}'+//width:65%;
+		'#gardenField{text-align:center;position:absolute;right:0px;top:0px;bottom:0px;overflow-x:auto;overflow:hidden;}'+
 		'#gardenPlot{position:relative;margin:8px auto;}'+
 		'.gardenTile{cursor:pointer;width:'+M.tileSize+'px;height:'+M.tileSize+'px;position:absolute;}'+
-		//'.gardenTile:before{transform:translate(0,0);pointer-events:none;content:\'\';display:block;position:absolute;left:0px;top:0px;right:0px;bottom:0px;margin:6px;border-radius:12px;background:rgba(0,0,0,0.1);box-shadow:0px 0px 4px rgba(255,255,255,0.2),-4px 4px 4px 2px rgba(0,0,0,0.2) inset;}'+
-		//'.gardenTile:hover:before{margin:2px;animation:wobble 0.5s;}'+
 		'.gardenTile:before{transform:translate(0,0);opacity:0.65;transition:opacity 0.2s;pointer-events:none;content:\'\';display:block;position:absolute;left:0px;top:0px;right:0px;bottom:0px;margin:0px;background:url(img/gardenPlots.png);}'+
 			'.gardenTile:nth-child(4n+1):before{background-position:40px 0px;}'+
 			'.gardenTile:nth-child(4n+2):before{background-position:80px 0px;}'+
@@ -1650,18 +1595,15 @@ M.launch=function()
 					str+='<div id="gardenStats"></div>';
 				str+='</div>';
 			str+='</div>';
-			
 		str+='</div>';
 		div.innerHTML=str;
 		M.buildPlot();
 		M.buildPanel();
-		
 		M.lumpRefill=l('gardenLumpRefill');
 		AddEvent(M.lumpRefill,'click',function(){
 			Game.refillLump(1,function(){
 				M.loopsMult=3;
 				M.nextSoil=Date.now();
-				//M.nextFreeze=Date.now();
 				M.nextStep=Date.now();
 				PlaySound('snd/pop'+Math.floor(Math.random()*3+1)+'.mp3',0.75);
 			});
@@ -1670,7 +1612,7 @@ M.launch=function()
 		{
 			if (Game.sesame)
 			{
-				if (Game.keys[16] && Game.keys[17])//ctrl & shift, fill garden with random plants
+				if (Game.keys[16] && Game.keys[17])
 				{
 					for (var y=0;y<6;y++)
 					{
@@ -1682,7 +1624,7 @@ M.launch=function()
 					M.toRebuild=true;
 					M.toCompute=true;
 				}
-				else//unlock/lock all seeds
+				else
 				{
 					var locked=0;
 					for (var i in M.plants)
@@ -1695,10 +1637,7 @@ M.launch=function()
 				}
 			}
 		});
-		
 		M.reset();
-		
-		//M.parent.switchMinigame(1);
 	}
 	M.onResize=function()
 	{
@@ -1718,7 +1657,6 @@ M.launch=function()
 	}
 	M.save=function()
 	{
-		//output cannot use ",", ";" or "|"
 		var str=''+
 		parseFloat(M.nextStep)+':'+
 		parseInt(M.soil)+':'+
@@ -1746,8 +1684,6 @@ M.launch=function()
 	}
 	M.load=function(str)
 	{
-		//interpret str; called after .init
-		//note : not actually called in the Game's load; see "minigameSave" in main.js
 		if (!str) return false;
 		var i=0;
 		var spl=str.split(' ');
@@ -1773,7 +1709,6 @@ M.launch=function()
 			}
 		}
 		M.plants['bakerWheat'].unlocked=1;
-		
 		var plot=spl[i++]||0;
 		if (plot)
 		{
@@ -1788,13 +1723,10 @@ M.launch=function()
 				}
 			}
 		}
-		
 		M.getUnlockedN();
 		M.computeStepT();
-		
 		M.buildPlot();
 		M.buildPanel();
-		
 		M.computeBoostPlot();
 		M.toCompute=true;
 	}
@@ -1803,7 +1735,6 @@ M.launch=function()
 		M.soil=0;
 		if (M.seedSelected>-1) M.plantsById[M.seedSelected].l.classList.remove('on');
 		M.seedSelected=-1;
-		
 		M.nextStep=Date.now();
 		M.nextSoil=Date.now();
 		M.nextFreeze=Date.now();
@@ -1825,28 +1756,20 @@ M.launch=function()
 				M.plants[i].unlocked=0;
 			}
 		}
-		
 		M.plants['bakerWheat'].unlocked=1;
-		
 		M.loopsMult=1;
-		
 		M.getUnlockedN();
 		M.computeStepT();
-		
 		M.computeMatures();
-		
 		M.buildPlot();
 		M.buildPanel();
 		M.computeEffs();
 		M.toCompute=true;
-		
 		setTimeout(function(M){return function(){M.onResize();}}(M),10);
 	}
 	M.logic=function()
 	{
-		//run each frame
 		var now=Date.now();
-		
 		if (!M.freeze)
 		{
 			M.nextStep=Math.min(M.nextStep,now+(M.stepT)*1000);
@@ -1854,17 +1777,13 @@ M.launch=function()
 			{
 				M.computeStepT();
 				M.nextStep=now+M.stepT*1000;
-				
 				M.computeBoostPlot();
 				M.computeMatures();
-				
 				var weedMult=M.soilsById[M.soil].weedMult;
-				
 				var loops=1;
 				if (M.soilsById[M.soil].key=='woodchips') loops=3;
 				loops*=M.loopsMult;
 				M.loopsMult=1;
-			
 				for (var y=0;y<6;y++)
 				{
 					for (var x=0;x<6;x++)
@@ -1875,13 +1794,11 @@ M.launch=function()
 							var me=M.plantsById[tile[0]-1];
 							if (tile[0]>0)
 							{
-								//age
 								tile[1]+=randomFloor((me.ageTick+me.ageTickR*Math.random())*M.plotBoost[y][x][0]);
 								tile[1]=Math.max(tile[1],0);
 								if (me.immortal) tile[1]=Math.min(me.mature+1,tile[1]);
 								else if (tile[1]>=100)
 								{
-									//die of old age
 									M.plot[y][x]=[0,0];
 									if (me.onDie) me.onDie(x,y);
 									if (M.soilsById[M.soil].key=='pebbles' && Math.random()<0.35)
@@ -1891,10 +1808,6 @@ M.launch=function()
 								}
 								else if (!me.noContam)
 								{
-									//other plant contamination
-									//only occurs in cardinal directions
-									//immortal plants and plants with noContam are immune
-									
 									var list=[];
 									for (var i in M.plantContam)
 									{
@@ -1907,15 +1820,14 @@ M.launch=function()
 										if ((!M.plants[contam].weed && !M.plants[contam].fungus) || Math.random()<M.plotBoost[y][x][2])
 										{
 											var any=0;
-											var neighs={};//all surrounding plants
-											var neighsM={};//all surrounding mature plants
+											var neighs={};
+											var neighsM={};
 											for (var i in M.plants){neighs[i]=0;}
 											for (var i in M.plants){neighsM[i]=0;}
 											var neigh=M.getTile(x,y-1);if (neigh[0]>0){var age=neigh[1];neigh=M.plantsById[neigh[0]-1];any++;neighs[neigh.key]++;if (age>=neigh.mature){neighsM[neigh.key]++;}}
 											var neigh=M.getTile(x,y+1);if (neigh[0]>0){var age=neigh[1];neigh=M.plantsById[neigh[0]-1];any++;neighs[neigh.key]++;if (age>=neigh.mature){neighsM[neigh.key]++;}}
 											var neigh=M.getTile(x-1,y);if (neigh[0]>0){var age=neigh[1];neigh=M.plantsById[neigh[0]-1];any++;neighs[neigh.key]++;if (age>=neigh.mature){neighsM[neigh.key]++;}}
 											var neigh=M.getTile(x+1,y);if (neigh[0]>0){var age=neigh[1];neigh=M.plantsById[neigh[0]-1];any++;neighs[neigh.key]++;if (age>=neigh.mature){neighsM[neigh.key]++;}}
-											
 											if (neighsM[contam]>=1) M.plot[y][x]=[M.plants[contam].id+1,0];
 										}
 									}
@@ -1923,13 +1835,11 @@ M.launch=function()
 							}
 							else
 							{
-								//plant spreading and mutation
-								//happens on all 8 tiles around this one
 								for (var loop=0;loop<loops;loop++)
 								{
 									var any=0;
-									var neighs={};//all surrounding plants
-									var neighsM={};//all surrounding mature plants
+									var neighs={};
+									var neighsM={};
 									for (var i in M.plants){neighs[i]=0;}
 									for (var i in M.plants){neighsM[i]=0;}
 									var neigh=M.getTile(x,y-1);if (neigh[0]>0){var age=neigh[1];neigh=M.plantsById[neigh[0]-1];any++;neighs[neigh.key]++;if (age>=neigh.mature){neighsM[neigh.key]++;}}
@@ -1943,7 +1853,6 @@ M.launch=function()
 									if (any>0)
 									{
 										var muts=M.getMuts(neighs,neighsM);
-										
 										var list=[];
 										for (var ii=0;ii<muts.length;ii++)
 										{
@@ -1953,7 +1862,6 @@ M.launch=function()
 									}
 									else if (loop==0)
 									{
-										//weeds in empty tiles (no other plants must be nearby)
 										var chance=0.002*weedMult*M.plotBoost[y][x][2];
 										if (Math.random()<chance) M.plot[y][x]=[M.plants['meddleweed'].id+1,0];
 									}
@@ -1968,8 +1876,7 @@ M.launch=function()
 		}
 		if (M.toRebuild) M.buildPlot();
 		if (M.toCompute) M.computeEffs();
-		
-		if (Game.keys[27])//esc
+		if (Game.keys[27])
 		{
 			if (M.seedSelected>-1) M.plantsById[M.seedSelected].l.classList.remove('on');
 			M.seedSelected=-1;
@@ -1977,8 +1884,6 @@ M.launch=function()
 	}
 	M.draw=function()
 	{
-		//run each draw frame
-		
 		if (M.cursorL)
 		{
 			if (!M.cursor || M.seedSelected<0)
