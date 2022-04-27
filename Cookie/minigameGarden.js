@@ -17,7 +17,7 @@ M.launch=function()
 				ageTickR:2,
 				mature:35,
 				children:['bakerWheat','thumbcorn','cronerice','bakeberry','clover','goldenClover','chocoroot','tidygrass'],
-				effsStr:'<div class="green">&bull; +1% CpS</div>',
+				effsStr:'<div class="green">• +1% CpS</div>',
 				q:'A plentiful crop whose hardy grain is used to make flour for pastries.',
 				onHarvest:function(x,y,age)
 				{
@@ -33,7 +33,7 @@ M.launch=function()
 				ageTickR:2,
 				mature:20,
 				children:['bakerWheat','thumbcorn','cronerice','gildmillet','glovemorel'],
-				effsStr:'<div class="green">&bull; +2% cookies per click</div>',
+				effsStr:'<div class="green">• +2% cookies per click</div>',
 				q:'A strangely-shaped variant of corn. The amount of strands that can sprout from one seed is usually in the single digits.',
 			},
 			'cronerice':{
@@ -45,7 +45,7 @@ M.launch=function()
 				ageTickR:0.7,
 				mature:55,
 				children:['thumbcorn','gildmillet','elderwort','wardlichen'],
-				effsStr:'<div class="green">&bull; +3% grandma CpS</div>',
+				effsStr:'<div class="green">• +3% grandma CpS</div>',
 				q:'Not only does this wrinkly bulb look nothing like rice, it\'s not even related to it either; its closest extant relative is the weeping willow.',
 			},
 			'gildmillet':{
@@ -57,7 +57,7 @@ M.launch=function()
 				ageTickR:1.5,
 				mature:40,
 				children:['clover','goldenClover','shimmerlily'],
-				effsStr:'<div class="green">&bull; +1% golden cookie gains</div><div class="green">&bull; +0.1% golden cookie effect duration</div>',
+				effsStr:'<div class="green">• +1% golden cookie gains</div><div class="green">• +0.1% golden cookie effect duration</div>',
 				q:'An ancient staple crop, famed for its golden sheen. Was once used to bake birthday cakes for kings and queens of old.',
 			},
 			'clover':{
@@ -69,7 +69,7 @@ M.launch=function()
 				ageTickR:1.5,
 				mature:35,
 				children:['goldenClover','greenRot','shimmerlily'],
-				effsStr:'<div class="green">&bull; +1% golden cookie frequency</div>',
+				effsStr:'<div class="green">• +1% golden cookie frequency</div>',
 				q:'<i>Trifolium repens</i>, a fairly mundane variety of clover with a tendency to produce four leaves. Such instances are considered lucky by some.',
 			},
 			'goldenClover':{
@@ -81,7 +81,7 @@ M.launch=function()
 				ageTickR:12,
 				mature:50,
 				children:[],
-				effsStr:'<div class="green">&bull; +3% golden cookie frequency</div>',
+				effsStr:'<div class="green">• +3% golden cookie frequency</div>',
 				q:'A variant of the ordinary clover that traded its chlorophyll for pure organic gold. Tragically short-lived, this herb is an evolutionary dead-end - but at least it looks pretty.',
 			},
 			'shimmerlily':{
@@ -93,7 +93,7 @@ M.launch=function()
 				ageTickR:6,
 				mature:70,
 				children:['elderwort','whiskerbloom','chimerose','cheapcap'],
-				effsStr:'<div class="green">&bull; +1% golden cookie gains</div><div class="green">&bull; +1% golden cookie frequency</div><div class="green">&bull; +1% random drops</div>',
+				effsStr:'<div class="green">• +1% golden cookie gains</div><div class="green">• +1% golden cookie frequency</div><div class="green">• +1% random drops</div>',
 				q:'These little flowers are easiest to find at dawn, as the sunlight refracting in dew drops draws attention to their pure-white petals.',
 			},
 			'elderwort':{
@@ -108,7 +108,7 @@ M.launch=function()
 				noContam:true,
 				detailsStr:'Immortal',
 				children:['everdaisy','ichorpuff','shriekbulb'],
-				effsStr:'<div class="green">&bull; +1% wrath cookie gains</div><div class="green">&bull; +1% wrath cookie frequency</div><div class="green">&bull; +1% grandma CpS</div><div class="green">&bull; immortal</div><div class="gray">&bull; surrounding plants (3x3) age 3% faster</div>',
+				effsStr:'<div class="green">• +1% wrath cookie gains</div><div class="green">• +1% wrath cookie frequency</div><div class="green">• +1% grandma CpS</div><div class="green">• immortal</div><div class="gray">• surrounding plants (3x3) age 3% faster</div>',
 				q:'A very old, long-forgotten subspecies of edelweiss that emits a strange, heady scent. There is some anecdotal evidence that these do not undergo molecular aging.',
 				onHarvest:function(x,y,age)
 				{
@@ -124,7 +124,7 @@ M.launch=function()
 				ageTickR:1,
 				mature:50,
 				children:['queenbeet'],
-				effsStr:'<div class="green">&bull; +1% CpS</div><div class="green">&bull; harvest when mature for +30 minutes of CpS (max. 3% of bank)</div>',
+				effsStr:'<div class="green">• +1% CpS</div><div class="green">• harvest when mature for +30 minutes of CpS (max. 3% of bank)</div>',
 				q:'A favorite among cooks, this large berry has a crunchy brown exterior and a creamy red center. Excellent in pies or chicken stews.',
 				onHarvest:function(x,y,age)
 				{
@@ -150,7 +150,7 @@ M.launch=function()
 				mature:25,
 				detailsStr:'Predictable growth',
 				children:['whiteChocoroot','drowsyfern','queenbeet'],
-				effsStr:'<div class="green">&bull; +1% CpS</div><div class="green">&bull; harvest when mature for +3 minutes of CpS (max. 3% of bank)</div><div class="green">&bull; predictable growth</div>',
+				effsStr:'<div class="green">• +1% CpS</div><div class="green">• harvest when mature for +3 minutes of CpS (max. 3% of bank)</div><div class="green">• predictable growth</div>',
 				q:'A tangly bramble coated in a sticky, sweet substance. Unknown genetic ancestry. Children often pick these from fields as-is as a snack.',
 				onHarvest:function(x,y,age)
 				{
@@ -175,7 +175,7 @@ M.launch=function()
 				mature:25,
 				detailsStr:'Predictable growth',
 				children:['whiskerbloom','tidygrass'],
-				effsStr:'<div class="green">&bull; +1% golden cookie gains</div><div class="green">&bull; harvest when mature for +3 minutes of CpS (max. 3% of bank)</div><div class="green">&bull; predictable growth</div>',
+				effsStr:'<div class="green">• +1% golden cookie gains</div><div class="green">• harvest when mature for +3 minutes of CpS (max. 3% of bank)</div><div class="green">• predictable growth</div>',
 				q:'A pale, even sweeter variant of the chocoroot. Often impedes travelers with its twisty branches.',
 				onHarvest:function(x,y,age)
 				{
@@ -202,7 +202,7 @@ M.launch=function()
 				mature:70,
 				detailsStr:'Spreads easily',
 				children:['brownMold','whiteChocoroot','wardlichen','greenRot'],
-				effsStr:'<div class="green">&bull; +1% CpS</div><div class="gray">&bull; may spread as brown mold</div>',
+				effsStr:'<div class="green">• +1% CpS</div><div class="gray">• may spread as brown mold</div>',
 				q:'A common rot that infests shady plots of earth. Grows in little creamy capsules. Smells sweet, but sadly wilts quickly.',
 			},
 			'brownMold':{
@@ -216,7 +216,7 @@ M.launch=function()
 				mature:70,
 				detailsStr:'Spreads easily',
 				children:['whiteMildew','chocoroot','keenmoss','wrinklegill'],
-				effsStr:'<div class="red">&bull; -1% CpS</div><div class="gray">&bull; may spread as white mildew</div>',
+				effsStr:'<div class="red">• -1% CpS</div><div class="gray">• may spread as white mildew</div>',
 				q:'A common rot that infests shady plots of earth. Grows in odd reddish clumps. Smells bitter, but thankfully wilts quickly.',
 			},
 			
@@ -232,7 +232,7 @@ M.launch=function()
 				contam:0.05,
 				detailsStr:'Grows in empty tiles, spreads easily',
 				children:['meddleweed','brownMold','crumbspore'],
-				effsStr:'<div class="red">&bull; useless</div><div class="red">&bull; may overtake nearby plants</div><div class="gray">&bull; may sometimes drop spores when uprooted</div>',
+				effsStr:'<div class="red">• useless</div><div class="red">• may overtake nearby plants</div><div class="gray">• may sometimes drop spores when uprooted</div>',
 				q:'The sign of a neglected farmland, this annoying weed spawns from unused dirt and may sometimes spread to other plants, killing them in the process.',
 				onKill:function(x,y,age)
 				{
@@ -249,7 +249,7 @@ M.launch=function()
 				ageTickR:2,
 				mature:60,
 				children:['chimerose','nursetulip'],
-				effsStr:'<div class="green">&bull; +0.2% effects from milk</div>',
+				effsStr:'<div class="green">• +0.2% effects from milk</div>',
 				q:'Squeezing the translucent pods makes them excrete a milky liquid, while producing a faint squeak akin to a cat\'s meow.',
 			},
 			'chimerose':{
@@ -261,7 +261,7 @@ M.launch=function()
 				ageTickR:1.5,
 				mature:30,
 				children:['chimerose'],
-				effsStr:'<div class="green">&bull; +1% reindeer gains</div><div class="green">&bull; +1% reindeer frequency</div>',
+				effsStr:'<div class="green">• +1% reindeer gains</div><div class="green">• +1% reindeer frequency</div>',
 				q:'Originating in the greener flanks of polar mountains, this beautiful flower with golden accents is fragrant enough to make any room feel a little bit more festive.',
 			},
 			'nursetulip':{
@@ -273,7 +273,7 @@ M.launch=function()
 				ageTickR:2,
 				mature:60,
 				children:[],
-				effsStr:'<div class="green">&bull; surrounding plants (3x3) are 20% more efficient</div><div class="red">&bull; -2% CpS</div>',
+				effsStr:'<div class="green">• surrounding plants (3x3) are 20% more efficient</div><div class="red">• -2% CpS</div>',
 				q:'This flower grows an intricate root network that distributes nutrients throughout the surrounding soil. The reason for this seemingly altruistic behavior is still unknown.',
 			},
 			'drowsyfern':{
@@ -285,7 +285,7 @@ M.launch=function()
 				ageTickR:0.1,
 				mature:30,
 				children:[],
-				effsStr:'<div class="green">&bull; +3% CpS</div><div class="red">&bull; -5% cookies per click</div><div class="red">&bull; -10% golden cookie frequency</div>',
+				effsStr:'<div class="green">• +3% CpS</div><div class="red">• -5% cookies per click</div><div class="red">• -10% golden cookie frequency</div>',
 				q:'Traditionally used to brew a tea that guarantees a good night of sleep.',
 				onHarvest:function(x,y,age)
 				{
@@ -301,7 +301,7 @@ M.launch=function()
 				ageTickR:4,
 				mature:65,
 				children:['wardlichen'],
-				effsStr:'<div class="gray">&bull; 2% less wrath cookies</div><div class="gray">&bull; wrinklers spawn 15% slower</div>',
+				effsStr:'<div class="gray">• 2% less wrath cookies</div><div class="gray">• wrinklers spawn 15% slower</div>',
 				q:'The metallic stench that emanates from this organism has been known to keep insects and slugs away.',
 			},
 			'keenmoss':{
@@ -313,7 +313,7 @@ M.launch=function()
 				ageTickR:5,
 				mature:65,
 				children:['drowsyfern','wardlichen','keenmoss'],
-				effsStr:'<div class="green">&bull; +3% random drops</div>',
+				effsStr:'<div class="green">• +3% random drops</div>',
 				q:'Fuzzy to the touch and of a vibrant green. In plant symbolism, keenmoss is associated with good luck for finding lost objects.',
 			},
 			'queenbeet':{
@@ -326,7 +326,7 @@ M.launch=function()
 				mature:80,
 				noContam:true,
 				children:['duketater','queenbeetLump','shriekbulb'],
-				effsStr:'<div class="green">&bull; +0.3% golden cookie effect duration</div><div class="red">&bull; -2% CpS</div><div class="green">&bull; harvest when mature for +1 hour of CpS (max. 4% of bank)</div>',
+				effsStr:'<div class="green">• +0.3% golden cookie effect duration</div><div class="red">• -2% CpS</div><div class="green">• harvest when mature for +1 hour of CpS (max. 4% of bank)</div>',
 				q:'A delicious taproot used to prepare high-grade white sugar. Entire countries once went to war over these.',
 				onHarvest:function(x,y,age)
 				{
@@ -352,7 +352,7 @@ M.launch=function()
 				mature:85,
 				noContam:true,
 				children:[],
-				effsStr:'<div class="red">&bull; -10% CpS</div><div class="red">&bull; surrounding plants (3x3) are 20% less efficient</div><div class="green">&bull; harvest when mature for a sugar lump</div>',
+				effsStr:'<div class="red">• -10% CpS</div><div class="red">• surrounding plants (3x3) are 20% less efficient</div><div class="green">• harvest when mature for a sugar lump</div>',
 				q:'A delicious taproot used to prepare high-grade white sugar. Entire countries once went to war over these.<br>It looks like this one has grown especially sweeter and juicier from growing in close proximity to other queenbeets.',
 				onHarvest:function(x,y,age)
 				{
@@ -373,7 +373,7 @@ M.launch=function()
 				mature:95,
 				noContam:true,
 				children:['shriekbulb'],
-				effsStr:'<div class="green">&bull; harvest when mature for +2 hours of CpS (max. 8% of bank)</div>',
+				effsStr:'<div class="green">• harvest when mature for +2 hours of CpS (max. 8% of bank)</div>',
 				q:'A rare, rich-tasting tuber fit for a whole meal, as long as its strict harvesting schedule is respected. Its starch has fascinating baking properties.',
 				onHarvest:function(x,y,age)
 				{
@@ -402,7 +402,7 @@ M.launch=function()
 				noContam:true,
 				detailsStr:'Spreads easily',
 				children:['crumbspore','glovemorel','cheapcap','doughshroom','wrinklegill','ichorpuff'],
-				effsStr:'<div class="green">&bull; explodes into up to 1 minute of CpS at the end of its lifecycle (max. 1% of bank)</div><div class="red">&bull; may overtake nearby plants</div>',
+				effsStr:'<div class="green">• explodes into up to 1 minute of CpS at the end of its lifecycle (max. 1% of bank)</div><div class="red">• may overtake nearby plants</div>',
 				q:'An archaic mold that spreads its spores to the surrounding dirt through simple pod explosion.',
 				onDie:function(x,y)
 				{
@@ -427,7 +427,7 @@ M.launch=function()
 				noContam:true,
 				detailsStr:'Spreads easily',
 				children:['crumbspore','doughshroom','foolBolete','shriekbulb'],
-				effsStr:'<div class="green">&bull; explodes into up to 5 minutes of CpS at the end of its lifecycle (max. 3% of bank)</div><div class="red">&bull; may overtake nearby plants</div>',
+				effsStr:'<div class="green">• explodes into up to 5 minutes of CpS at the end of its lifecycle (max. 3% of bank)</div><div class="red">• may overtake nearby plants</div>',
 				q:'Jammed full of warm spores; some forest walkers often describe the smell as similar to passing by a bakery.',
 				onDie:function(x,y)
 				{
@@ -449,7 +449,7 @@ M.launch=function()
 				ageTickR:18,
 				mature:80,
 				children:[],
-				effsStr:'<div class="green">&bull; +4% cookies per click</div><div class="green">&bull; +1% cursor CpS</div><div class="red">&bull; -1% CpS</div>',
+				effsStr:'<div class="green">• +4% cookies per click</div><div class="green">• +1% cursor CpS</div><div class="red">• -1% CpS</div>',
 				q:'Touching its waxy skin reveals that the interior is hollow and uncomfortably squishy.',
 			},
 			'cheapcap':{
@@ -462,7 +462,7 @@ M.launch=function()
 				ageTickR:16,
 				mature:40,
 				children:[],
-				effsStr:'<div class="green">&bull; buildings and upgrades are 0.2% cheaper</div><div class="red">&bull; cannot handle cold climates; 15% chance to die when frozen</div>',
+				effsStr:'<div class="green">• buildings and upgrades are 0.2% cheaper</div><div class="red">• cannot handle cold climates; 15% chance to die when frozen</div>',
 				q:'Small, tough, and good in omelettes. Some historians propose that the heads of dried cheapcaps were once used as currency in some bronze age societies.',
 			},
 			'foolBolete':{
@@ -475,7 +475,7 @@ M.launch=function()
 				ageTickR:25,
 				mature:50,
 				children:[],
-				effsStr:'<div class="green">&bull; +2% golden cookie frequency</div><div class="red">&bull; -5% golden cookie gains</div><div class="red">&bull; -2% golden cookie duration</div><div class="red">&bull; -2% golden cookie effect duration</div>',
+				effsStr:'<div class="green">• +2% golden cookie frequency</div><div class="red">• -5% golden cookie gains</div><div class="red">• -2% golden cookie duration</div><div class="red">• -2% golden cookie effect duration</div>',
 				q:'Named for its ability to fool mushroom pickers. The fool\'s bolete is not actually poisonous, it\'s just extremely bland.',
 			},
 			'wrinklegill':{
@@ -488,7 +488,7 @@ M.launch=function()
 				ageTickR:3,
 				mature:65,
 				children:['elderwort','shriekbulb'],
-				effsStr:'<div class="gray">&bull; wrinklers spawn 2% faster</div><div class="gray">&bull; wrinklers eat 1% more</div>',
+				effsStr:'<div class="gray">• wrinklers spawn 2% faster</div><div class="gray">• wrinklers eat 1% more</div>',
 				q:'This mushroom\'s odor resembles that of a well-done steak, and is said to whet the appetite - making one\'s stomach start gurgling within seconds.',
 			},
 			'greenRot':{
@@ -501,7 +501,7 @@ M.launch=function()
 				ageTickR:13,
 				mature:65,
 				children:['keenmoss','foolBolete'],
-				effsStr:'<div class="green">&bull; +0.5% golden cookie duration</div><div class="green">&bull; +1% golden cookie frequency</div><div class="green">&bull; +1% random drops</div>',
+				effsStr:'<div class="green">• +0.5% golden cookie duration</div><div class="green">• +1% golden cookie frequency</div><div class="green">• +1% random drops</div>',
 				q:'This short-lived mold is also known as "emerald pebbles", and is considered by some as a pseudo-gem that symbolizes good fortune.',
 				onHarvest:function(x,y,age)
 				{
@@ -519,7 +519,7 @@ M.launch=function()
 				noContam:true,
 				detailsStr:'The unfortunate result of some plant combinations',
 				children:['shriekbulb'],
-				effsStr:'<div class="red">&bull; -2% CpS</div><div class="red">&bull; surrounding plants (3x3) are 5% less efficient</div>',
+				effsStr:'<div class="red">• -2% CpS</div><div class="red">• surrounding plants (3x3) are 5% less efficient</div>',
 				q:'A nasty vegetable with a dreadful quirk : its flesh resonates with a high-pitched howl whenever it is hit at the right angle by sunlight, moonlight, or even a slight breeze.',
 			},
 			'tidygrass':{
@@ -531,7 +531,7 @@ M.launch=function()
 				ageTickR:0,
 				mature:40,
 				children:['everdaisy'],
-				effsStr:'<div class="green">&bull; surrounding tiles (5x5) develop no weeds or fungus</div>',
+				effsStr:'<div class="green">• surrounding tiles (5x5) develop no weeds or fungus</div>',
 				q:'The molecules this grass emits are a natural weedkiller. Its stems grow following a predictable pattern, making it an interesting -if expensive- choice for a lawn grass.',
 			},
 			'everdaisy':{
@@ -546,7 +546,7 @@ M.launch=function()
 				immortal:1,
 				detailsStr:'Immortal',
 				children:[],
-				effsStr:'<div class="green">&bull; surrounding tiles (3x3) develop no weeds or fungus</div><div class="green">&bull; immortal</div>',
+				effsStr:'<div class="green">• surrounding tiles (3x3) develop no weeds or fungus</div><div class="green">• immortal</div>',
 				q:'While promoted by some as a superfood owing to its association with longevity and intriguing geometry, this elusive flower is actually mildly toxic.',
 			},
 			'ichorpuff':{
@@ -559,7 +559,7 @@ M.launch=function()
 				ageTickR:1.5,
 				mature:35,
 				children:[],
-				effsStr:'<div class="green">&bull; surrounding plants (3x3) age half as fast</div><div class="red">&bull; surrounding plants (3x3) are half as efficient</div>',
+				effsStr:'<div class="green">• surrounding plants (3x3) age half as fast</div><div class="red">• surrounding plants (3x3) are half as efficient</div>',
 				q:'This puffball mushroom contains sugary spores, but it never seems to mature to bursting on its own. Surrounding plants under its influence have a very slow metabolism, reducing their effects but lengthening their lifespan.',
 				onHarvest:function(x,y,age)
 				{
@@ -852,7 +852,7 @@ M.launch=function()
 				effMult:1,
 				weedMult:1,
 				req:0,
-				effsStr:'<div class="gray">&bull; tick every <b>5 minutes</b></div>',
+				effsStr:'<div class="gray">• tick every <b>5 minutes</b></div>',
 				q:'Simple, regular old dirt that you\'d find in nature.',
 			},
 			'fertilizer':{
@@ -862,7 +862,7 @@ M.launch=function()
 				effMult:0.75,
 				weedMult:1.2,
 				req:50,
-				effsStr:'<div class="gray">&bull; tick every <b>3 minutes</b></div><div class="red">&bull; passive plant effects <b>-25%</b></div><div class="red">&bull; weeds appear <b>20%</b> more</div>',
+				effsStr:'<div class="gray">• tick every <b>3 minutes</b></div><div class="red">• passive plant effects <b>-25%</b></div><div class="red">• weeds appear <b>20%</b> more</div>',
 				q:'Soil with a healthy helping of fresh manure. Plants grow faster but are less efficient.',
 			},
 			'clay':{
@@ -872,7 +872,7 @@ M.launch=function()
 				effMult:1.25,
 				weedMult:1,
 				req:100,
-				effsStr:'<div class="gray">&bull; tick every <b>15 minutes</b></div><div class="green">&bull; passive plant effects <b>+25%</b></div>',
+				effsStr:'<div class="gray">• tick every <b>15 minutes</b></div><div class="green">• passive plant effects <b>+25%</b></div>',
 				q:'Rich soil with very good water retention. Plants grow slower but are more efficient.',
 			},
 			'pebbles':{
@@ -882,7 +882,7 @@ M.launch=function()
 				effMult:0.25,
 				weedMult:0.1,
 				req:200,
-				effsStr:'<div class="gray">&bull; tick every <b>5 minutes</b></div><div class="red">&bull; passive plant effects <b>-75%</b></div><div class="green">&bull; <b>35% chance</b> of collecting seeds automatically when plants expire</div><div class="green">&bull; weeds appear <b>10 times</b> less</div>',
+				effsStr:'<div class="gray">• tick every <b>5 minutes</b></div><div class="red">• passive plant effects <b>-75%</b></div><div class="green">• <b>35% chance</b> of collecting seeds automatically when plants expire</div><div class="green">• weeds appear <b>10 times</b> less</div>',
 				q:'Dry soil made of small rocks tightly packed together. Not very conducive to plant health, but whatever falls off your crops will be easy to retrieve.<br>Useful if you\'re one of those farmers who just want to find new seeds without having to tend their garden too much.',
 			},
 			'woodchips':{
@@ -892,7 +892,7 @@ M.launch=function()
 				effMult:0.25,
 				weedMult:0.1,
 				req:300,
-				effsStr:'<div class="gray">&bull; tick every <b>5 minutes</b></div><div class="red">&bull; passive plant effects <b>-75%</b></div><div class="green">&bull; plants spread and mutate <b>3 times more</b></div><div class="green">&bull; weeds appear <b>10 times</b> less</div>',
+				effsStr:'<div class="gray">• tick every <b>5 minutes</b></div><div class="red">• passive plant effects <b>-75%</b></div><div class="green">• plants spread and mutate <b>3 times more</b></div><div class="green">• weeds appear <b>10 times</b> less</div>',
 				q:'Soil made of bits and pieces of bark and sawdust. Helpful for young sprouts to develop, not so much for mature plants.',
 			},
 		};
@@ -940,14 +940,14 @@ M.launch=function()
 							if (M.effs[i]!=1 && effs[i])
 							{
 								var amount=(M.effs[i]-1)*100;
-								effStr+='<div style="font-size:10px;margin-left:64px;"><b>&bull; '+effs[i].n+' :</b> <span class="'+((amount*(effs[i].rev?-1:1))>0?'green':'red')+'">'+(amount>0?'+':'-')+Beautify(Math.abs(M.effs[i]-1)*100,2)+'%</span></div>';
+								effStr+='<div style="font-size:10px;margin-left:64px;"><b>• '+effs[i].n+' :</b> <span class="'+((amount*(effs[i].rev?-1:1))>0?'green':'red')+'">'+(amount>0?'+':'-')+Beautify(Math.abs(M.effs[i]-1)*100,2)+'%</span></div>';
 							}
 						}
 						if (effStr=='') effStr='<div style="font-size:10px;margin-left:64px;"><b>None.</b></div>';
 						str+='<div>Combined effects of all your plants :</div>'+effStr;
 					}
 					str+='<div class="line"></div>';
-					str+='<img src="img/gardenTip.png" style="float:right;margin:0px 0px 8px 8px;"/><small style="line-height:100%;">&bull; You can cross-breed plants by planting them close to each other; new plants will grow in the empty tiles next to them.<br>&bull; Unlock new seeds by harvesting mature plants.<br>&bull; When you ascend, your garden plants are reset, but you keep all the seeds you\'ve unlocked.<br>&bull; Your garden has no effect and does not grow while the game is closed.</small>';
+					str+='<img src="img/gardenTip.png" style="float:right;margin:0px 0px 8px 8px;"/><small style="line-height:100%;">• You can cross-breed plants by planting them close to each other; new plants will grow in the empty tiles next to them.<br>• Unlock new seeds by harvesting mature plants.<br>• When you ascend, your garden plants are reset, but you keep all the seeds you\'ve unlocked.<br>• Your garden has no effect and does not grow while the game is closed.</small>';
 					return str;
 				},
 				func:function(){},
@@ -1205,7 +1205,6 @@ M.launch=function()
 										'Does not decay'
 								)
 							)+'</small>'+
-							//'<small><br>'+M.plotBoost[y][x]+'</small>'+
 							(M.plotBoost[y][x]!=[1,1,1]?('<small>'+
 								(M.plotBoost[y][x][0]!=1?'<br>Aging multiplier : '+Beautify(M.plotBoost[y][x][0]*100)+'%':'')+
 								(M.plotBoost[y][x][1]!=1?'<br>Effect multiplier : '+Beautify(M.plotBoost[y][x][1]*100)+'%':'')+
@@ -1360,7 +1359,6 @@ M.launch=function()
 						iconL.style.opacity=(dying?0.5:1);
 						iconL.style.backgroundPosition=(-icon[0]*48)+'px '+(-icon[1]*48)+'px';
 						iconL.style.display='block';
-						//iconL.innerHTML=M.plotBoost[y][x];
 					}
 					else iconL.style.display='none';
 					if (M.isTileUnlocked(x,y)) tileL.style.display='block';
@@ -1372,7 +1370,6 @@ M.launch=function()
 		
 		M.clickTile=function(x,y)
 		{
-			//if (M.freeze) return false;
 			var outcome=M.useTool(M.seedSelected,x,y);
 			M.toCompute=true;
 			if (outcome && !Game.keys[16])//shift
@@ -1385,7 +1382,6 @@ M.launch=function()
 					else {l('gardenSeed-'+it.id).classList.remove('on');}
 				}
 			}
-			//PlaySound('snd/tick.mp3');
 		}
 		
 		M.useTool=function(what,x,y)
@@ -1902,7 +1898,7 @@ M.launch=function()
 				M.cursorL.style.display='block';
 			}
 		}
-		if (Game.drawT%10==0)
+		if (Game.drawT==0)
 		{
 			M.lumpRefill.style.display='block';
 			if (M.freeze) l('gardenNextTick').innerHTML='Garden is frozen. Unfreeze to resume.';
