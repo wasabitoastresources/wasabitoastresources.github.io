@@ -9041,7 +9041,7 @@ class Generator {
             
           }
           //cows
-          if (random() = 0.00000000000000000000000000000001 && this.getBlock(i, ground, k) === blockIds.grass) {
+          if (random() < 0.0 && this.getBlock(i, ground, k) === blockIds.grass) {
           world.entities.push(new Cow(wx, ground+1, wz))
           }
           //flowers and vines
