@@ -1,4 +1,3 @@
-/* reset CSS */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -19,7 +18,6 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
-/* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -44,9 +42,6 @@ table {
 }
 
 
-/*=====================================================================================
-BASE
-=======================================================================================*/
 html,body
 {
 	width:100%;
@@ -88,7 +83,6 @@ body
 	top:0px;
 	right:0px;
 	bottom:0px;
-	/*min-width:1280px;*/
 }
 
 small
@@ -115,7 +109,6 @@ a:active
 
 .inset
 {
-	/*box-shadow:0px 0px 12px #000 inset;*/
 }
 
 .titleFont,.title,.section,.lockedTitle
@@ -129,9 +122,6 @@ a:active
 	color:#fff;
 }
 
-/*=====================================================================================
-SECTIONS
-=======================================================================================*/
 .section
 {
 	text-align:center;
@@ -363,9 +353,6 @@ a.option.neato:active
 	background-color:#999;
 }
 
-/*=====================================================================================
-oh forget it this is just a mess
-=======================================================================================*/
 #backgroundLayers, #backgroundLayers div
 {
 	width:100%;
@@ -573,9 +560,7 @@ div:hover>.hoverable
 	width:30%;
 	bottom:0px;
 	min-width:100px;
-	/*overflow:hidden;*/
 }
-/*#sectionLeftExtra{position:absolute;left:0px;top:0px;}*/
 #sectionMiddle
 {
 	position:absolute;
@@ -613,7 +598,6 @@ div:hover>.hoverable
 	right:0px;
 	overflow-x:hidden;
 	overflow-y:scroll;
-	/*background:url(img/panelBG.png);*/
 	background:rgba(0,0,0,0.5);
 }
 
@@ -637,7 +621,6 @@ div:hover>.hoverable
 }
 
 
-/* this is a mess */
 .framed,a.option,.sliderBox,.smallFramed
 {
 	border:1px solid #e2dd48;
@@ -653,8 +636,6 @@ div:hover>.hoverable
 }
 .framed,a.option,a.option.framed,a.option.framed:hover,.smallFramed
 {
-	/*border-color:#dac56e #c07a36 #a44e36 #c07a36;*/
-	/*border:1px solid #e2dd48;*/
 	border-color:#ece2b6 #875526 #733726 #dfbc9a;
 }
 .smallFramed
@@ -704,7 +685,6 @@ textarea,input[type="text"]
 	margin:2px auto;
 }
 
-/* why, CSS? why? */
 input[type=range]
 {
 	-webkit-appearance:none;
@@ -890,7 +870,6 @@ input[type=range]:active::-ms-thumb,input[type=range]:hover::-ms-thumb {backgrou
 	position:absolute;
 	z-index:1000000000;
 	display:none;
-	//transition:left 0.1s ease-out,right 0.1s ease-out,top 0.1s ease-out,bottom 0.1s ease-out;
 }
 #tooltip
 {
@@ -909,7 +888,6 @@ input[type=range]:active::-ms-thumb,input[type=range]:hover::-ms-thumb {backgrou
 }
 #tooltip .data
 {
-	/*border-top:1px solid rgba(255,255,255,0.25);*/
 	padding:4px 0px;
 	font-size:80%;
 }
@@ -939,7 +917,6 @@ input[type=range]:active::-ms-thumb,input[type=range]:hover::-ms-thumb {backgrou
 }
 .description
 {
-	/*border-top:1px solid rgba(255,255,255,0.25);*/
 	margin:4px 0px;
 }
 
@@ -1039,8 +1016,6 @@ q:after
 	position:absolute;
 	left:-128px;
 	top:-128px;
-	/*background:url(img/perfectCookie.png);
-	background-size:256px 256px;*/
 	background:url(img/empty.png);/* somehow necessary; an empty div with no background seems to be click-through */
 	cursor:pointer;
 	z-index:10000;
@@ -1313,25 +1288,6 @@ q:after
 {
 	background:url(img/bracketPanelRightS.png) no-repeat;right:-18px;width:18px;
 }
-/*.roundedPanel
-{
-	background:url(img/roundedPanelBG.png) repeat-x 0px 0px;
-	position:relative;
-}
-.roundedPanel:before,.roundedPanel:after
-{
-	content:'';
-	display:block;width:17px;height:32px;
-	position:absolute;top:0px;
-}
-.roundedPanel:before
-{
-	background:url(img/roundedPanelLeft.png) no-repeat;left:-17px;
-}
-.roundedPanel:after
-{
-	background:url(img/roundedPanelRight.png) no-repeat;right:-17px;
-}*/
 #ascendNumber
 {
 	display:none;
@@ -1428,11 +1384,9 @@ q:after
 	background:url(img/prestigeBar.jpg) 0px 0px;
 	position:absolute;
 	left:0px;
-	/*right:100%;*/
 	right:0px;
 	top:0px;
 	height:100%;
-	/*max-width:100%;*/
 	transform:translate(0px,0px);
 }
 .meter:after
@@ -1456,7 +1410,6 @@ q:after
 }
 #ascendMeter
 {
-	/*right:100px;*/
 }
 
 .meter.filling
@@ -1464,11 +1417,6 @@ q:after
 -webkit-animation:fluidMotion 10s infinite linear;
    -moz-animation:fluidMotion 10s infinite linear;
         animation:fluidMotion 10s infinite linear;
-	/*-webkit-transition:right 0.5s linear;
-	-moz-transition:right 0.5s linear;
-	-ms-transition:right 0.5s linear;
-	-o-transition:right 0.5s linear;
-	transition:right 0.5s linear;*/
 }
 @-webkit-keyframes fluidMotion{
 from {background-position:0px -24px;}
@@ -1494,8 +1442,6 @@ from {background-position:0px -24px;}
 	right:0px;
 	top:0px;
 	bottom:0px;
-	/*box-shadow:0px 0px 24px #000 inset;
-	background:#000 url(img/darkNoise.jpg);*/
 }
 
 #comments
@@ -1508,7 +1454,6 @@ from {background-position:0px -24px;}
 	height:64px;
 	background:url(img/shadedBorders.png);
 	background-size:100% 96px;
-	/*overflow:hidden;*/
 }
 .commentsText
 {
@@ -1556,7 +1501,6 @@ from {background-position:0px -24px;}
 	z-index:10;
 }
 
-/* let me tell you about vendor prefixes */
 .risingAway{
 -webkit-animation:riseAway 1s 1 forwards;
    -moz-animation:riseAway 1s 1 forwards;
@@ -1630,7 +1574,6 @@ from {top:20px;opacity:0;}
 
 @keyframes bounce
 {
-	/* weeeeee */
 	0% 		{transform-origin:50% 100%;transform:scale(1,1);}
 	10% 	{transform-origin:50% 100%;transform:scale(0.9,1.2);}
 	20% 	{transform-origin:50% 100%;transform:scale(1.5,0.5);}
@@ -1719,15 +1662,12 @@ from {top:20px;opacity:0;}
 	position:relative;
 	padding-bottom:16px;
 	display:none;
-	/*overflow:hidden;*/
 }
 .row.enabled{display:block;}
 .row .rowCanvas
 {
 	width:100%;
 	height:128px;
-	/*overflow-x:scroll;
-	overflow-y:hidden;*/
 	background:#000;
 	display:block;
 }
@@ -1743,14 +1683,11 @@ from {top:20px;opacity:0;}
 }
 .row.onMinigame .rowCanvas{display:none;}
 .row.onMinigame .rowSpecial{display:block;}
-/*.row.muted .rowCanvas,.row.muted .rowSpecial{display:none;}*/
-/*.row.muted .separatorBottom{background:rgba(0,0,0,0.75);box-shadow:1px 1px 0px rgba(255,255,255,0.1) inset,-1px -1px 0px rgba(0,0,0,0.5) inset;}*/
 .row.muted{display:none;}
 
 .row .info, #sectionLeft .info
 {
 	display:none;
-	/*visibility:hidden;*/
 	-webkit-transition: opacity 0.1s ease-out;
 	-moz-transition: opacity 0.1s ease-out;
 	-ms-transition: opacity 0.1s ease-out;
@@ -1896,8 +1833,6 @@ from {top:20px;opacity:0;}
 .trophy:hover
 {
 	top:-1px;
-	/*filter:brightness(125%) drop-shadow(0px 3px 2px #000);
-	-webkit-filter:brightness(125%) drop-shadow(0px 3px 2px #000);*/
 }
 
 .tag
@@ -1922,8 +1857,6 @@ from {top:20px;opacity:0;}
 #upgrades:before{content:'Upgrades';}
 #toggleUpgrades:before{content:'Switches';}
 #techUpgrades:before{content:'Research';}
-/*#vaultUpgrades{height:0px;}*/
-/*#vaultUpgrades:hover{height:auto;min-height:60px;}*/
 #vaultUpgrades .crate{opacity:0.5;}
 #vaultUpgrades .crate{transform:scale(0.5);margin:-9px;}
 #vaultUpgrades{height:30px;}
@@ -1949,9 +1882,7 @@ from {top:20px;opacity:0;}
 	margin:6px;
 	display:inline-block;
 	cursor:pointer;
-	/*opacity:0.6;*/
 	position:relative;
-	/*background:#000;*/
 	background:rgba(0,0,0,0.25);
 	float:left;
 }
@@ -1978,21 +1909,6 @@ from {top:20px;opacity:0;}
 .crate:before{background-position:120px 0px;}
 .crate.enabled:before{background-position:0px 0px;}
 .crate.enabled:hover:before,.crate.highlighted:before{background-position:60px 0px;}
-/*.crate.enabled:hover:after,.crate.highlighted:after
-{
-	content:'';
-	position:absolute;
-	left:-24px;
-	top:-24px;
-	width:96px;
-	height:96px;
-	display:block;
-	//background:url(img/upgradeHighlight.png);
-	background:url(img/upgradeHighlight.jpg);
-	mix-blend-mode:screen;
-	z-index:100;
-	pointer-events:none;
-}*/
 .crate.shadow:before{background-position:120px 60px;}
 .crate.shadow.enabled:before{background-position:0px 60px;}
 .crate.shadow.enabled:hover:before{background-position:60px 60px;}
@@ -2022,8 +1938,6 @@ from {top:20px;opacity:0;}
 	width:48px;
 	height:48px;
 	background:url(img/pieFill.png);
-	/*background-size:864px 384px;*/
-	/*background-size:864px 384px;*/
 	z-index:1000;
 	opacity:0.5;
 }
@@ -2038,22 +1952,7 @@ from {top:20px;opacity:0;}
 	background-image:url(img/ascendSlot.png);
 	background-position:88px 0px;
 }
-/*.crate.heavenly:after
-{
-	content:'';
-	position:absolute;
-	left:-6px;
-	top:-6px;
-	width:60px;
-	height:60px;
-	display:block;
-	background:#f00;
-	border-radius:30px;
-	z-index:-10;
-}*/
 #menu .crate.heavenly {margin:12px;}
-/*#menu .crate.heavenly:nth-child(even) {margin-top:16px;margin-bottom:8px;}
-#menu .crate.heavenly:nth-child(3n) {margin-right:16px;margin-left:8px;}*/
 .crate.heavenly,.crate.heavenly:hover{background-color:transparent;}
 .icon
 {
@@ -2064,7 +1963,6 @@ from {top:20px;opacity:0;}
 }
 .icon,.crate,.usesIcon
 {
-	/*background-image:url(img/icons.png?v=20);*/
 }
 .icon,.crate,.shadowFilter
 {
@@ -2072,7 +1970,6 @@ from {top:20px;opacity:0;}
 	-webkit-filter:drop-shadow(0px 3px 2px #000);
 }
 
-/*filter the whole list rather than filtering each individual crate*/
 .crateBox .crate,.upgradeBox .crate
 {
 	filter:none;
@@ -2092,7 +1989,6 @@ from {top:20px;opacity:0;}
 
 .achievement
 {
-	/*opacity:0.4;*/
 }
 .crate.enabled
 {
@@ -2100,7 +1996,6 @@ from {top:20px;opacity:0;}
 }
 .crate.heavenly.enabled:before
 {
-	/*background-position:0px -60px;*/
 	background-position:0px 0px;
 }
 .crate.heavenly:hover:before
@@ -2109,13 +2004,9 @@ from {top:20px;opacity:0;}
 }
 .crate:hover,.crate.highlighted
 {
-	/*background-color:#200e0a;*/
 	opacity:1;
 	top:-1px;
 	
-	/* for some reason having a filter update on hover makes the cursor confused about which icon it's hovering */
-	/*filter:brightness(115%);
-	-webkit-filter:brightness(115%);*/
 }
 .crate.heavenly
 {
@@ -2129,7 +2020,6 @@ from {top:20px;opacity:0;}
 }
 .parentLink
 {
-	/*background:url(img/linkPulse.png);*/
 	background:url(img/linkPulse.gif);
 	width:0px;
 	height:8px;
@@ -2139,11 +2029,6 @@ from {top:20px;opacity:0;}
 	transform-origin:0% 50%;
 	opacity:0.5;
 	z-index:-10;
-	/*
--webkit-animation:parentLinkPulse 1s infinite linear;
-   -moz-animation:parentLinkPulse 1s infinite linear;
-        animation:parentLinkPulse 1s infinite linear;
-	*/
 }
 @-webkit-keyframes parentLinkPulse{
 from {background-position:0px 0px;}
@@ -2584,8 +2469,6 @@ from {background-position:0px 0px;}
 #notes
 {
 	position:absolute;
-	/*left:0px;
-	bottom:128px;*/
 	left:50%;
 	margin-left:-125px;
 	bottom:0px;
@@ -2610,7 +2493,6 @@ from {background-position:0px 0px;}
 {
 	font-weight:bold;
 	font-size:14px;
-	/*overflow-y:hidden;*/
 }
 .note h5
 {
@@ -2623,8 +2505,6 @@ from {background-position:0px 0px;}
 }
 .note.hasdesc h3
 {
-	/*border-bottom:1px solid rgba(255,255,255,0.5);
-	padding-bottom:2px;*/
 }
 .note.nodesc h3
 {
@@ -2644,11 +2524,6 @@ p
 {opacity:0;}
 #game.ascendIntro,#ascend
 {
-	/*background:url(img/starbg.jpg);
-	background-size:1024px 1024px;*/
-	/*background:url(img/starbg.jpg),url(img/starbg.jpg);
-	background-size:1024px 1024px,2048px 2048px;
-	background-blend-mode:hard-light;*/
 }/*animation:drift 60s linear 0s infinite;}*/
 #game.ascendIntro,#game.reincarnating{background:#000;}
 
@@ -2665,7 +2540,6 @@ p
 	bottom:0px;
 	z-index:100000;
 	cursor:move;
-	/*transition:background-position 0.2s ease-out,background-size 0.1s ease-out;*/
 }
 #ascendBG
 {
@@ -2692,7 +2566,6 @@ p
 	position:absolute;
 	left:0px;
 	top:0px;
-	/*transition:transform 0.1s ease-out;*/
 }
 #ascendHelp
 {
@@ -2734,7 +2607,6 @@ p
 	z-index:100;
 	text-align:center;
 	filter:drop-shadow(0px 0px 4px #000);
-	/*-webkit-filter:drop-shadow(0px 0px 4px #000);*/
 	cursor:auto;
 }
 
@@ -2874,7 +2746,6 @@ p
 	-ms-interpolation-mode: nearest-neighbor;   /* IE                            */
 }
 
-/*show scrollbars in safari*/
 ::-webkit-scrollbar
 {
 	-webkit-appearance:none;
@@ -2891,9 +2762,6 @@ p
 	box-shadow:0px 0px 0px 1px #999 inset;
 }
 
-/*=====================================================================================
-SUPPORT
-=======================================================================================*/
 #support
 {
 	width:300px;
@@ -2982,38 +2850,7 @@ SUPPORT
 .noAds .ifNoAds{display:block;}
 .noAds #support,.noAds #smallSupport,.noAds .supportComment{display:none;}
 
-/*=====================================================================================
-NEW AD DISPLAY
-=======================================================================================*/
-/*
-#sectionRight
-{
-	right:160px;
-}
-#sectionMiddle
-{
-	right:478px;
-}
-#sectionAd
-{
-	height:100%;
-	position:absolute;
-	top:0px;
-	right:0px;
-	overflow-x:hidden;
-	width:160px;
-	background:url(img/darkNoise.jpg);
-}
-.separatorRight
-{
-	right:477px;
-}
-#sectionAd .supportPlaceholder {width:160px;}
-*/
 
-/*=====================================================================================
-STOP THE FANCY
-=======================================================================================*/
 .noFancy *
 {
 	text-shadow:none!important;
@@ -3029,9 +2866,6 @@ STOP THE FANCY
 	-webkit-filter:none!important;
 }
 
-/*=====================================================================================
-MOBILE
-=======================================================================================*/
 .mobile #sectionLeft,.mobile #sectionMiddle,.mobile #sectionRight
 {
 	width:100%;
@@ -3159,11 +2993,7 @@ MOBILE
 	text-shadow:0px 0px 12px rgba(255,255,255,0.5);
 	background:rgba(255,255,255,0.05);
 }
-
 .mobile .row {padding-bottom:16px;}
-
 .mobile #comments, .mobile #cookies {display:none;}
 .mobile #focusButtons, .mobile #compactOverlay/*, .mobile #buildingsTitle*/
 {display:block;}
-
-/**{overflow:hidden!important;}*/
