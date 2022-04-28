@@ -5,25 +5,18 @@ html, body {
   height: 100%;
   background-color: #202124;
 }
-
 .icon {
   -webkit-user-select: none;
   user-select: none;
   display: inline-block;
 }
-
 .icon-offline {
   content: -webkit-image-set( url(assets/default_100_percent/100-error-offline.png) 1x, url(assets/default_200_percent/200-error-offline.png) 2x);
   position: relative;
 }
-
 .hidden {
   display: none;
 }
-
-
-/* Offline page */
-
 .offline .interstitial-wrapper {
   color: #2b2b2b;
   font-size: 1em;
@@ -33,7 +26,6 @@ html, body {
   padding-top: 100px;
   width: 100%;
 }
-
 .offline .runner-container {
   height: 150px;
   max-width: 600px;
@@ -42,7 +34,6 @@ html, body {
   top: 35px;
   width: 44px;
 }
-
 .offline .runner-canvas {
   height: 150px;
   max-width: 600px;
@@ -52,7 +43,6 @@ html, body {
   top: 0;
   z-index: 2;
 }
-
 .offline .controller {
   background: rgba(247, 247, 247, .1);
   height: 100vh;
@@ -62,11 +52,9 @@ html, body {
   width: 100vw;
   z-index: 1;
 }
-
 #offline-resources {
   display: none;
 }
-
 @media (max-width: 420px) {
   .suggested-left > #control-buttons, .suggested-right > #control-buttons {
     float: none;
@@ -78,7 +66,6 @@ html, body {
     border-radius: 0;
   }
 }
-
 @media (max-height: 350px) {
   h1 {
     margin: 0 0 15px;
@@ -93,20 +80,17 @@ html, body {
     margin-top: 30px;
   }
 }
-
 @media (min-width: 600px) and (max-width: 736px) and (orientation: landscape) {
   .offline .interstitial-wrapper {
     margin-left: 0;
     margin-right: 0;
   }
 }
-
 @media (min-width: 420px) and (max-width: 736px) and (min-height: 240px) and (max-height: 420px) and (orientation:landscape) {
   .interstitial-wrapper {
     margin-bottom: 100px;
   }
 }
-
 @media (min-height: 240px) and (orientation: landscape) {
   .offline .interstitial-wrapper {
     margin-bottom: 90px;
@@ -115,7 +99,6 @@ html, body {
     margin-bottom: 20px;
   }
 }
-
 @media (max-height: 320px) and (orientation: landscape) {
   .icon-offline {
     margin-bottom: 0;
@@ -124,7 +107,6 @@ html, body {
     top: 10px;
   }
 }
-
 @media (max-width: 240px) {
   .interstitial-wrapper {
     overflow: inherit;
