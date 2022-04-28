@@ -7,7 +7,6 @@ class  Cell {
         this.revealed = false;
         this.flagged = false;
     }
-
     getAdjCells() {
         var adj = [];
         var lastRow = board.length - 1;
@@ -22,7 +21,6 @@ class  Cell {
         if (this.col > 0) adj.push(board[this.row][this.col - 1]);       
         return adj;
     }
-
     calcAdjBombs() {
         var adjCells = this.getAdjCells();
         var adjBombs = adjCells.reduce(function(acc, cell) {
@@ -30,14 +28,12 @@ class  Cell {
         }, 0);
         this.adjBombs = adjBombs;
     }
-
     flag() {
         if (!this.revealed) {
             this.flagged = !this.flagged;
             return this.flagged;
         }
     }
-
     reveal() {
         if (this.revealed && !hitBomb) return;
         this.revealed = true;
