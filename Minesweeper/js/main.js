@@ -1,4 +1,3 @@
-/*----- constants -----*/
 var bombImage = '<img src="images/bomb.png">';
 var flagImage = '<img src="images/flag.png">';
 var wrongBombImage = '<img src="images/wrong-bomb.png">'
@@ -19,7 +18,6 @@ var colors = [
   '#7A7A7A',
 ];
 
-/*----- app's state (variables) -----*/
 var size = 16;
 var board;
 var bombCount;
@@ -30,10 +28,8 @@ var elapsedTime;
 var timerId;
 var winner;
 
-/*----- cached element references -----*/
 var boardEl = document.getElementById('board');
 
-/*----- event listeners -----*/
 document.getElementById('size-btns').addEventListener('click', function(e) {
   size = parseInt(e.target.id.replace('size-', ''));
   init();
@@ -71,7 +67,6 @@ function createResetListener() {
   });
 }
 
-/*----- functions -----*/
 function setTimer () {
   timerId = setInterval(function(){
     elapsedTime += 1;
@@ -162,7 +157,6 @@ function getBombCount() {
   });
   return count;
 };
-
 function addBombs() {
   var currentTotalBombs = sizeLookup[`${size}`].totalBombs;
   while (currentTotalBombs !== 0) {
@@ -175,7 +169,6 @@ function addBombs() {
     }
   }
 };
-
 function getWinner() {
   for (var row = 0; row<board.length; row++) {
     for (var col = 0; col<board[0].length; col++) {
@@ -185,7 +178,6 @@ function getWinner() {
   } 
   return true;
 };
-
 function render() {
   document.getElementById('bomb-counter').innerText = bombCount.toString().padStart(3, '0');
   var seconds = timeElapsed % 60;
@@ -223,7 +215,6 @@ function render() {
     clearInterval(timerId);
   }
 };
-
 function runCodeForAllCells(cb) {
   board.forEach(function(rowArr) {
     rowArr.forEach(function(cell) {
@@ -231,6 +222,5 @@ function runCodeForAllCells(cb) {
     });
   });
 }
-
 init();
 render();
