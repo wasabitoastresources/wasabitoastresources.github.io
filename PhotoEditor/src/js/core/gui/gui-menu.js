@@ -1,17 +1,7 @@
-/*
- * miniPaint - https://github.com/viliusle/miniPaint
- * author: Vilius L.
- */
-
 import config from './../../config.js';
 import menuDefinition from './../../config-menu.js';
 import Tools_translate_class from './../../modules/tools/translate.js';
-
-/**
- * class responsible for rendering main menu
- */
 class GUI_menu_class {
-
 	constructor() {
 		this.eventSubscriptions = {};
 		this.dropdownMaxHeightMargin = 15;
@@ -19,23 +9,18 @@ class GUI_menu_class {
 		this.menuBarNode = null;
 		this.lastFocusedMenuBarLink = 0;
 		this.dropdownStack = [];
-
 		this.Tools_translate = new Tools_translate_class();
 	}
-
 	render_main() {
 		this.menuContainer = document.getElementById('main_menu');
-
 		let menuTemplate = '<ul class="menu_bar" role="menubar" tabindex="0">';
 		for (let i = 0; i < menuDefinition.length; i++) {
 			const item = menuDefinition[i];
 			menuTemplate += this.generate_menu_bar_item_template(item, i);
 		}
 		menuTemplate += '</ul>';
-
 		this.menuContainer.innerHTML = menuTemplate;
 		this.menuBarNode = this.menuContainer.querySelector('[role="menubar"]');
-
 		this.menuContainer.addEventListener('click', (event) => { return this.on_click_menu(event); }, true);
 		this.menuContainer.addEventListener('keydown', (event) => { return this.on_key_down_menu(event); }, true);
 		this.menuBarNode.addEventListener('focus', (event) => { return this.on_focus_menu_bar(event); });
@@ -46,10 +31,8 @@ class GUI_menu_class {
 		document.body.addEventListener('mousedown', (event) => { return this.on_mouse_down_body(event); }, true);
 		document.body.addEventListener('touchstart', (event) => { return this.on_mouse_down_body(event); }, true);
 		window.addEventListener('resize', (event) => { return this.on_resize_window(event); }, true);
-
 		document.body.classList.add('loaded');
 	}
-
 	on(eventName, callback) {
 		if (!this.eventSubscriptions[eventName]) {
 			this.eventSubscriptions[eventName] = [];
@@ -58,7 +41,6 @@ class GUI_menu_class {
 			this.eventSubscriptions[eventName].push(callback);
 		}
 	}
-
 	emit(eventName, payload, object) {
 		if (this.eventSubscriptions[eventName]) {
 			for (let callback of this.eventSubscriptions[eventName]) {
@@ -66,7 +48,6 @@ class GUI_menu_class {
 			}
 		}
 	}
-
 	generate_menu_bar_item_template(definition, index) {
 		return `
 			<li>
@@ -75,7 +56,6 @@ class GUI_menu_class {
 			</li>
 		`.trim();
 	}
-
 	generate_menu_dropdown_item_template(definition, level, index) {
 		if (definition.divider) {
 			return `
@@ -99,16 +79,12 @@ class GUI_menu_class {
 			`.trim();
 		}
 	}
-
 	on_mouse_down_body(event) {
 		const target = event.touches && event.touches.length > 0 ? event.touches[0].target : event.target;
-
-		// Clicked outside of menu; close dropdowns.
 		if (target && !this.menuContainer.contains(target)) {
 			this.close_child_dropdowns(0);
 		}
 	}
-
 	on_focus_menu_bar(event) {
 		if (document.activeElement === this.menuBarNode) {
 			let lastFocusedLink = this.menuBarNode.querySelector(`[data-index="${ this.lastFocusedMenuBarLink }"]`);
@@ -118,19 +94,14 @@ class GUI_menu_class {
 			lastFocusedLink.focus();
 		}
 	}
-
 	on_focus_menu_bar_link(event) {
 		this.lastFocusedMenuBarLink = parseInt(event.target.getAttribute('data-index'), 10) || 0;
 	}
-
 	on_blur_menu_bar(event) {
-		// TODO
 	}
-
 	on_key_down_menu(event) {
 		const key = event.key;
 		const activeElement = document.activeElement;
-
 		if (activeElement && activeElement.tagName === 'A') {
 			const linkLevel = parseInt(activeElement.getAttribute('data-level'), 10) || 0;
 			const linkIndex = parseInt(activeElement.getAttribute('data-index'), 10) || 0;
@@ -242,11 +213,8 @@ class GUI_menu_class {
 			}
 		}
 	}
-
 	on_click_menu(event) {
 		const target = event.target.closest('a');
-
-		// Any link in the menu is clicked.
 		if (target && target.tagName === 'A') {
 			const hasPopup = target.getAttribute('aria-haspopup') === 'true';			
 			if (hasPopup) {
@@ -258,13 +226,11 @@ class GUI_menu_class {
 			this.close_child_dropdowns(0);
 		}
 	}
-
 	on_resize_window(event) {
 		if (this.dropdownStack.length > 0) {
 			this.position_dropdowns();
 		}
 	}
-
 	toggle_dropdown(opener, isTrusted) {
 		const linkLevel = parseInt(opener.getAttribute('data-level'), 10) || 0;
 		const linkIndex = parseInt(opener.getAttribute('data-index'), 10) || 0;
@@ -279,23 +245,16 @@ class GUI_menu_class {
 			this.create_dropdown(opener, linkLevel, linkIndex, !isTrusted);
 		}
 	}
-
 	trigger_link(link) {
 		const level = parseInt(link.getAttribute('data-level'), 10) || 0;
 		const index = parseInt(link.getAttribute('data-index'), 10) || 0;
-
-		// Find link definition
 		let children = menuDefinition;
 		for (let i = 0; i < level; i++) {
 			const childIndex = this.dropdownStack[i] != null ? this.dropdownStack[i].index : index;
 			children = children[childIndex].children;
 		}
 		let definition = children[index];
-
-		// Close the dropdown
 		this.close_child_dropdowns(0);
-
-		// Emit callback events for triggered links
 		if (definition.target) {
 			this.emit('select_target', definition.target, definition);
 		}
@@ -303,7 +262,6 @@ class GUI_menu_class {
 			this.emit('select_href', definition.href, null);
 		}
 	}
-
 	close_child_dropdowns(level) {
 		for (let i = this.dropdownStack.length - 1; i >= 0; i--) {
 			if (i >= level) {
@@ -313,18 +271,13 @@ class GUI_menu_class {
 		}
 		this.dropdownStack = this.dropdownStack.slice(0, level);
 	}
-
 	create_dropdown(opener, level, index, focusAfterCreation) {
 		this.close_child_dropdowns(level);
-
-		// Find child list in the menu definition
 		let children = menuDefinition;
 		for (let i = 0; i <= level; i++) {
 			const childIndex = this.dropdownStack[i] != null ? this.dropdownStack[i].index : index;
 			children = children[childIndex].children;
 		}
-
-		// Create the dropdown element, place it in DOM & position it
 		let dropdownElement = document.createElement('ul');
 		dropdownElement.className = 'menu_dropdown';
 		dropdownElement.role = 'menu';
@@ -335,44 +288,34 @@ class GUI_menu_class {
 			dropdownTemplate += this.generate_menu_dropdown_item_template(children[i], level + 1, i);
 		}
 		dropdownElement.innerHTML = dropdownTemplate;
-
 		this.menuContainer.appendChild(dropdownElement);
-
 		if (config.LANG != 'en') {
 			this.Tools_translate.translate(config.LANG, this.menuContainer);
 		}
-
 		if (focusAfterCreation) {
 			dropdownElement.querySelector('a').focus();
 		}
-
 		this.dropdownStack.push({
 			children,
 			opener,
 			index,
 			element: dropdownElement
 		});
-
 		this.position_dropdowns();
 	}
-
 	position_dropdowns() {
 		const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 		const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-
 		let topNavHeight = 0;
 		for (let level = 0; level < this.dropdownStack.length; level++) {
 			const dropdownElement = this.dropdownStack[level].element;
 			const openerRect = this.dropdownStack[level].opener.getBoundingClientRect();
-
 			topNavHeight = openerRect.height;
 			const dropdownMaxHeight = vh - topNavHeight - this.dropdownMaxHeightMargin;
 			dropdownElement.style.maxHeight = dropdownMaxHeight + 'px';
 			const dropdownRect = dropdownElement.getBoundingClientRect();
-
 			if (level === 0) {
 				dropdownElement.style.top = (openerRect.y + openerRect.height) + 'px';
-
 				let left = openerRect.x;
 				if (left + dropdownRect.width > vw) {
 					left = openerRect.x + openerRect.width - dropdownRect.width;
@@ -390,7 +333,6 @@ class GUI_menu_class {
 					top = vh - this.dropdownMaxHeightMargin - dropdownRect.height;
 				}
 				dropdownElement.style.top = top + 'px';
-
 				let left = openerRect.x + openerRect.width + 1;
 				if (left + dropdownRect.width > vw) {
 					left = openerRect.x - dropdownRect.width - 1;
@@ -409,7 +351,5 @@ class GUI_menu_class {
 			}
 		}
 	}
-
 }
-
 export default GUI_menu_class;
