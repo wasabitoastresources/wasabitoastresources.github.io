@@ -9,18 +9,6 @@ import Helper_class from './../libs/helpers.js';
 import Dialog_class from './../libs/popup.js';
 import WebFont from 'webfontloader';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
-
-/**
- * TODO
- * - Add leading, superscript, subscript
- * - Implement text direction (right to left, top to bottom, etc.); currently partial implementation
- * - Allow search & add google fonts
- * - Undo history
- */
-
-// Default text styling
-// WARNING - changing this could break backwards compatibility!
-// Defaults aren't saved in text layer in order to reduce data size and increase meta comparison performance.
 export const metaDefaults = {
 	size: 40,
 	family: 'Arial',
@@ -34,8 +22,6 @@ export const metaDefaults = {
 	stroke_size: 0,
 	stroke_color: '#000000'
 };
-
-// Global map of font name to font metrics information.
 const fontMetricsMap = new Map();
 const layerEditors = new WeakMap();
 const fontLoadPromiseMap = new Map();
@@ -48,7 +34,6 @@ fontLoadMap.set('Monospace', true);
 fontLoadMap.set('Tahoma', true);
 fontLoadMap.set('Times New Roman', true);
 fontLoadMap.set('Verdana', true);
-
 function load_font_family({ family, variants }, successCallback) {
 	if (fontLoadMap.get(family) == null) {
 		fontLoadMap.set(family, false);
@@ -82,10 +67,6 @@ function load_font_family({ family, variants }, successCallback) {
 		}
 	}
 }
-
-/**
- * The canvas's native font metrics implementation doesn't really give us enough information...
- */
 const kerningTestCanvas = document.createElement('canvas');
 kerningTestCanvas.width = 10;
 kerningTestCanvas.height = 10;
@@ -96,41 +77,25 @@ class Font_metrics_class {
 		this.family = family || (family = "Arial");
 		this.size = parseInt(size) || (size = 12);
 		this.kerningMap = new Map();
-
-		// Preparing container
 		const line = document.createElement('div');
 		const body = document.body;
 		line.style.position = 'absolute';
 		line.style.whiteSpace = 'nowrap';
 		line.style.font = size + 'px ' + family;
 		body.appendChild(line);
-
-		// Now we can measure width and height of the letter
-		const text = '——————————'; // 10 symbols to be more accurate with width
+		const text = '——————————';
 		line.innerHTML = text;
 		this.width = line.offsetWidth / text.length;
 		this.height = line.offsetHeight;
-
-		// Now creating 1px sized item that will be aligned to baseline
-		// to calculate baseline shift
 		const baseline = document.createElement('span');
 		baseline.style.display = 'inline-block';
 		baseline.style.overflow = 'hidden';
 		baseline.style.width = '1px';
 		baseline.style.height = '1px';
 		line.appendChild(baseline);
-
-		// Baseline is important for positioning text on canvas
 		this.baseline = baseline.offsetTop + baseline.offsetHeight;
-
 		document.body.removeChild(line);
 	}
-
-	/**
-	 * Attempts to determine the height of a letter via pixel comparison
-	 * @param {string} letter - The letter to check
-	 * @param {string} [baseline] - Baseline position override
-	 */
 	calculate_letter_bounds(letter, baseline) {
 		baseline = baseline || 'alphabetic'
 		kerningTestCanvas.width = this.width;
@@ -167,12 +132,6 @@ class Font_metrics_class {
 			height: end - start
 		}
 	}
-
-	/**
-	 * Calculate the kerning offset between two letters.
-	 * @param {string} letters - a two character string of the two letters to determine font kerning from. Returns the kerning offset that should be used to draw the 2nd letter. 
-	 * @param {object} flags - font style, such as bold or italic
-	 */
 	get_kerning_offset(letters, flags = {}) {
 		let offset = this.kerningMap.get(letters);
 		if (offset == null) {
@@ -187,38 +146,18 @@ class Font_metrics_class {
 		return offset;
 	}
 }
-
-/**
- * This class's job is to store and modify the internal JSON format of a text layer.
- */
 class Text_document_class {
 	constructor() {
 		this.lines = [];
 		this.on_change = null;
-
-		// If user edits params while no selection, queue meta insertion for next type.
 		this.queuedMetaChanges = null;
 	}
-
-	/**
-	 * Returns the number of lines in the document.
-	 */
 	get_line_count() {
 		return this.lines.length;
 	}
-
-	/**
-	 * Returns the length of a given line
-	 * @param {number} lineNumber - The number of the line to get the length of
-	 */
 	get_line_character_count(lineNumber) {
 		return this.get_line_text(lineNumber).length;
 	}
-	
-	/**
-	 * Returns the text string at a given line (ignores formatting).
-	 * @param {number} lineNumber - The number of the line to get the text from
-	 */
 	get_line_text(lineNumber) {
 		let lineText = '';
 		for (let i = 0; i < this.lines[lineNumber].length; i++) {
@@ -226,13 +165,6 @@ class Text_document_class {
 		}
 		return lineText;
 	}
-	
-	/**
-	 * Returns the position of the end of the the word at the line/character provided
-	 * @param {number} line - The reference line number (0 indexed) 
-	 * @param {number} character - The reference character position (0 indexed)
-	 * @param {boolean} noJump - Dont jump to the next word if at the end of current one
-	 */
 	get_word_end_position(line, character, noJump) {
 		let newLine = line;
 		let newCharacter = character;
@@ -263,13 +195,6 @@ class Text_document_class {
 			character: newCharacter
 		}
 	}
-
-	/**
-	 * Returns the position of the start of the the word at the line/character provided
-	 * @param {number} line - The reference line number (0 indexed) 
-	 * @param {number} character - The reference character position (0 indexed)
-	 * @param {boolean} noJump - Dont jump to the next word if at the end of current one
-	 */
 	get_word_start_position(line, character, noJump) {
 		let newLine = line;
 		let newCharacter = character;
@@ -303,10 +228,6 @@ class Text_document_class {
 			character: newCharacter
 		}
 	}
-	
-	/**
-	 * Determine if the metadata (formatting) of two text spans is the same, usually used to determine if the spans can be merged together.
-	 */
 	is_same_span_meta(meta1, meta2) {
 		const meta1Keys = Object.keys(meta1).sort();
 		const meta2Keys = Object.keys(meta2).sort();
@@ -325,13 +246,6 @@ class Text_document_class {
 		}
 		return true;
 	}
-
-	/**
-	 * Inserts a span with empty text in the document at the specified line and character position
-	 * @param {number} line - The line number to insert at (0 indexed) 
-	 * @param {number} character - The character position to insert at (0 indexed)
-	 * @param {object} meta - Metadata to associate with span
-	 */
 	insert_empty_span(line, character, meta) {
 		let insertedSpan = null;
 		const lineDef = this.lines[line];
@@ -372,21 +286,12 @@ class Text_document_class {
 		this.lines[line] = newLine;
 		return insertedSpan;
 	}
-	
-	/**
-	 * Inserts a text string in the document at the specified line and character position
-	 * @param {string} text - The text string to insert
-	 * @param {number} line - The line number to insert at (0 indexed) 
-	 * @param {number} character - The character position to insert at (0 indexed)
-	 */
 	insert_text(text, line, character) {
-
 		let insertedSpan;
 		if (this.queuedMetaChanges) {
 			insertedSpan = this.insert_empty_span(line, character, this.queuedMetaChanges);
 			this.queuedMetaChanges = null;
 		}
-
 		const insertLine = this.lines[line];
 		const textHasNewline = text.includes('\n');
 		let characterCount = 0;
@@ -395,8 +300,6 @@ class Text_document_class {
 		let nextSpans = [];
 		let newLine = line;
 		let newCharacter = character;
-
-		// Insert text into span at specified line/character
 		for (let i = 0; i < insertLine.length; i++) {
 			const span = insertLine[i];
 			const spanLength = span.text.length;
@@ -421,8 +324,6 @@ class Text_document_class {
 			}
 			characterCount += spanLength;
 		}
-
-		// Create new lines if newline character was used
 		if (textHasNewline && modifyingSpan) {
 			const modifiedSpans = [];
 			const textLines = modifyingSpan.text.split('\n');
@@ -447,28 +348,15 @@ class Text_document_class {
 				}
 			}
 		}
-
-		// Notify change
 		if (this.on_change) {
 			this.on_change(this.lines);
 		}
-
-		// Return end position
 		return {
 			line: newLine,
 			character: newCharacter
 		};
 	}
-	
-	/**
-	 * Deletes text withing the specified range
-	 * @param {number} startLine - The starting line of the text range
-	 * @param {number} startCharacter - The character position at the starting line of the text range
-	 * @param {number} endLine - The ending line of the text range
-	 * @param {number} endCharacter - The character position at the ending line of the text range
-	 */
 	delete_range(startLine, startCharacter, endLine, endCharacter) {
-		// Check bounds
 		startLine >= 0 || (startLine = 0);
 		startCharacter >= 0 || (startCharacter = 0);
 		endLine < this.lines.length || (endLine = this.lines.length - 1);
@@ -476,16 +364,12 @@ class Text_document_class {
 		endCharacter <= endLineCharacterCount || (
 			endCharacter = endLineCharacterCount
 		);
-
-		// Early return if there's nothing to delete
 		if (startLine === endLine && startCharacter === endCharacter) {
 			return {
 				line: startLine,
 				character: startCharacter
 			};
 		}
-
-		// Get spans in start line before range
 		const beforeSpans = [];
 		const afterSpans = [];
 		let characterCount = 0;
@@ -504,8 +388,6 @@ class Text_document_class {
 			}
 			characterCount += spanLength;
 		}
-
-		// Get spans in end line after range
 		characterCount = 0;
 		let endSpan = null;    
 		let endSpanDeleteIndex = 0;
@@ -521,8 +403,6 @@ class Text_document_class {
 			}
 			characterCount += spanLength;
 		}
-
-		// Merge start and end lines
 		this.lines[startLine] = [...beforeSpans];
 		if (startSpan === endSpan || this.is_same_span_meta(startSpan.meta, endSpan.meta)) {
 			const combinedSpans = {
@@ -575,69 +455,39 @@ class Text_document_class {
 			this.lines[startLine] = this.lines[startLine].concat(middleSpans);
 		}
 		this.lines[startLine] = this.lines[startLine].concat(afterSpans);
-
-		// Delete lines in-between range
 		this.lines.splice(startLine + 1, endLine - startLine);
-
-		// Notify change
 		if (this.on_change) {
 			this.on_change(this.lines);
 		}
-
-		// Return new position
 		return {
 			line: startLine,
 			character: startCharacter
 		};
 	}
-	
-	/**
-	 * Deletes a single character in front or behind the specified character position, handling deleting new lines, etc.
-	 * @param {boolean} forward - True if deleting the next character, otherwise deletes the previous character
-	 * @param {number} startLine - The line number to delete from
-	 * @param {number} startCharacter - The character position to delete from
-	 */
 	delete_character(forward, startLine, startCharacter) {
 		let endLine = startLine;
 		let endCharacter = startCharacter;
-		
-		// Delete forwards
 		if (forward) {
-			// If there are characters after cursor on this line we remove one
 			if (startCharacter < this.get_line_character_count(startLine)) {
 				++endCharacter;
 			}
-			// if there are Lines after this one we append it
 			else if (startLine < this.lines.length - 1) {
 				++endLine;
 				endCharacter = 0;
 			}
 		}
-		// Delete backwards
 		else {
-			// If there are characters before the cursor on this line we remove one
 			if (startCharacter > 0) {
 				--startCharacter;
 			}
-			// if there are rows before we append current to previous one
 			else if (startLine > 0) {
 				--startLine;
 				startCharacter = this.get_line_character_count(startLine);
 			}
 		}
-
 		return this.delete_range(startLine, startCharacter, endLine, endCharacter);
 	}
-	
-	/**
-	 * Retrieves a metadata summary object for the specified range of text. 
-	 * @param {number} startLine - The starting line of the text range
-	 * @param {number} startCharacter - The character position at the starting line of the text range
-	 * @param {number} endLine - The ending line of the text range
-	 * @param {number} endCharacter - The character position at the ending line of the text range
-	 */
 	get_meta_range(startLine, startCharacter, endLine, endCharacter) {
-		// Check bounds
 		startLine >= 0 || (startLine = 0);
 		startCharacter >= 0 || (startCharacter = 0);
 		endLine < this.lines.length || (endLine = this.lines.length - 1);
@@ -646,8 +496,6 @@ class Text_document_class {
 			endCharacter = endLineCharacterCount
 		);
 		const isEmpty = startLine === endLine && startCharacter === endCharacter;
-
-		// Loop through all spans in range and collect meta values
 		const metaCollection = {};
 		for (const metaKey in metaDefaults) {
 			metaCollection[metaKey] = [];
@@ -693,8 +541,6 @@ class Text_document_class {
 				spanStartCharacter += span.text.length;
 			}
 		}
-
-		// Fill in default values for undefined meta keys
 		for (const metaKey in metaDefaults) {
 			if (metaCollection[metaKey].length === 0) {
 				metaCollection[metaKey] = [metaDefaults[metaKey]];
@@ -702,17 +548,7 @@ class Text_document_class {
 		}
 		return metaCollection;
 	}
-
-	/**
-	 * Sets styling metadata for the specified range of text. 
-	 * @param {number} startLine - The starting line of the text range
-	 * @param {number} startCharacter - The character position at the starting line of the text range
-	 * @param {number} endLine - The ending line of the text range
-	 * @param {number} endCharacter - The character position at the ending line of the text range
-	 * @param {object} meta - The meta to set
-	 */
 	set_meta_range(startLine, startCharacter, endLine, endCharacter, meta) {
-		// Check bounds
 		startLine >= 0 || (startLine = 0);
 		startCharacter >= 0 || (startCharacter = 0);
 		endLine < this.lines.length || (endLine = this.lines.length - 1);
@@ -720,8 +556,6 @@ class Text_document_class {
 		endCharacter <= endLineCharacterCount || (
 			endCharacter = endLineCharacterCount
 		);
-
-		// Set meta of spans in selection
 		let isInsideRange = false;
 		for (let lineIndex = startLine; lineIndex <= endLine; lineIndex++) {
 			const line = this.lines[lineIndex];
@@ -740,7 +574,6 @@ class Text_document_class {
 						isInsideRange = false;
 					}
 				}
-				// Selection start splits the span it's inside of
 				let choppedStartCharacters = 0;
 				if (startCharacter > spanStartCharacter && startCharacter < spanStartCharacter + spanLength && lineIndex === startLine) {
 					choppedStartCharacters = startCharacter - spanStartCharacter;
@@ -752,7 +585,6 @@ class Text_document_class {
 					isInsideRange = true;
 				}
 				newLine.push(span);
-				// Selection end splits the span it's inside of
 				if (endCharacter > spanStartCharacter && endCharacter < spanStartCharacter + spanLength && lineIndex === endLine) {
 					newLine.push({
 						text: span.text.slice(endCharacter - spanStartCharacter - choppedStartCharacters),
@@ -761,7 +593,6 @@ class Text_document_class {
 					span.text = span.text.slice(0, endCharacter - spanStartCharacter - choppedStartCharacters);
 					isInsideRange = true;
 				}
-				// Add meta to span
 				if (isInsideRange) {
 					for (const metaKey in meta) {
 						span.meta[metaKey] = meta[metaKey];
@@ -771,20 +602,11 @@ class Text_document_class {
 			}
 			this.lines[lineIndex] = newLine;
 		}
-
 		this.normalize(startLine, endLine);
-
-		// Notify change
 		if (this.on_change) {
 			this.on_change(this.lines);
 		}
 	}
-
-	/**
-	 * Merges sibling spans that have the same metadata, and removes empty spans. 
-	 * @param {number} startLine - The starting line of the text range
-	 * @param {number} endLine - The ending line of the text range
-	 */
 	normalize(startLine, endLine) {
 		for (let lineIndex = startLine; lineIndex <= endLine; lineIndex++) {
 			const line = this.lines[lineIndex];
@@ -811,11 +633,6 @@ class Text_document_class {
 	}
 
 }
-
-
-/**
- * This class represents a single selection range in a text editor's document.
- */
 class Text_selection_class {
 	constructor(/* Text_editor_class */ editor) {
 		this.editor = editor;
@@ -824,36 +641,19 @@ class Text_selection_class {
 		this.isActiveSideEnd = true;
 		this.isBlinkVisible = true;
 		this.blinkInterval = 500;
-
 		this.start = {
 			line: 0,
 			character: 0
 		};
-		
 		this.end = {
 			line: 0,
 			character: 0
 		};
-
 		this.set_position(0, 0);
 	}
-	
-	/**
-	 * Returns if the current text selection contains no characters
-	 * @returns {boolean}
-	 */
 	is_empty() {
 		return this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character) === 0;
 	}
-	
-	/**
-	 * Determines the relative position of two line/character sets.
-	 * @param {number} line1
-	 * @param {number} character1 
-	 * @param {number} line2 
-	 * @param {number} character2
-	 * @returns {number} -1 if line1/character1 is less than line2/character2, 1 if greater, and 0 if equal
-	 */
 	compare_position(line1, character1, line2, character2) {
 		if (line1 < line2) {
 			return -1;
@@ -869,13 +669,6 @@ class Text_selection_class {
 			}
 		}
 	}
-	
-	/**
-	 * Sets the head position of the selection to the specified line/character, optionally extends to selection to that position.
-	 * @param {number} line - The line number to set the selection to 
-	 * @param {number} character - The character index to set the selection to
-	 * @param {boolean} [keepSelection] - If true, extends the current selection to the specified position. If false or undefined, sets an empty selection at that position. 
-	 */
 	set_position(line, character, keepSelection) {
 		if (line == null) {
 			line = this.end.line;
@@ -883,18 +676,12 @@ class Text_selection_class {
 		if (character == null) {
 			character = this.end.character;
 		}
-
-		// Check lower bounds
 		line >= 0 || (line = 0);
 		character >= 0 || (character = 0);
-
-		// Check upper bounds
 		const lineCount = this.editor.document.get_line_count();
 		line < lineCount || (line = lineCount - 1);
 		const lineCharacterCount = this.editor.document.get_line_character_count(line);
 		character <= lineCharacterCount || (character = lineCharacterCount);
-
-		// Add to selection
 		if (keepSelection) {
 			const positionCompare = this.compare_position(
 				line,
@@ -902,13 +689,9 @@ class Text_selection_class {
 				this.start.line,
 				this.start.character
 			);
-
-			// Determine whether we should make the start side of the range active, selection moving left or up.
 			if (positionCompare === -1 && (this.is_empty() || line < this.start.line)) {
 				this.isActiveSideEnd = false;
 			}
-
-			// Assign new value to the side that is active
 			if (this.isActiveSideEnd) {
 				this.end.line = line;
 				this.end.character = character;
@@ -916,8 +699,6 @@ class Text_selection_class {
 				this.start.line = line;
 				this.start.character = character;
 			}
-
-			// Making sure that end is greater than start and swap if necessary
 			if (this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character) > 0) {
 				this.isActiveSideEnd = !this.isActiveSideEnd;
 				const temp = {
@@ -930,24 +711,16 @@ class Text_selection_class {
 				this.end.character = temp.character;
 			}
 		}
-		// Empty cursor move
 		else {
 			this.isActiveSideEnd = true;
 			this.start.line = this.end.line = line;
 			this.start.character = this.end.character = character;
 		}
-
-		// Reset cursor blink
 		this.isBlinkVisible = true;
 		if (this.isVisible) {
 			this.start_blinking();
 		}
 	}
-	
-	/**
-	 * Retrieves the position of the head of the selection (could be the start or end of the selection based on previous operations)
-	 * @returns {object} - { line, character }
-	 */
 	get_position() {
 		if (this.isActiveSideEnd) {
 			return {
@@ -961,11 +734,6 @@ class Text_selection_class {
 			};
 		}
 	}
-
-	/**
-	 * Gets the plain text value in the current selection range.
-	 * @returns {string}
-	 */
 	get_text() {
 		const positionCompare = this.compare_position(this.start.line, this.start.character, this.end.line, this.end.character);
 		const firstLine = positionCompare === 1 ? this.end.line : this.start.line;
@@ -986,21 +754,11 @@ class Text_selection_class {
 		}
 		return textLines.join('\n');
 	}
-	
-	/**
-	 * Sets the visibility of the selection in the editor.
-	 * @param {boolean} isVisible 
-	 */
 	set_visible(isVisible) {
 		if (this.isVisible != isVisible) {
 			this.isVisible = isVisible;
 		}
 	}
-
-	/**
-	 * Sets the visibility of the selection cursor in the editor.
-	 * @param {boolean} isVisible 
-	 */
 	set_cursor_visible(isVisible) {
 		if (this.isCursorVisible != isVisible) {
 			this.isCursorVisible = isVisible;
@@ -1012,83 +770,36 @@ class Text_selection_class {
 			}
 		}
 	}
-	
-	/**
-	 * Starts the selection cursor blinking.
-	 */
 	start_blinking() {
 		clearInterval(this.blinkIntervalHandle);
 		this.blinkIntervalHandle = setInterval(this.blink.bind(this), this.blinkInterval);
 	}
-	
-	/**
-	 * Stops the selection cursor blinking.
-	 */
 	stop_blinking() {
 		clearInterval(this.blinkIntervalHandle);
 	}
-	
-	/**
-	 * Toggles the visibility of the selection cursor.
-	 */
 	blink() {
 		this.isBlinkVisible = !this.isBlinkVisible;
 		const firstLine = Math.min(this.start.line, this.end.line);
 		const lastLine = Math.max(this.start.line, this.end.line);
-		/*
-		this.editor.render({
-			lineStart: firstLine,
-			lineEnd: lastLine
-		});
-		*/
-		// this.Base_layers.render();
 	}
-	
-	/**
-	 * Moves the cursor to a previous line.
-	 * @param {number} length - The number of lines to move 
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection
-	 */
 	move_line_previous(length, keepSelection) {
 		length = length == null ? 1 : length;
 		const position = this.get_position();
 		this.set_position(position.line - length, null, keepSelection);
 	}
-	
-	/**
-	 * Moves the cursor to a next line.
-	 * @param {number} length - The number of lines to move 
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection
-	 */
 	move_line_next(length, keepSelection) {
 		length = length == null ? 1 : length;
 		const position = this.get_position();
 		this.set_position(position.line + length, null, keepSelection);
 	}
-		
-	/**
-	 * Moves to the start of the current line.
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
-	 */
 	move_line_start(keepSelection) {
 		const position = this.get_position();
 		this.set_position(position.line, 0, keepSelection);
 	}
-
-	/**
-	 * Moves to the end of the current line.
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
-	 */
 	move_line_end(keepSelection) {
 		const position = this.get_position();
 		this.set_position(position.line, this.editor.document.get_line_character_count(position.line), keepSelection);
 	}
-	
-	/**
-	 * Moves the cursor to a character behind in the document, handles line wrapping.
-	 * @param {number} length - The number of characters to move 
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
-	 */
 	move_character_previous(length, keepSelection) {
 		length = length == null ? 1 : length;
 		const position = this.get_position();
@@ -1100,12 +811,6 @@ class Text_selection_class {
 			this.set_position(position.line, position.character - length, keepSelection);
 		}
 	}
-	
-	/**
-	 * Moves the cursor to a character ahead in the document, handles line wrapping.
-	 * @param {number} length - The number of characters to move 
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
-	 */
 	move_character_next(length, keepSelection) {
 		length = length == null ? 1 : length;
 		const position = this.get_position();
@@ -1118,56 +823,32 @@ class Text_selection_class {
 			this.set_position(position.line, position.character + length, keepSelection);
 		}
 	}
-
-	/**
-	 * Moves the cursor to the beginning of the current word or previous word, handles line wrapping.
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
-	 */
 	move_word_previous(keepSelection) {
 		const position = this.get_position();
 		const newPosition = this.editor.document.get_word_start_position(position.line, position.character);
 		this.set_position(newPosition.line, newPosition.character, keepSelection);
 	}
-
-	/**
-	 * Moves the cursor to the end of the current word or next word, handles line wrapping.
-	 * @param {boolean} keepSelection - Whether to move to an empty selection or extend the current selection 
-	 */
 	move_word_next(keepSelection) {
 		const position = this.get_position();
 		const newPosition = this.editor.document.get_word_end_position(position.line, position.character);
 		this.set_position(newPosition.line, newPosition.character, keepSelection);
 	}
 }
-
-
-/**
- * This class handles rendering a text layer and editing it based on keyboard/mouse/touch controls
- */
 class Text_editor_class {
 	constructor(options) {
 		options = options || {};
-
 		this.editingCtx = document.getElementById('canvas_minipaint').getContext("2d");
 		this.hasValueChanged = false;
-
-		// Text boundary and offsets are precomputed before drawn
 		this.lineRenderInfo = null;
 		this.lastCalculatedZoom = 0;
 		this.lastCalculatedLayerWidth = 0;
 		this.lastCalculatedLayerHeight = 0;
 		this.textBoundaryWidth = 0;
 		this.textBoundaryHeight = 0;
-
-		// Styling options during render
 		this.selectionBackgroundColor = options.selectionBackgroundColor || '#1C79C4';
 		this.selectionTextColor = options.selectionTextColor || '#FFFFFF';
-
-		// Offset from top/left of layer for cursor visibility
 		this.drawOffsetTop = options.paddingVertical != null ? options.paddingVertical : 6;
 		this.drawOffsetLeft = options.paddingHorizontal != null ? options.paddingHorizontal : 10;
-
-		// Tracking internal state for keyboard/mouse/touch control
 		this.shiftPressed = false;
 		this.ctrlPressed = false;
 		this.isMouseSelectionActive = false;
@@ -1179,34 +860,18 @@ class Text_editor_class {
 		this.mouseSelectionMoveY = null;
 		this.mouseSelectionEdgeScrollInterval = null;
 		this.focused = false;
-		
-		// Text document for this editor
 		this.document = new Text_document_class();
 		this.document.lines = [[{ text: '', meta: {} }]];
 		this.wrappedLines = [[]];
-
-		// Text selection for this editor
 		this.selection = new Text_selection_class(this);
-
-		// The layer associated with this editor (so data can be updated)
 		this.layer = null;
 		this.document.on_change = () => {
 			this.layer.data = this.document.lines;
 		};
 	}
-
-	/**
-	 * Sets the lines of the document (from layer data)
-	 * @param {array} lines 
-	 */
 	set_lines(lines) {
 		this.document.lines = lines || [[{ text: '', meta: {} }]];
 	}
-
-	/**
-	 * Returns the text string at a given line wrap (ignores formatting).
-	 * @param {object} wrap - The wrap definition 
-	 */
 	get_wrap_text(wrap) {
 		let wrapText = '';
 		for (let i = 0; i < wrap.spans.length; i++) {
@@ -1214,12 +879,6 @@ class Text_editor_class {
 		}
 		return wrapText;
 	}
-
-	/**
-	 * Calculates font metrics for the given span and returns it. Caches by default.
-	 * @param {object} span - The span to calculate metrics for
-	 * @param {boolean} noCache - Skip caching if the metrics is expected to change in the future (e.g. font family not loaded yet.) 
-	 */
 	get_span_font_metrics(span, noCache) {
 		const fontSize = (span.meta.size || metaDefaults.size);
 		const fontName = (span.meta.family || metaDefaults.family);
@@ -1232,7 +891,6 @@ class Text_editor_class {
 		}
 		return fontMetrics;
 	}
-
 	insert_text_at_current_position(text) {
 		if (!this.selection.is_empty()) {
 			this.delete_character_at_current_position();
@@ -1242,7 +900,6 @@ class Text_editor_class {
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
 	}
-	
 	delete_character_at_current_position(forward) {
 		let newPosition;
 		if (this.selection.is_empty()) {
@@ -1259,7 +916,6 @@ class Text_editor_class {
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
 	}
-
 	delete_selection() {
 		let newPosition = this.document.delete_range(
 			this.selection.start.line,
@@ -1270,7 +926,6 @@ class Text_editor_class {
 		this.selection.set_position(newPosition.line, newPosition.character);
 		this.hasValueChanged = true;
 	}
-
 	trigger_cursor_start(layer, layerX, layerY) {
 		this.isMouseSelectionActive = true;
 		this.mouseSelectionStartX = layerX;
@@ -1280,7 +935,6 @@ class Text_editor_class {
 		this.mouseSelectionStartCharacter = cursorStart.character;
 		this.selection.set_position(cursorStart.line, cursorStart.character, false);
 	}
-	
 	trigger_cursor_move(layer, layerX, layerY) {
 		const isInsideCanvas = true; // layerX > 0 && layerY > 0 && layerX < this.lastCalculatedLayerWidth && layerY < this.lastCalculatedLayerHeight;
 		if (this.isMouseSelectionActive && isInsideCanvas) {
@@ -1291,29 +945,23 @@ class Text_editor_class {
 			this.selection.set_position(cursorEnd.line, cursorEnd.character, true);
 		}
 	}
-	
 	trigger_cursor_end() {
 		this.isMouseSelectionActive = false;
 		this.mouseSelectionMoveX = null;
 		this.mouseSelectionMoveY = null;
 	}
-	
 	get_cursor_position_from_absolute_position(layer, x, y) {
 		let line = -1;
 		let character = -1;
-
 		if (this.lineRenderInfo) {
 			const textDirection = layer.params.text_direction;
 			const wrapDirection = layer.params.wrap_direction;
 			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(textDirection);
 			const isNegativeTextDirection = ['rtl', 'btt'].includes(textDirection);
-
 			let characterPosition = isHorizontalTextDirection ? x : y;
 			let wrapPosition = isHorizontalTextDirection ? y : x;
-			
 			const wrapSizes = this.lineRenderInfo.wrapSizes;
 			let wrapRelativeIndex = -1;
-		
 			let globalWrapIndex = 0;
 			for (let [lineIndex, lineInfo] of this.lineRenderInfo.lines.entries()) {
 				wrapRelativeIndex = 0;
@@ -1360,7 +1008,6 @@ class Text_editor_class {
 		}
 		return { line, character };
 	}
-
 	calculate_text_placement(ctx, layer) {
 		const boundary = layer.params.boundary;
 		const textDirection = layer.params.text_direction;
@@ -1369,12 +1016,9 @@ class Text_editor_class {
 		const valign = layer.params.valign;
 		const isHorizontalTextDirection = ['ltr', 'rtl'].includes(textDirection);
 		const isNegativeTextDirection = ['rtl', 'btt'].includes(textDirection);
-
 		let totalTextDirectionSize = 0;
 		let totalWrapDirectionSize = 0;
 		let textDirectionMaxSize = isHorizontalTextDirection ? layer.width : layer.height;
-
-		// Determine new lines based on text wrapping, if applicable
 		let lineRenderInfo = {
 			wrapSizes: [],
 			lines: []
@@ -1417,7 +1061,6 @@ class Text_editor_class {
 					const characterSize = isHorizontalTextDirection ? ctx.measureText(character).width : fontMetrics.height;
 					wrapAccumulativeSize += characterSize + fontKerning + kerning;
 					if (boundary !== 'dynamic' && wrapAccumulativeSize > textDirectionMaxSize && ![' ', '-'].includes(character)) {
-						// Find last span with space
 						let dividerPosition = -1;
 						let bs = s;
 						for (; bs >= 0; bs--) {
@@ -1434,7 +1077,6 @@ class Text_editor_class {
 						}
 						let beforeSpans = [];
 						let afterSpans = [];
-						// Found a previous span on the current line wrap that contains a space, split the line
 						if (dividerPosition > -1) {
 							beforeSpans = currentWrapSpans.slice(0, bs);
 							afterSpans = currentWrapSpans.slice(bs + 1);
@@ -1453,12 +1095,10 @@ class Text_editor_class {
 								});
 							}
 						}
-						// For word split only, break out.
 						else if (layer.params.wrap === 'word') {
 							wrapCharacterOffsets.push(wrapAccumulativeSize);
 							break;
 						}
-						// Otherwise, split the word
 						else {
 							if (s === 0 && c === 0) {
 								c++;
@@ -1519,8 +1159,6 @@ class Text_editor_class {
 				wraps: lineWraps
 			});
 		}
-
-		// Adjust offsets for alignment along the text direction
 		if ((isHorizontalTextDirection && halign !== 'left') || (!isHorizontalTextDirection && valign !== 'top')) {
 			const maxTextDirectionSize = boundary === 'dynamic' ? totalTextDirectionSize : (isHorizontalTextDirection ? layer.width : layer.height);
 			for (let line of lineRenderInfo.lines) {
@@ -1537,8 +1175,6 @@ class Text_editor_class {
 				}
 			}
 		}
-
-		// Determine the size of each line (e.g. line height if horizontal typing direction)
 		let wrapSizeAccumulator = 0;
 		let wrapCounter = 0;
 		for (let line of lineRenderInfo.lines) {
@@ -1585,29 +1221,22 @@ class Text_editor_class {
 			}
 		}
 		totalWrapDirectionSize = wrapSizeAccumulator;
-
 		this.lastCalculatedLayerWidth = layer.width;
 		this.lastCalculatedLayerHeight = layer.height;
 		this.textBoundaryWidth = Math.max(1, Math.round(isHorizontalTextDirection ? totalTextDirectionSize : totalWrapDirectionSize));
 		this.textBoundaryHeight = Math.max(1, Math.round(isHorizontalTextDirection ? totalWrapDirectionSize : totalTextDirectionSize));
 		this.lineRenderInfo = lineRenderInfo;
 	}
-
 	render(ctx, layer) {
 		if (config.need_render_changed_params || this.hasValueChanged || layer.width != this.lastCalculatedLayerWidth || layer.height != this.lastCalculatedLayerHeight || !this.textBoundaryWidth || !this.textBoundaryHeight) {
 			this.calculate_text_placement(ctx, layer);
 		}
-
 		if (!this.lineRenderInfo) return;
-
 		try {
-
 			let options = options || {};
 			let isSelectionEmpty = this.selection.is_empty();
-
 			ctx.textAlign = 'left';
 			ctx.textBaseline = 'alphabetic';
-
 			const boundary = layer.params.boundary;
 			let drawOffsetTop = layer.y + 1;
 			let drawOffsetLeft = layer.x + 1;
@@ -1615,7 +1244,6 @@ class Text_editor_class {
 			const wrapDirection = layer.params.wrap_direction;
 			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(textDirection);
 			const isNegativeTextDirection = ['rtl', 'btt'].includes(textDirection);
-
 			const wrapSizes = this.lineRenderInfo.wrapSizes;
 			let lineIndex = 0;
 			let wrapIndex = 0;
@@ -1624,12 +1252,9 @@ class Text_editor_class {
 			if(layer.rotate){
 				const alpha = (layer.rotate * Math.PI) / 180;
 				ctx.save();
-				// Move the canvas to the center before rotating
 				ctx.translate(layer.x + layer.width / 2, layer.y + layer.height / 2);
 				ctx.rotate(alpha);
-				// Move it back after it
 				ctx.translate(-layer.x - layer.width / 2, -layer.y - layer.height / 2);
-
 			}
 			for (let line of this.lineRenderInfo.lines) {
 				let lineLetterCount = 0;
@@ -1646,7 +1271,6 @@ class Text_editor_class {
 						const underline = span.meta.underline != null ? span.meta.underline : metaDefaults.underline;
 						const strikethrough = span.meta.strikethrough != null ? span.meta.strikethrough : metaDefaults.strikethrough;
 						const family = span.meta.family || metaDefaults.family;
-
 						if (fontLoadMap.get(family) !== true) {
 							const variants = config.user_fonts[family] ? config.user_fonts[family].variants : undefined;
 							load_font_family({ family, variants }, () => {
@@ -1654,13 +1278,10 @@ class Text_editor_class {
 								this.Base_layers.render();
 							});
 						}
-
 						let fontMetrics;
 						if (underline || strikethrough) {
 							fontMetrics = this.get_span_font_metrics(span, !fontLoadMap.get(family));
 						}
-
-						// Set styles for drawing
 						ctx.font =
 							' ' + (italic ? 'italic' : '') +
 							' ' + (bold ? 'bold' : '') +
@@ -1682,10 +1303,6 @@ class Text_editor_class {
 						} else {
 							ctx.lineWidth = 0;
 						}
-
-						
-						
-						// Loop through each letter in each span and draw it
 						for (let c = 0; c < span.text.length; c++) {
 							const letter = span.text.charAt(c);
 							const lineStart = Math.round(drawOffsetTop + wrapSizes[wrapIndex].offset);
@@ -1760,9 +1377,6 @@ class Text_editor_class {
 							characterIndex++;
 							lineLetterCount++;
 						}
-
-						
-
 						if (span.text.length === 0) {
 							if (cursorLine === lineIndex && cursorCharacter === lineLetterCount) {
 								const lineStart = Math.round(drawOffsetTop + wrapSizes[wrapIndex].offset);
@@ -1775,8 +1389,6 @@ class Text_editor_class {
 							}
 						}
 					}
-
-					// Draw cursor
 					if (this.selection.isCursorVisible /*&& this.selection.isBlinkVisible*/ && cursorStartX && this.editingCtx == ctx) {
 						ctx.lineCap = 'butt';
 						ctx.strokeStyle = '#55555577';
@@ -1814,11 +1426,9 @@ class Text_editor_class {
 		} catch (error) {
 			console.warn(error);
 		}
-
 		this.hasValueChanged = false;
 	}
 }
-
 class Google_fonts_search_class {
 	constructor() {
 		this.POP = new Dialog_class();
@@ -1832,7 +1442,6 @@ class Google_fonts_search_class {
 		this.selectedFonts = {};
 		this.searchTimeoutHandle = null;
 	}
-
 	render_font_list(page) {
 		page = page || 1;
 		const pageCount = Math.ceil(this.fontListFiltered.length / 8);
@@ -1871,15 +1480,11 @@ class Google_fonts_search_class {
 			</div>
 		`;
 		this.fontListNode.innerHTML = html;
-
-		// Attempt to remove vertical scroll by decreasing page size.
 		if (this.fontsPerPage > 3 && this.dialogContentNode.scrollHeight > this.dialogContentNode.clientHeight) {
 			this.fontsPerPage--;
 			this.render_font_list(page);
 			return;
 		}
-
-		// Handle checkbox
 		this.fontListNode.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
 			checkbox.addEventListener('change', (e) => {
 				if (checkbox.checked) {
@@ -1891,14 +1496,11 @@ class Google_fonts_search_class {
 				}
 			});
 		});
-
-		// Handle pagination
 		this.fontListNode.querySelector('.pagination').addEventListener('click', (e) => {
 			const page = parseInt(e.target.getAttribute('data-page'), 10);
 			this.render_font_list(page);
 		});
 	}
-
 	show() {
 		this.POP.show({
 			title: 'Search for Font',
@@ -1911,7 +1513,6 @@ class Google_fonts_search_class {
 				this.dialogContentNode = popup.el.querySelector('.dialog_content');
 				this.dialogContentNode.appendChild(node);
 				this.fontListNode = node;				
-
 				const queryInput = popup.el.querySelector('#pop_data_query');
 				queryInput.addEventListener('input', (e) => {
 					const query = (e.target.value || '').toLowerCase();
@@ -1932,7 +1533,6 @@ class Google_fonts_search_class {
 						}, 350);
 					}
 				});
-
 				const apiKey = config.google_webfonts_key;
 				$.getJSON(`https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`, (data) => {
 					this.fontList = data.items;
@@ -1966,10 +1566,7 @@ class Google_fonts_search_class {
 		});
 	}
 }
-
-
 class Text_class extends Base_tools_class {
-
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
@@ -2005,8 +1602,6 @@ class Text_class extends Base_tools_class {
 				},
 			};
 			this.Base_selection = new Base_selection_class(ctx, sel_config, this.name);
-
-			// Need a textarea in order to listen for keyboard inputs in an accessible, multi-platform independent way
 			this.textarea = document.createElement('textarea');
 			this.textarea.id = 'text_tool_keyboard_input';
 			this.textarea.setAttribute('autocorrect', 'off');
@@ -2015,7 +1610,6 @@ class Text_class extends Base_tools_class {
 			this.textarea.setAttribute('spellcheck', 'false');
 			this.textarea.style = `position: absolute; top: 0; left: 0; padding: 0; width: 1px; height: 1px; background: transparent; border: none; outline: none; color: transparent; opacity: 0.01; pointer-events: none;`;
 			document.body.appendChild(this.textarea);
-
 			this.textarea.addEventListener('focus', () => {
 				this.focused = true;
 				let editor = this.get_editor(this.layer);
@@ -2023,7 +1617,6 @@ class Text_class extends Base_tools_class {
 					this.focusedValue = JSON.stringify(editor.document.lines);
 				}
 			}, true);
-
 			this.textarea.addEventListener('blur', () => {
 				this.focused = false;
 				let editor = this.get_editor(this.layer);
@@ -2039,7 +1632,6 @@ class Text_class extends Base_tools_class {
 				this.focusedValue = null;
 				this.Base_layers.render();
 			}, true);
-
 			this.textarea.addEventListener('input', (e) => {
 				if (config.layer) {
 					const editor = this.get_editor(config.layer);
@@ -2049,7 +1641,6 @@ class Text_class extends Base_tools_class {
 					this.extend_fixed_bounds(config.layer, editor);
 				}
 			}, true);
-
 			this.textarea.addEventListener('keydown', (e) => {
 				if (config.layer) {
 					let handled = true;
@@ -2152,27 +1743,22 @@ class Text_class extends Base_tools_class {
 			}, true);
 		}
 	}
-
 	dragStart(event) {
 		if (config.TOOL.name != this.name)
 			return;
 		this.mousedown(event);
 	}
-
 	dragMove(event) {
 		if (config.TOOL.name != this.name)
 			return;
 		this.mousemove(event);
 	}
-
 	dragEnd(event) {
 		if (config.TOOL.name != this.name)
 			return;
 		this.mouseup(event);
 	}
-
 	load() {
-		// Mouse events
 		document.addEventListener('mousedown', (event) => {
 			this.dragStart(event);
 		});
@@ -2185,8 +1771,6 @@ class Text_class extends Base_tools_class {
 		document.addEventListener('dblclick', (event) => {
 			this.doubleClick(event);
 		});
-
-		// Touch events
 		document.addEventListener('touchstart', (event) => {
 			this.dragStart(event);
 		});
@@ -2197,16 +1781,13 @@ class Text_class extends Base_tools_class {
 			this.dragEnd(event);
 		});
 	}
-
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.click_valid == false)
 			return;
-
 		this.creating = false;
 		this.selecting = false;
 		this.resizing = false;
-
 		this.mousedownX = mouse.x;
 		this.mousedownY = mouse.y;
 		this.mousedownBounds = {
@@ -2216,12 +1797,10 @@ class Text_class extends Base_tools_class {
 			height: config.layer.height,
 			boundary: config.layer.params.boundary
 		};
-
 		if (this.Base_selection.mouse_lock !== null) {
 			this.resizing = true;
 			return;
 		}
-
 		const existingLayer = this.get_text_layer_at_mouse(e);
 		if (existingLayer) {
 			this.selecting = true;
@@ -2236,7 +1815,6 @@ class Text_class extends Base_tools_class {
 			);
 		}
 		else {
-			// Create a new text layer
 			this.creating = true;
 			const layer = {
 				type: this.name,
@@ -2264,7 +1842,6 @@ class Text_class extends Base_tools_class {
 			this.layer = config.layer;
 		}
 	}
-
 	mousemove(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.is_drag == false)
@@ -2272,7 +1849,6 @@ class Text_class extends Base_tools_class {
 		if (mouse.click_valid == false) {
 			return;
 		}
-
 		if (this.resizing) {
 			config.layer.x = this.selection.x;
 			config.layer.y = this.selection.y;
@@ -2285,8 +1861,6 @@ class Text_class extends Base_tools_class {
 		else if (this.creating) {
 			const width = Math.abs(mouse.x - this.mousedownX);
 			const height = Math.abs(mouse.y - this.mousedownY);
-
-			//more data
 			if (config.layer.params.boundary === 'dynamic') {
 				config.layer.params.boundary = 'box';
 			}
@@ -2299,14 +1873,12 @@ class Text_class extends Base_tools_class {
 		}
 		this.Base_layers.render();
 	}
-
 	mouseup(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.click_valid == false) {
 			return;
 		}
 		const editor = this.get_editor(this.layer);
-
 		if (this.resizing) {
 			config.layer.x = this.mousedownBounds.x;
 			config.layer.y = this.mousedownBounds.y;
@@ -2331,9 +1903,7 @@ class Text_class extends Base_tools_class {
 		else if (this.creating) {
 			let width = Math.abs(mouse.x - this.mousedownX);
 			let height = Math.abs(mouse.y - this.mousedownY);
-
 			if (width == 0 && height == 0) {
-				// Same coordinates - let render figure out dynamic width
 				width = 1;
 				height = 1;
 			}
@@ -2353,7 +1923,6 @@ class Text_class extends Base_tools_class {
 		else if (this.selecting) {
 			editor.trigger_cursor_end();
 			this.textarea.focus();
-			
 			if (editor.selection.is_empty() && editor.document.queuedMetaChanges) {
 				let meta = {};
 				const existingMeta = editor.document.get_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character);
@@ -2365,12 +1934,8 @@ class Text_class extends Base_tools_class {
 				this.update_tool_attributes(this.layer, editor);
 			}
 		}
-
-		// Resize layer based on text boundaries.
 		this.extend_fixed_bounds(this.layer, editor);
 		this.Base_layers.render();
-
-		// Center layer on mouse if not click & drag
 		if (this.creating && config.layer.params.boundary === 'dynamic') {
 			requestAnimationFrame(() => {
 				app.State.do_action(
@@ -2382,13 +1947,10 @@ class Text_class extends Base_tools_class {
 				);
 			});
 		}
-
 		this.resizing = false;
 		this.selecting = false;
 		this.creating = false;
 	}
-
-
 	doubleClick(event) {
 		if (document.activeElement === this.textarea) {
 			const editor = this.get_editor(this.layer);
@@ -2402,7 +1964,6 @@ class Text_class extends Base_tools_class {
 			}
 		}
 	}
-
 	on_params_update(param) {
 		const editor = this.get_editor(config.layer);
 		const value = param.value;
@@ -2471,7 +2032,6 @@ class Text_class extends Base_tools_class {
 		}
 		return returnValue;
 	}
-
 	update_tool_attributes(layer, editor) {
 		if (layer && layer.params) {
 			const meta = editor.document.get_meta_range(editor.selection.start.line, editor.selection.start.character, editor.selection.end.line, editor.selection.end.character);
@@ -2490,7 +2050,6 @@ class Text_class extends Base_tools_class {
 			this.GUI_tools.show_action_attributes();
 		}
 	}
-
 	resize_to_dynamic_bounds(layer, editor) {
 		if (layer && layer.params && layer.params.boundary === 'dynamic') {
 			let new_width = Math.max(9, editor.textBoundaryWidth + 1);
@@ -2499,7 +2058,6 @@ class Text_class extends Base_tools_class {
 			config.layer.height = new_height;
 		}
 	}
-
 	extend_fixed_bounds(layer, editor) {
 		if (layer && layer.params && layer.params.boundary !== 'dynamic') {
 			const isHorizontalTextDirection = ['ltr', 'rtl'].includes(layer.params.textDirection);
@@ -2514,12 +2072,10 @@ class Text_class extends Base_tools_class {
 			config.layer.height = new_height;
 		}
 	}
-
 	render(ctx, layer) {
 		if (layer.width == 0 && layer.height == 0)
 			return;
 		var params = layer.params;
-
 		const isActiveLayerAndTextTool = layer === config.layer && config.TOOL.name === 'text';
 		const editor = this.get_editor(layer);
 		editor.selection.set_visible(isActiveLayerAndTextTool);
@@ -2541,13 +2097,10 @@ class Text_class extends Base_tools_class {
 			this.selection.height = 0;
 		}
 	}
-
 	get_editor(layer) {
 		let editor = layerEditors.get(layer);
 		if (!editor) {
 			editor = new Text_editor_class();
-
-			// Convert legacy to new format
 			if (layer.params && layer.params.text) {
 				const params = layer.params;
 				let lines = [];
@@ -2587,9 +2140,6 @@ class Text_class extends Base_tools_class {
 				delete params.align;
 				layer.data = lines;
 				layer.x -= 1;
-
-				// Change leading offset so line height matches legacy line height calculation... need to load the font first to do this.
-				// This is an approximate calculation, but seems to be pretty close.
 				load_font_family({ family }, () => {
 					const line = layer.data[0];
 					if (!line) return;
@@ -2603,8 +2153,6 @@ class Text_class extends Base_tools_class {
 					editor.Base_layers.render();
 				});
 			}
-
-			// Create initial layer data if new layer
 			if (!layer.data) {
 				const params = this.getParams();
 				layer.data = [[{
@@ -2624,7 +2172,6 @@ class Text_class extends Base_tools_class {
 					}
 				}]];
 			}
-
 			editor.set_lines(layer.data);
 			editor.Base_layers = this.Base_layers;
 			editor.layer = layer;
@@ -2637,7 +2184,6 @@ class Text_class extends Base_tools_class {
 		}
 		return editor;
 	}
-
 	get_text_layer_at_mouse(e) {
 		const layers_sorted = this.Base_layers.get_sorted_layers();
 		if (config.layer.type === 'text') {
@@ -2647,7 +2193,6 @@ class Text_class extends Base_tools_class {
 		const clickableMargin = 5;
 		for (let layer of layers_sorted) {
 			if (layer.type === 'text') {
-				// TODO - account for rotation
 				if (mouse.x >= layer.x - clickableMargin && mouse.x <= layer.x + layer.width + clickableMargin && mouse.y >= layer.y - clickableMargin && mouse.y <= layer.y + layer.height + clickableMargin) {
 					return layer;
 				}
@@ -2655,7 +2200,5 @@ class Text_class extends Base_tools_class {
 		}
 		return null;
 	}
-
 }
-
 export default Text_class;
