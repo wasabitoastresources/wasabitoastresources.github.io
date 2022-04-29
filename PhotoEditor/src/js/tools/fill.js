@@ -4,9 +4,7 @@ import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
-
 class Fill_class extends Base_tools_class {
-
 	constructor(ctx) {
 		super();
 		this.Base_layers = new Base_layers_class();
@@ -15,28 +13,21 @@ class Fill_class extends Base_tools_class {
 		this.name = 'fill';
 		this.working = false;
 	}
-
 	dragStart(event) {
 		var _this = this;
 		if (config.TOOL.name != _this.name)
 			return;
 		_this.mousedown(event);
 	}
-
 	load() {
 		var _this = this;
-
-		//mouse events
 		document.addEventListener('mousedown', function (event) {
 			_this.dragStart(event);
 		});
-
-		// collect touch events
 		document.addEventListener('touchstart', function (event) {
 			_this.dragStart(event);
 		});
 	}
-
 	mousedown(e) {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.click_valid == false) {
@@ -46,17 +37,13 @@ class Fill_class extends Base_tools_class {
 			alertify.error('Erase on rotate object is disabled. Sorry.');
 			return;
 		}
-
 		this.fill(mouse);
 	}
-
 	async fill(mouse) {
 		var params = this.getParams();
-
 		if(this.working == true){
 			return;
 		}
-
 		if (config.layer.type != 'image' && config.layer.type !== null) {
 			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
 			return;
@@ -69,8 +56,6 @@ class Fill_class extends Base_tools_class {
 			alertify.error('Color alpha value can not be zero.');
 			return;
 		}
-
-		//get canvas from layer
 		var canvas = document.createElement('canvas');
 		var ctx = canvas.getContext("2d");
 		if (config.layer.type !== null) {
@@ -82,28 +67,18 @@ class Fill_class extends Base_tools_class {
 			canvas.width = config.WIDTH;
 			canvas.height = config.HEIGHT;
 		}
-
 		var mouse_x = Math.round(mouse.x) - config.layer.x;
 		var mouse_y = Math.round(mouse.y) - config.layer.y;
-
-		//adapt to origin size
 		mouse_x = this.adaptSize(mouse_x, 'width');
 		mouse_y = this.adaptSize(mouse_y, 'height');
-
-		//convert float coords to integers
 		mouse_x = Math.round(mouse_x);
 		mouse_y = Math.round(mouse_y);
-
 		var color_to = this.Helper.hexToRgb(config.COLOR);
 		color_to.a = config.ALPHA;
-
-		//change
 		this.working = true;
 		this.fill_general(ctx, config.WIDTH, config.HEIGHT,
 			mouse_x, mouse_y, color_to, params.power, params.anti_aliasing, params.contiguous);
-
 		if (config.layer.type != null) {
-			//update
 			app.State.do_action(
 				new app.Actions.Bundle_action('fill_tool', 'Fill Tool', [
 					new app.Actions.Update_layer_image_action(canvas)
@@ -111,7 +86,6 @@ class Fill_class extends Base_tools_class {
 			);
 		}
 		else {
-			//create new
 			var params = [];
 			params.type = 'image';
 			params.name = 'Fill';
@@ -126,12 +100,9 @@ class Fill_class extends Base_tools_class {
 				])
 			);
 		}
-
-		//prevent crash bug on touch screen - hard to explain and debug
 		await new Promise(r => setTimeout(r, 10));
 		this.working = false;
 	}
-
 	fill_general(context, W, H, x, y, color_to, sensitivity, anti_aliasing, contiguous = false) {
 		sensitivity = sensitivity * 255 / 100; //convert to 0-255 interval
 		x = parseInt(x);
@@ -140,14 +111,11 @@ class Fill_class extends Base_tools_class {
 		canvasTemp.width = W;
 		canvasTemp.height = H;
 		var ctxTemp = canvasTemp.getContext("2d");
-
 		ctxTemp.rect(0, 0, W, H);
 		ctxTemp.fillStyle = "rgba(255, 255, 255, 0)";
 		ctxTemp.fill();
-
 		var img_tmp = ctxTemp.getImageData(0, 0, W, H);
 		var imgData_tmp = img_tmp.data;
-
 		var img = context.getImageData(0, 0, W, H);
 		var imgData = img.data;
 		var k = ((y * (img.width * 4)) + (x * 4));
@@ -163,9 +131,7 @@ class Fill_class extends Base_tools_class {
 			&& color_from.b == color_to.b && color_from.a == color_to.a) {
 			return false;
 		}
-
 		if (contiguous == false) {
-			//check only nearest pixels
 			var stack = [];
 			stack.push([x, y]);
 			while (stack.length > 0) {
@@ -177,55 +143,43 @@ class Fill_class extends Base_tools_class {
 						continue;
 					var k = (nextPointY * W + nextPointX) * 4;
 					if (imgData_tmp[k + 3] != 0)
-						continue; //already parsed
-
-					//check
+						continue;
 					if (Math.abs(imgData[k + 0] - color_from.r) <= sensitivity &&
 						Math.abs(imgData[k + 1] - color_from.g) <= sensitivity &&
 						Math.abs(imgData[k + 2] - color_from.b) <= sensitivity &&
 						Math.abs(imgData[k + 3] - color_from.a) <= sensitivity) {
-
-						//fill pixel
-						imgData_tmp[k] = color_to.r; //r
-						imgData_tmp[k + 1] = color_to.g; //g
-						imgData_tmp[k + 2] = color_to.b; //b
-						imgData_tmp[k + 3] = color_to.a; //a
-
+						imgData_tmp[k] = color_to.r;
+						imgData_tmp[k + 1] = color_to.g;
+						imgData_tmp[k + 2] = color_to.b;
+						imgData_tmp[k + 3] = color_to.a;
 						stack.push([nextPointX, nextPointY]);
 					}
 				}
 			}
 		}
 		else {
-			//global mode - contiguous
 			for (var i = 0; i < imgData.length; i += 4) {
 				if (imgData[i + 3] == 0)
-					continue;	//transparent
-
-				//imgData[i] + 0.7152 * imgData[i + 1] + 0.0722 * imgData[i + 2]);
-
+					continue;
 				for (var j = 0; j < 4; j++) {
 					var k = i + j;
-
 					if (Math.abs(imgData[k] - color_from.r) <= sensitivity
 						&& Math.abs(imgData[k + 1] - color_from.g) <= sensitivity
 						&& Math.abs(imgData[k + 2] - color_from.b) <= sensitivity
 						&& Math.abs(imgData[k + 3] - color_from.a) <= sensitivity) {
-						imgData_tmp[k] = color_to.r; //r
-						imgData_tmp[k + 1] = color_to.g; //g
-						imgData_tmp[k + 2] = color_to.b; //b
-						imgData_tmp[k + 3] = color_to.a; //a
+						imgData_tmp[k] = color_to.r;
+						imgData_tmp[k + 1] = color_to.g;
+						imgData_tmp[k + 2] = color_to.b;
+						imgData_tmp[k + 3] = color_to.a;
 					}
 				}
 			}
 		}
-
 		ctxTemp.putImageData(img_tmp, 0, 0);
 		if (anti_aliasing == true) {
 			context.filter = 'blur(1px)';
 		}
 		context.drawImage(canvasTemp, 0, 0);
 	}
-
 }
 export default Fill_class;
