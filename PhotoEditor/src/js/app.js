@@ -1,4 +1,3 @@
-// Store singletons for easy access
 export default {
 	GUI: null,
 	Tools: null,
