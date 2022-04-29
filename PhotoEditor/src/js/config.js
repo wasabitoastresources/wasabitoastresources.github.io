@@ -1,9 +1,6 @@
-//main config file
-
 var config = {};
-
 config.TRANSPARENCY = false;
-config.TRANSPARENCY_TYPE = 'squares'; //squares, green, grey
+config.TRANSPARENCY_TYPE = 'squares';
 config.LANG = 'en';
 config.WIDTH = null;
 config.HEIGHT = null;
@@ -19,24 +16,20 @@ config.google_webfonts_key = 'AIzaSyAC_Tx8RKkvN235fXCUyi_5XhSaRCzNhMg';
 config.layers = [];
 config.layer = null;
 config.need_render = false;
-config.need_render_changed_params = false; // Set specifically when param change in layer details triggered render
+config.need_render_changed_params = false;
 config.mouse = {};
 config.swatches = {
-	default: [] // Only default used right now, object format for swatch swapping in future.
+	default: [] 
 };
 config.user_fonts = {};
 config.guides_enabled = true;
 config.guides = [];
 config.ruler_active = false;
-
-//requires styles in reset.css
 config.themes = [
 	'dark',
 	'light',
 	'green',
 ];
-
-//no-translate BEGIN
 config.FONTS = [
 	"Arial",
 	"Courier",
@@ -75,8 +68,6 @@ config.FONTS = [
 	"Titillium Web",
 	"Ubuntu"
 ];
-//no-translate END
-
 config.TOOLS = [
 	{
 		name: 'select',
@@ -496,8 +487,5 @@ config.TOOLS = [
 		},
 	},
 ];
-
-//link to active tool
 config.TOOL = config.TOOLS[2];
-	
 export default config;
