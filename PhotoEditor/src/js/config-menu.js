@@ -636,93 +636,6 @@ const menuDefinition = [
 				divider: true
 			},
 			{
-				name: 'Language',
-				children: [
-					{
-						name: 'English',
-						target: 'tools/translate.translate',
-						parameter: 'en',
-					},
-					{
-						divider: true
-					},
-					{
-						//Arabic
-						name: 'عربي',
-						target: 'tools/translate.translate',
-						parameter: 'ar',
-					},
-					{
-						//Chinese simplified
-						name: '简体中文',
-						target: 'tools/translate.translate',
-						parameter: 'zh',
-					},
-					{
-						name: 'Deutsch',
-						target: 'tools/translate.translate',
-						parameter: 'de',
-					},
-					{
-						name: 'English (UK)',
-						target: 'tools/translate.translate',
-						parameter: 'uk',
-					},
-					{
-						name: 'Español',
-						target: 'tools/translate.translate',
-						parameter: 'es',
-					},
-					{
-						name: 'Français',
-						target: 'tools/translate.translate',
-						parameter: 'fr',
-					},
-					{
-						name: 'Greek',
-						target: 'tools/translate.translate',
-						parameter: 'el',
-					},
-					{
-						name: 'Italiano',
-						target: 'tools/translate.translate',
-						parameter: 'it',
-					},
-					{
-						//Japanese
-						name: '日本語',
-						target: 'tools/translate.translate',
-						parameter: 'ja',
-					},
-					{
-						//Korean
-						name: '한국어',
-						target: 'tools/translate.translate',
-						parameter: 'ko',
-					},
-					{
-						name: 'Lietuvių',
-						target: 'tools/translate.translate',
-						parameter: 'lt',
-					},
-					{
-						name: 'Português',
-						target: 'tools/translate.translate',
-						parameter: 'pt',
-					},
-					{
-						name: 'русский язык',
-						target: 'tools/translate.translate',
-						parameter: 'ru',
-					},
-					{
-						name: 'Türkçe',
-						target: 'tools/translate.translate',
-						parameter: 'tr',
-					}
-				]
-			},
-			{
 				name: 'Search',
 				shortcut: 'F3',
 				ellipsis: true,
@@ -758,6 +671,4 @@ const menuDefinition = [
 		]
 	}
 ];
-
-
 export default menuDefinition;
