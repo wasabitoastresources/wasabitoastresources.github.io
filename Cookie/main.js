@@ -1308,7 +1308,7 @@ Game.Launch=function()
 		
 		Game.grandmaNames=['Granny','Gusher','Ethel','Edna','Doris','Maud','Hilda','Gladys','Michelle','Michele','Phyllis','Millicent','Muriel','Myrtle','Mildred','Mavis','Helen','Gloria','Sheila','Betty','Gertrude','Agatha','Beryl','Agnes','Pearl','Precious','Ruby','Vera','Bonnie','Ada','Bunny','Cookie','Darling','Gaga','GamGam','Memaw','Mimsy','Peanut','Nana','Nan','Tootsie','Warty','Stinky','Heinous'];
 		Game.customGrandmaNames=[];
-		Game.heralds=0;
+		Game.heralds=41;
 		
 		Game.GrabData=function()
 		{
@@ -1363,7 +1363,7 @@ Game.Launch=function()
 		Game.attachTooltip(l('heralds'),function(){
 			var str='';
 			
-			if (!Game.externalDataLoaded) str+='Heralds couldn\'t be loaded. There may be an issue with our servers, or you are playing the game locally.';
+			if (Game.externalDataLoaded) str+='Heralds couldn\'t be loaded. There may be an issue with our servers, or you are playing the game locally.';
 			else
 			{
 				if (Game.heralds==0) str+='There are no heralds at the moment. Please consider <b style="color:#bc3aff;">donating to our Patreon</b>!';
@@ -2193,6 +2193,7 @@ Game.Launch=function()
 					}
 					
 					Game.heralds=41;
+					actualHeralds=41;
 					
 					if (Game.prefs.popups) Game.Popup('Game loaded');
 					else Game.Notify('Game loaded','','',1,1);
