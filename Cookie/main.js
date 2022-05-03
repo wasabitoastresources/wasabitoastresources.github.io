@@ -2192,7 +2192,7 @@ Game.Launch=function()
 						else if (Game.season=='easter') Game.Notify('Easter!','It\'s <b>Easter season</b>!<br>Keep an eye out and you just might click a rabbit or two!',[0,12],60*3);
 					}
 					
-					Game.heralds=actualHeralds;
+					Game.heralds=41;
 					
 					if (Game.prefs.popups) Game.Popup('Game loaded');
 					else Game.Notify('Game loaded','','',1,1);
@@ -2203,10 +2203,6 @@ Game.Launch=function()
 			else return false;
 			return true;
 		}
-		
-		/*=====================================================================================
-		RESET
-		=======================================================================================*/
 		Game.Reset=function(hard)
 		{
 			Game.T=0;
