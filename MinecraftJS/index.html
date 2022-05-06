@@ -3,7 +3,7 @@
 		<meta charset="utf-8">
 		<title>MineKhan</title>
     <base href="https://minekhan.thingmaker.repl.co">
-    <meta name="keywords" content="Minekhan"> <!--search "Minekhan" on Google-->
+    <meta name="keywords" content="Minekhan">
     <meta name="description" content="Minekhan with survival and nether and many more features">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" id="themeColor">
@@ -14,7 +14,7 @@
 	</head>
 	<style>
 		body {
-			overflow: hidden; /* Hide scrollbars */
+			overflow: hidden;
 		}
     button, #onscreenControls, canvas, #loader{
 			-webkit-tap-highlight-color: transparent;
@@ -5773,7 +5773,6 @@ ROTATION = 0x1800
 		let near = 1
 		let far = 1000000
 		currentFov = fov
-
 		projection[0] = scale / width * height
 		projection[5] = scale
 		projection[10] = -far / (far - near)
@@ -5794,7 +5793,6 @@ ROTATION = 0x1800
 			uniformMatrix("view3d", program3D, "uView", false, matrix)
 		}
 	}
-
 	function timeString(millis) {
 		if (millis > 300000000000 || !millis) {
 			return "never"
@@ -6523,10 +6521,10 @@ ROTATION = 0x1800
       if(block){
         let onclick = blockData[block].onclick
         if(onclick){
-          if(!onclick(x, y, z)){p.lastPlace = Date.now(); return} //if it doesn't return true
+          if(!onclick(x, y, z)){p.lastPlace = Date.now(); return}
         }
         let onuse = blockData[holding] ? blockData[holding].onuse : null
-        if(onuse){ //items like flint and steel can't be placed but lights stuff
+        if(onuse){
           if(!onuse(x,y,z, block)){p.lastPlace = Date.now(); return}
         }
       }
@@ -6565,7 +6563,6 @@ ROTATION = 0x1800
     var canPlace = (!hitboxBlock) || (blockData[hitboxBlock].liquid)
 		if (!blocking && canPlace) {
       var block = holding
-      
 			pos[0] = x
 			pos[1] = y
 			pos[2] = z
@@ -6642,12 +6639,9 @@ ROTATION = 0x1800
         inventory.hotbar[inventory.hotbarSlot].amount --;
         updateHUD = true
       }
-      
-      //play sound
       blockSound(block, "place", x,y,z)
 		}
 	}
-
   function cracks(){
     var now = Date.now()
     var block = hitBox.pos ? world.getBlock(hitBox.pos[0], hitBox.pos[1], hitBox.pos[2]) : 0
@@ -6677,8 +6671,6 @@ ROTATION = 0x1800
       crack.delayDone = 0
     }
   }
-
-	// Save the coords for a small sphere used to carve out caves
 	let sphere;
 	{
 		let blocks = []
@@ -6695,13 +6687,7 @@ ROTATION = 0x1800
 		}
 		sphere = new Int8Array(blocks)
 	}
-
 	function isCave(x, y, z) {
-		// Generate a 3D rigid multifractal noise shell.
-		// Then generate another one with different coordinates.
-		// Overlay them on top of each other, and the overlapping parts should form a cave-like structure.
-		// This is extremely slow, and requires generating 2 noise values for every single block in the world.
-		// TODO: replace with a crawler system of some sort, that will never rely on a head position in un-generated chunks.
 		let smooth = 0.02
 		let caveSize = 0.0055
 		let cave1 = abs(0.5 - caveNoise(x * smooth, y * smooth, z * smooth)) < caveSize
@@ -6715,38 +6701,23 @@ ROTATION = 0x1800
 			}
 		}
 	}
-
 	let renderedChunks = 0
 	function getBlock(x, y, z, blocks) {
 		return blocks[((x >> 4) + 1) * 9 + ((y >> 4) + 1) * 3 + (z >> 4) + 1][((x & 15) << 8) + ((y & 15) << 4) + (z & 15)]
 	}
-	/**
-	 * Returns a 1 if the face is exposed and should be drawn, or a 0 if the face is hidden
-	 * 
-	 * @param {number} x - The X coordinate of the block that may be covering a face
-	 * @param {number} y - The Y coordinate of the block that may be covering a face
-	 * @param {number} z - The Z coordinate of the block that may be covering a face
-	 * @param {Collection} blocks - Some collection of blocks that can return the block at (x, y, z)
-	 * @param {number} type - The blockstate of the block that's being considered for face culling
-	 * @param {function} func - The function that can be called to return a block from the blocks collection
-	*/
 	function hideFace(x, y, z, blocks, type, func, sourceDir, dir) {
 		let block = func.call(world, x, y, z, blocks)
 		if (!block) {
 			return 1
 		}
-
 		let data = blockData[block]
 		let sourceData = blockData[type]
-
 		let sourceRange = 3
 		let hiderRange = 3
 		if (func !== getBlock || screen === "loading") {
-			// getBlock is only used during the optimize phase of worldGen
 			sourceRange = sourceData.shape.cull[sourceDir]
 			hiderRange = data.shape.cull[dir]
 		}
-
 		if ((sourceRange & hiderRange) !== sourceRange || sourceRange === 0 || block !== type && data.transparent || data.transparent && data.shadow) {
 			return 1
 		}
@@ -6756,7 +6727,7 @@ ROTATION = 0x1800
 		shade: [ 1, 0.85, 0.7, 0.6, 0.3 ],
 		ret: [],
 		blocks: [],
-		top: function(x, y, z, block) { // Actually the bottom... How did these get flipped?
+		top: function(x, y, z, block) {
 			let blocks = this.blocks
 			let ret = this.ret
 			blocks[0] = blockData[getBlock(x-1, y-1, z-1, block)].shadow
@@ -6768,14 +6739,13 @@ ROTATION = 0x1800
 			blocks[6] = blockData[getBlock(x-1, y-1, z+1, block)].shadow
 			blocks[7] = blockData[getBlock(x, y-1, z+1, block)].shadow
 			blocks[8] = blockData[getBlock(x+1, y-1, z+1, block)].shadow
-
 			ret[0] = this.shade[blocks[0] + blocks[1] + blocks[3] + blocks[4]]*0.75
 			ret[1] = this.shade[blocks[1] + blocks[2] + blocks[4] + blocks[5]]*0.75
 			ret[2] = this.shade[blocks[5] + blocks[4] + blocks[8] + blocks[7]]*0.75
 			ret[3] = this.shade[blocks[4] + blocks[3] + blocks[7] + blocks[6]]*0.75
 			return ret
 		},
-		bottom: function(x, y, z, block) { // Actually the top
+		bottom: function(x, y, z, block) {
 			let blocks = this.blocks
 			let ret = this.ret
 			blocks[0] = blockData[getBlock(x-1, y+1, z-1, block)].shadow
@@ -6787,7 +6757,6 @@ ROTATION = 0x1800
 			blocks[6] = blockData[getBlock(x-1, y+1, z+1, block)].shadow
 			blocks[7] = blockData[getBlock(x, y+1, z+1, block)].shadow
 			blocks[8] = blockData[getBlock(x+1, y+1, z+1, block)].shadow
-
 			ret[0] = this.shade[blocks[4] + blocks[3] + blocks[7] + blocks[6]]
 			ret[1] = this.shade[blocks[5] + blocks[4] + blocks[8] + blocks[7]]
 			ret[2] = this.shade[blocks[1] + blocks[2] + blocks[4] + blocks[5]]
@@ -6806,7 +6775,6 @@ ROTATION = 0x1800
 			blocks[6] = blockData[getBlock(x-1, y+1, z+1, block)].shadow
 			blocks[7] = blockData[getBlock(x, y+1, z+1, block)].shadow
 			blocks[8] = blockData[getBlock(x+1, y+1, z+1, block)].shadow
-
 			ret[0] = this.shade[blocks[5] + blocks[4] + blocks[8] + blocks[7]]*0.95
 			ret[1] = this.shade[blocks[4] + blocks[3] + blocks[7] + blocks[6]]*0.95
 			ret[2] = this.shade[blocks[0] + blocks[1] + blocks[3] + blocks[4]]*0.95
@@ -6825,7 +6793,6 @@ ROTATION = 0x1800
 			blocks[6] = blockData[getBlock(x+1, y-1, z-1, block)].shadow
 			blocks[7] = blockData[getBlock(x+1, y, z-1, block)].shadow
 			blocks[8] = blockData[getBlock(x+1, y+1, z-1, block)].shadow
-
 			ret[0] = this.shade[blocks[1] + blocks[2] + blocks[4] + blocks[5]]*0.95
 			ret[1] = this.shade[blocks[5] + blocks[4] + blocks[8] + blocks[7]]*0.95
 			ret[2] = this.shade[blocks[4] + blocks[3] + blocks[7] + blocks[6]]*0.95
@@ -6844,7 +6811,6 @@ ROTATION = 0x1800
 			blocks[6] = blockData[getBlock(x+1, y-1, z+1, block)].shadow
 			blocks[7] = blockData[getBlock(x+1, y, z+1, block)].shadow
 			blocks[8] = blockData[getBlock(x+1, y+1, z+1, block)].shadow
-
 			ret[0] = this.shade[blocks[1] + blocks[2] + blocks[4] + blocks[5]]*0.8
 			ret[1] = this.shade[blocks[5] + blocks[4] + blocks[8] + blocks[7]]*0.8
 			ret[2] = this.shade[blocks[4] + blocks[3] + blocks[7] + blocks[6]]*0.8
@@ -6863,7 +6829,6 @@ ROTATION = 0x1800
 			blocks[6] = blockData[getBlock(x-1, y-1, z+1, block)].shadow
 			blocks[7] = blockData[getBlock(x-1, y, z+1, block)].shadow
 			blocks[8] = blockData[getBlock(x-1, y+1, z+1, block)].shadow
-
 			ret[0] = this.shade[blocks[7] + blocks[8] + blocks[4] + blocks[5]]*0.8
 			ret[1] = this.shade[blocks[5] + blocks[4] + blocks[2] + blocks[1]]*0.8
 			ret[2] = this.shade[blocks[4] + blocks[3] + blocks[1] + blocks[0]]*0.8
@@ -6871,7 +6836,6 @@ ROTATION = 0x1800
 			return ret
 		},
 	}
-	
 	function average(l, a, b, c, d) {
 		a = l[a]
 		b = l[b]
@@ -6904,7 +6868,7 @@ ROTATION = 0x1800
 	}
 	let getLight = {
 		blocks: [],
-		top: function(x, y, z, block, ret, blockLight = 0) { // Actually the bottom... How did these get flipped?
+		top: function(x, y, z, block, ret, blockLight = 0) {
 			let blocks = this.blocks
 			blocks[0] = (getBlock(x-1, y-1, z-1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[1] = (getBlock(x, y-1, z-1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
@@ -6915,12 +6879,10 @@ ROTATION = 0x1800
 			blocks[6] = (getBlock(x-1, y-1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[7] = (getBlock(x, y-1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[8] = (getBlock(x+1, y-1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
-
 			ret[0] = average(blocks, 4, 0, 1, 3)
 			ret[1] = average(blocks, 4, 1, 2, 5)
 			ret[2] = average(blocks, 4, 5, 7, 8)
 			ret[3] = average(blocks, 4, 3, 6, 7)
-			// debugger
 			return ret
 		},
 		bottom: function(x, y, z, block, ret, blockLight = 0) { // Actually the top
@@ -6934,7 +6896,6 @@ ROTATION = 0x1800
 			blocks[6] = (getBlock(x-1, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[7] = (getBlock(x, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[8] = (getBlock(x+1, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
-
 			ret[0] = average(blocks, 4, 3, 6, 7)
 			ret[1] = average(blocks, 4, 5, 7, 8)
 			ret[2] = average(blocks, 4, 1, 2, 5)
@@ -6952,7 +6913,6 @@ ROTATION = 0x1800
 			blocks[6] = (getBlock(x-1, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[7] = (getBlock(x, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[8] = (getBlock(x+1, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
-
 			ret[0] = average(blocks, 4, 5, 7, 8)
 			ret[1] = average(blocks, 4, 3, 6, 7)
 			ret[2] = average(blocks, 4, 0, 1, 3)
@@ -6970,7 +6930,6 @@ ROTATION = 0x1800
 			blocks[6] = (getBlock(x+1, y-1, z-1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[7] = (getBlock(x+1, y, z-1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[8] = (getBlock(x+1, y+1, z-1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
-
 			ret[0] = average(blocks, 4, 1, 2, 5)
 			ret[1] = average(blocks, 4, 5, 7, 8)
 			ret[2] = average(blocks, 4, 3, 6, 7)
@@ -6988,7 +6947,6 @@ ROTATION = 0x1800
 			blocks[6] = (getBlock(x+1, y-1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[7] = (getBlock(x+1, y, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[8] = (getBlock(x+1, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
-
 			ret[0] = average(blocks, 4, 1, 2, 5)
 			ret[1] = average(blocks, 4, 5, 7, 8)
 			ret[2] = average(blocks, 4, 3, 6, 7)
@@ -7006,7 +6964,6 @@ ROTATION = 0x1800
 			blocks[6] = (getBlock(x-1, y-1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[7] = (getBlock(x-1, y, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
 			blocks[8] = (getBlock(x-1, y+1, z+1, block) & 0xf << (blockLight * 4)) >> blockLight * 4
-
 			ret[0] = average(blocks, 4, 5, 7, 8)
 			ret[1] = average(blocks, 4, 1, 2, 5)
 			ret[2] = average(blocks, 4, 0, 1, 3)
@@ -7014,31 +6971,19 @@ ROTATION = 0x1800
 			return ret
 		},
 	}
-
-	/*
-	function interpolateShadows(shadows, x, y) {
-		let sx = (shadows[1] - shadows[0]) * x + shadows[0]
-		let sx2 = (shadows[3] - shadows[2]) * x + shadows[2]
-		return (sx2 - sx) * y + sx
-	}
-	*/
-  
 class Generator {
     constructor() {
         this.seedSet = false;
         this.seed = 0;
         this.size = 600;
-        this.diagonalNeighbors = true; //true if the corners are also adjacent
-        
+        this.diagonalNeighbors = true;
         this.grid = [];
         this.vertex = [];
         this.river = [];
         this.precip = [];
         this.biome = [];
         this.biomeBlend = [];
-        
         this.highestPoint = [0,0];
-        
         this.updates = [];
         this.stage = 0;
         this.changes = 0;
@@ -7154,7 +7099,7 @@ class Generator {
             if (a > 127) {a = -256+a;}
             return b+g*256+r*65536+a*16777216;
         }
-        if (this.stage === 0) { //landmass
+        if (this.stage === 0) {
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
                 for (var y = 0; y < this.size; y++) {
@@ -7174,7 +7119,7 @@ class Generator {
             if (this.X === this.size) {
                 this.updates.push({type:"ocean", x:0, y:0});
             }
-        }   else if (this.stage === 1) {    //Oceans
+        }   else if (this.stage === 1) {
             while (this.updates.length > 0 && win.performance.now() < end) {
                 var u = this.updates.shift();
                 if (this.grid[u.x+u.y*this.size] === 0) {
@@ -7190,7 +7135,7 @@ class Generator {
             if (this.updates.length === 0) {
                 this.X = this.size;
             }
-        }   else if (this.stage === 2) {    //altitude
+        }   else if (this.stage === 2) {
             if (this.h === -1) {this.h = 0;}
             var doingLake = false;
             var I = 0;
@@ -7249,8 +7194,7 @@ class Generator {
                 this.X = 0;
                 this.changes = 0;
             }
-        }   else if (this.stage === 3) {    //altitude readjustment
-            
+        }   else if (this.stage === 3) {
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
                 for (var y = 0; y < this.size; y++) {
@@ -7262,8 +7206,7 @@ class Generator {
                 }
                 this.X++;
             }
-            
-        }   else if (this.stage === 4) {    //rivers
+        }   else if (this.stage === 4) {
             if (this.rivers === 0) {
                 var x, y;
                 for (var i = 0; i < 200 && this.rivers < 100; i++) {
@@ -7293,7 +7236,7 @@ class Generator {
                     this.updates.shift();
                 }
             }
-        }   else if (this.stage === 5) {    //precipitation
+        }   else if (this.stage === 5) {
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
                 for (var y = 0; y < this.size; y++) {
@@ -7340,7 +7283,7 @@ class Generator {
                     }
                 }
             }
-        }   else if (this.stage === 6) {    //readjust precipitation
+        }   else if (this.stage === 6) {
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
                 for (var y = 0; y < this.size; y++) {
@@ -7348,14 +7291,14 @@ class Generator {
                 }
                 this.X++;
             }
-        }   else if (this.stage === 7) {    //temperature
+        }   else if (this.stage === 7) {
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
                 for (var y = 0; y < this.size; y++) {
                 }
                 this.X++;
             }
-        }   else if (this.stage === 8) {    //biomes
+        }   else if (this.stage === 8) {
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
                 for (var y = 0; y < this.size; y++) {
@@ -7407,7 +7350,7 @@ class Generator {
                 }
                 this.X++;
             }
-        }   else if (this.stage === 9) {    //add lava
+        }   else if (this.stage === 9) {
             let ph = this.vertex[this.highestPoint[0] + this.highestPoint[1]*this.size]-5;
             while (this.X < this.size && win.performance.now() < end) {
                 var x = this.X;
@@ -7428,7 +7371,6 @@ class Generator {
         }
     }
 }
-
 	class Section {
 		constructor(x, y, z, size, chunk) {
 			this.x = x
@@ -7475,13 +7417,10 @@ class Generator {
 			this.hasVisibleBlocks = false
 			this.renderLength = 0
 			let localBlocks = world.getAdjacentSubchunks(xx, yy, zz)
-
-			//Check all the blocks in the subchunk to see if they're visible.
 			for (let i = 0; i < s; i++) {
 				for (let j = 0; j < s; j++) {
 					for (let k = 0; k < s; k++, index++) {
 						blockState = blocks[index]
-
 						if (this.palleteMap[blockState] === undefined) {
 							this.palleteMap[blockState] = this.pallete.length
 							palleteIndex = this.pallete.length
@@ -7489,7 +7428,6 @@ class Generator {
 						} else {
 							palleteIndex = this.palleteMap[blockState]
 						}
-
 						visible = blockState && (hideFace(i-1, j, k, localBlocks, blockState, getBlock, "west", "east")
 						| hideFace(i+1, j, k, localBlocks, blockState, getBlock, "east", "west") << 1
 						| hideFace(i, j-1, k, localBlocks, blockState, getBlock, "bottom", "top") << 2
@@ -7525,39 +7463,31 @@ class Generator {
 			| hideFace(x, y, z+1, 0, blockState, world.getBlock, "north", "south") << 5)
 			let pos = (i | j << 4 | k << 8) << 19
 			let index = -1
-
-			// Find index of current block in this.renderData
 			for (let i = 0; i < this.renderLength; i++) {
 				if ((this.renderData[i] & 0x7ff80000) === pos) {
 					index = i
 					break
 				}
 			}
-
-			// Update pallete
 			if (this.palleteMap[blockState] === undefined) {
 				this.palleteMap[blockState] = this.pallete.length
 				this.pallete.push(blockState)
 			}
 
 			if (index < 0 && !visible) {
-				// Wasn't visible before, isn't visible after.
 				return
 			}
 			if (!visible) {
-				// Was visible before, isn't visible after.
 				this.renderData.splice(index, 1)
 				this.renderLength--
 				this.hasVisibleBlocks = !!this.renderLength
 				return
 			}
 			if (visible && index < 0) {
-				// Wasn't visible before, is visible after.
 				index = this.renderLength++
 				this.hasVisibleBlocks = true
 			}
 			this.renderData[index] = 1 << 31 | pos | visible << 13 | this.palleteMap[blockState]
-      
       var block = world.getBlock(x,y,z)
       if(!leaveMe && blockData[block]) blockData[block].onupdate(x,y,z,block);
 		}
@@ -7582,8 +7512,6 @@ class Generator {
 			let shapeVerts = null
 			let shapeTexVerts = null
 			let pallete = this.pallete
-			// let intShad = interpolateShadows
-			
 			for (let i = 0; i < length; i++) {
 				data = rData[i]
 				block = blockData[pallete[data & 0x1fff]]
@@ -7593,14 +7521,11 @@ class Generator {
 				x = loc & 15
 				y = loc >> 4 & 15
 				z = loc >> 8 & 15
-
 				x2 = x + this.x
 				y2 = y + this.y
 				z2 = z + this.z
-
 				shapeVerts = block.shape.verts
 				shapeTexVerts = block.shape.texVerts
-
 				let texNum = 0
 				for (let n = 0; n < 6; n++) {
 					side = blockSides[n]
@@ -7615,7 +7540,6 @@ class Generator {
 							tx = texVerts[0]
 							ty = texVerts[1]
 							texShapeVerts = shapeTexVerts[n][facei]
-
 							barray[index] = verts[0] + x2
 							barray[index+1] = verts[1] + y2
 							barray[index+2] = verts[2] + z2
@@ -7624,7 +7548,6 @@ class Generator {
 							barray[index+5] = shadows[0]
 							barray[index+6] = slights[0]
 							barray[index+7] = blights[0]
-
 							barray[index+8] = verts[3] + x2
 							barray[index+9] = verts[4] + y2
 							barray[index+10] = verts[5] + z2
@@ -7633,7 +7556,6 @@ class Generator {
 							barray[index+13] = shadows[1]
 							barray[index+14] = slights[1]
 							barray[index+15] = blights[1]
-
 							barray[index+16] = verts[6] + x2
 							barray[index+17] = verts[7] + y2
 							barray[index+18] = verts[8] + z2
@@ -7642,7 +7564,6 @@ class Generator {
 							barray[index+21] = shadows[2]
 							barray[index+22] = slights[2]
 							barray[index+23] = blights[2]
-
 							barray[index+24] = verts[9] + x2
 							barray[index+25] = verts[10] + y2
 							barray[index+26] = verts[11] + z2
@@ -7677,8 +7598,6 @@ class Generator {
 			for (let i = 0; i < 3; i++) {
 				let rnd = Math.random() * this.blocks.length | 0
 				if ((this.blocks[rnd]) === blockIds.grass) {
-					// Spread grass
-
 					let x = (rnd >> 8) + this.x
 					let y = (rnd >> 4 & 15) + this.y
 					let z = (rnd & 15) + this.z
@@ -7686,7 +7605,6 @@ class Generator {
 						world.setBlock(x, y, z, blockIds.dirt, false)
 						return
 					}
-
 					let rnd2 = Math.random() * 27 | 0
 					let x2 = rnd2 % 3 - 1
 					rnd2 = (rnd2 - x2 - 1) / 3
@@ -7695,7 +7613,6 @@ class Generator {
 					z += rnd2 - 1
 					x += x2
 					y += y2
-
 					if (world.getBlock(x, y, z) === blockIds.dirt && world.getBlock(x, y + 1, z) === blockIds.air) {
 						world.setBlock(x, y, z, blockIds.grass, false)
 					}
@@ -7709,15 +7626,11 @@ class Generator {
           let tree = blockIds.oakLog
           let leaf = blockIds.leaves
           let groundBlock = blockIds.dirt
-
-          //Center
           for (let j = ground + 1; j <= top; j++) {
             world.setBlock(i, j, k, tree)
           }
           world.setBlock(i, top + 1, k, leaf)
           world.setBlock(i, ground, k, groundBlock)
-
-          //Bottom leaves
           for (let x = -2; x <= 2; x++) {
             for (let z = -2; z <= 2; z++) {
               if (x || z) {
@@ -7733,8 +7646,6 @@ class Generator {
               }
             }
           }
-
-          //2nd layer leaves
           for (let x = -2; x <= 2; x++) {
             for (let z = -2; z <= 2; z++) {
               if (x || z) {
@@ -7750,8 +7661,6 @@ class Generator {
               }
             }
           }
-
-          //3rd layer leaves
           for (let x = -1; x <= 1; x++) {
             for (let z = -1; z <= 1; z++) {
               if (x || z) {
@@ -7767,8 +7676,6 @@ class Generator {
               }
             }
           }
-
-          //Top leaves
           world.setBlock(wx + 1, top + 1, wz, leaf)
           world.setBlock(wx, top + 1, wz - 1, leaf)
           world.setBlock(wx, top + 1, wz + 1, leaf)
@@ -7777,21 +7684,17 @@ class Generator {
           let i = (rnd >> 8) + this.x;      let wx = i
 					let j = (rnd >> 4 & 15) + this.y; let wy = j
 					let k = (rnd & 15) + this.z;      let wz = k
-          var ground = j//this.chunk.tops[i * 16 + k]
+          var ground = j
           var top = ground + floor(4.5 + (Math.random()*2.5) )
           var rand = floor(Math.random()*4096)
           let tree = blockIds.birchLog
           let leaf = blockIds.leaves
           let groundBlock = blockIds.dirt
-
-          //Center
           for (let j = ground + 1; j <= top; j++) {
             world.setBlock(i, j, k, tree)
           }
           world.setBlock(i, top + 1, k, leaf)
           world.setBlock(i, ground, k, groundBlock)
-
-          //Bottom leaves
           for (let x = -2; x <= 2; x++) {
             for (let z = -2; z <= 2; z++) {
               if (x || z) {
@@ -7807,8 +7710,6 @@ class Generator {
               }
             }
           }
-
-          //2nd layer leaves
           for (let x = -2; x <= 2; x++) {
             for (let z = -2; z <= 2; z++) {
               if (x || z) {
@@ -7824,8 +7725,6 @@ class Generator {
               }
             }
           }
-
-          //3rd layer leaves
           for (let x = -1; x <= 1; x++) {
             for (let z = -1; z <= 1; z++) {
               if (x || z) {
@@ -7841,8 +7740,6 @@ class Generator {
               }
             }
           }
-
-          //Top leaves
           world.setBlock(wx + 1, top + 1, wz, leaf)
           world.setBlock(wx, top + 1, wz - 1, leaf)
           world.setBlock(wx, top + 1, wz + 1, leaf)
@@ -7865,7 +7762,6 @@ class Generator {
 	let fullSection = new Section(0, 0, 0, 16)
 	fullSection.blocks.fill(blockIds.bedrock)
 	emptySection.light.fill(15)
-
 	class Chunk {
 		constructor(x, z, type) {
 			this.x = x
@@ -7874,17 +7770,16 @@ class Generator {
 			this.minY = 255
 			this.sections = []
 			this.cleanSections = []
-			this.tops = new Uint8Array(16 * 16) // Store the heighest block at every (x,z) coordinate
-      this.ceils = new Uint8Array(16 * 16) //for nether
+			this.tops = new Uint8Array(16 * 16)
+      this.ceils = new Uint8Array(16 * 16)
 			this.optimized = false
-			this.generated = false; // Terrain
-			this.populated = superflat === true // Trees and ores
+			this.generated = false;
+			this.populated = superflat === true
 			this.lit = false
 			this.lazy = false
 			this.edited = false
 			this.loaded = false
       this.type = type || world.type
-			// vao for this chunk
 			this.vao = glExtensions.vertex_array_object.createVertexArrayOES()
 			this.caves = !caves
 		}
@@ -7908,8 +7803,6 @@ class Generator {
 		fillLight() {
 			let max = this.sections.length * 16 - 1
 			let blockSpread = []
-
-			// Set virtical columns of light to level 15
 			for (let x = 0; x < 16; x++) {
 				for (let z = 0; z < 16; z++) {
 					let stop = false
@@ -7929,8 +7822,6 @@ class Generator {
 					}
 				}
 			}
-
-			// Spread the light to places where the virtical columns stopped earlier, plus chunk borders
 			let spread = []
 			for (let x = 0; x < 16; x++) {
 				for (let z = 0; z < 16; z++) {
@@ -7963,7 +7854,6 @@ class Generator {
 					this.spreadLight(blocks, i - 1, false, 1)
 				}
 			}
-
 			this.lit = true
 		}
 		setLight(x, y, z, level, blockLight) {
@@ -8119,7 +8009,6 @@ class Generator {
                      blockIds.allium, blockIds.oxeyeDaisy,
                      blockIds.lilac, blockIds.roseBush, blockIds.peony,
                      blockIds.TallGrass]
-      
 			randomSeed(hash(this.x, this.z) * 210000000)
 			let wx = 0, wz = 0, ground = 0, top = 0, rand = 0, place = false, topsi = 0, tall = 0
       let trueX = this.x, trueY = this.y, trueZ = this.z
@@ -8127,7 +8016,6 @@ class Generator {
       let biomeSmooth = generator.biomeSmooth;
 			let biome = 0
       let type = world.type
-
 			for (let i = 0; i < 16; i++) {
 				for (let k = 0; k < 16; k++) {
 					wx = this.x + i
@@ -8137,7 +8025,6 @@ class Generator {
           biome = superflat ? 0 : noiseProfile.noise((trueX + i) * biomeSmooth, (trueZ + k) * biomeSmooth)
           var b
           if(superflat){b = "field"}else b = getBiome(biome)
-
           let nb = getNetherBiome(biome)
 					if (trees && random() < 0.07 && type === "" && b === "field" && world.getBlock(i, ground, k) === blockIds.grass) {
             top = ground + floor(4.5 + random(2.5))
@@ -8145,15 +8032,11 @@ class Generator {
 						let tree = random() < 0.6 ? blockIds.oakLog : ++top && blockIds.birchLog
             let leaf = blockIds.leaves
             let groundBlock = blockIds.dirt
-
-						//Center
 						for (let j = ground + 1; j <= top; j++) {
 							this.setBlock(i, j, k, tree)
 						}
 						this.setBlock(i, top + 1, k, leaf)
 						this.setBlock(i, ground, k, groundBlock)
-
-						//Bottom leaves
 						for (let x = -2; x <= 2; x++) {
 							for (let z = -2; z <= 2; z++) {
 								if (x || z) {
@@ -8169,8 +8052,6 @@ class Generator {
 								}
 							}
 						}
-
-						//2nd layer leaves
 						for (let x = -2; x <= 2; x++) {
 							for (let z = -2; z <= 2; z++) {
 								if (x || z) {
@@ -8186,8 +8067,6 @@ class Generator {
 								}
 							}
 						}
-
-						//3rd layer leaves
 						for (let x = -1; x <= 1; x++) {
 							for (let z = -1; z <= 1; z++) {
 								if (x || z) {
@@ -8203,21 +8082,15 @@ class Generator {
 								}
 							}
 						}
-
-						//Top leaves
 						world.spawnBlock(wx + 1, top + 1, wz, leaf)
 						world.spawnBlock(wx, top + 1, wz - 1, leaf)
 						world.spawnBlock(wx, top + 1, wz + 1, leaf)
 						world.spawnBlock(wx - 1, top + 1, wz, leaf)
 					}
-          
-          // Cactus
           if (random() < 0.01 && this.getBlock(i, ground, k) && b === "desert" && ground > 60 && this.type !== "nether") {
             top = ground + Math.floor(2.5 + random(1.5));
             rand = Math.floor(random(4096));
             let tree = blockIds.cactus | CACTUS;
-
-            //Center
             for (let j = ground + 1; j <= top; j++) {
               this.setBlock(i, j, k, tree);
             }
@@ -8228,22 +8101,16 @@ class Generator {
             this.setBlock(i,ground+1,k, tree);
             this.setBlock(i, ground, k, blockIds.sand);
           }
-          
-          // Jungle trees
           if(trees && random() < 0.01 && type === "" && (b === "jungle" || b === "giantJungle") && world.getBlock(i, ground, k)){
-            tall = floor(5 + random(5)) //5 to 10
+            tall = floor(5 + random(5)
             top = ground + tall
             let tree = blockIds.jungleLog
             let leaf = blockIds.leaves
-            
-            //Center
 						for (let j = ground + 1; j <= top; j++) {
 							this.setBlock(i, j, k, tree)
 						}
 						this.setBlock(i, top + 1, k, leaf)
 						this.setBlock(i, ground, k, blockIds.dirt)
-            
-            //Bottom leaves
 						for (let x = -2; x <= 2; x++) {
 							for (let z = -2; z <= 2; z++) {
 								if (x || z) {
@@ -8259,8 +8126,6 @@ class Generator {
 								}
 							}
 						}
-
-						//2nd layer leaves
 						for (let x = -2; x <= 2; x++) {
 							for (let z = -2; z <= 2; z++) {
 								if (x || z) {
@@ -8276,8 +8141,6 @@ class Generator {
 								}
 							}
 						}
-
-						//3rd layer leaves
 						for (let x = -1; x <= 1; x++) {
 							for (let z = -1; z <= 1; z++) {
 								if (x || z) {
@@ -8293,21 +8156,16 @@ class Generator {
 								}
 							}
 						}
-
-						//Top leaves
 						world.spawnBlock(wx + 1, top + 1, wz, leaf)
 						world.spawnBlock(wx, top + 1, wz - 1, leaf)
 						world.spawnBlock(wx, top + 1, wz + 1, leaf)
 						world.spawnBlock(wx - 1, top + 1, wz, leaf)
-          }//end jungle trees
-          //Giant jungle trees
+          }
           if(trees && random() < 0.01 && type === "" && b === "giantJungle" && world.getBlock(i, ground, k)){
-            tall = floor(10 + random(20)) //10 to 30
+            tall = floor(10 + random(20))
             top = ground + tall
             let tree = blockIds.jungleLog
             let leaf = blockIds.leaves
-                  
-            //Center
             for (let j = ground + 1; j < top; j++) {
               this.setBlock(i, j, k, tree)
               world.spawnBlock(wx + 1, j, wz, tree)
@@ -8318,9 +8176,6 @@ class Generator {
             world.setBlock(wx + 1, ground, wz, blockIds.dirt)
             world.setBlock(wx, ground, wz + 1, blockIds.dirt)
             world.setBlock(wx+1, ground, wz+1, blockIds.dirt)
-
-            //Messy part
-            //leaves
             let w2 = 5 * 5
             let d2 = 5 * 5
             let h2 = 5 * 5
@@ -8334,8 +8189,6 @@ class Generator {
                 }
               }
             }
-
-            //the diagonal branches
             w2 = 3 * 3
             d2 = 3 * 3
             h2 = 3 * 3
@@ -8358,7 +8211,6 @@ class Generator {
               }
               let x = mx === 1?2:mx, z = mz === 1?2:mz
               var rnd = Math.floor(random(4))+2
-              //branch
               for(var by=0; by<rnd; by++){
                 world.setBlock(wx+x, y+by, wz+z, tree)
                 x += mx
@@ -8367,8 +8219,6 @@ class Generator {
               x -= mx
               z -= mz
               by -= 1
-
-              //leaves
               for(var lx=-3; lx<3; lx++){
                 for(var ly=1; ly<3; ly++){
                   for(var lz=-3; lz<3; lz++){
@@ -8379,9 +8229,8 @@ class Generator {
                   }
                 }
               }
-              // m = move; l = leaf
             }
-          }//end giant jungle trees; jungle bushes
+          }
           if(trees && random() < 0.007 && type === "" && (b === "jungle" || b === "giantJungle") && world.getBlock(i, ground, k)){
             let w2 = 3 * 3
             let d2 = 3 * 3
@@ -8398,7 +8247,6 @@ class Generator {
             }
             this.setBlock(i, ground+1, k, blockIds.jungleLog)
           }
-          
           if (random() < 0.005 && type === "nether" && ground > 79 && nb !== 0){
             tall = floor(4.5 + random(2.5))
             if(floor(random(12)) === 1) tall *= 2
@@ -8416,18 +8264,12 @@ class Generator {
                 leaf = blockIds.netherWartBlock
               }
             }
-            
-            //Center
 						for (let j = ground + 1; j <= top; j++) {
 							this.setBlock(i, j, k, tree)
 						}
 						this.setBlock(i, top + 1, k, leaf)
 						this.setBlock(i, ground, k, groundBlock)
-            
-            //Shroomlight
             for(var l=0; l<3; l++) world.spawnBlock(wx + random(-2, 2), top + random(-1,1), wz + random(-2,2), blockIds.shroomlight)
-            
-            //Top leaves
             for(var x=-1; x<2; x++){
               for(var z=-1; z<2; z++){
                 place = (x&1) && (z&1) ? rand & 1 : true
@@ -8437,8 +8279,6 @@ class Generator {
                 }
               }
             }
-            
-            //layer 2 leaves
             for(var x=-2; x<3; x++){
               for(var z=-2; z<3; z++){
                 place = (x===2 || x===-2) && (z===2 || z==-2) ? rand & 1 : true
@@ -8448,9 +8288,7 @@ class Generator {
                 }
               }
             }
-            
             rand = floor(random(4096))
-            //layer 1 leaves
             for(var x=-2; x<3; x++){
               for(var z=-2; z<3; z++){
                 place = x===2 || x===-2 || z===2 || z==-2 ? !(rand & 1) : false
@@ -8460,9 +8298,7 @@ class Generator {
                 }
               }
             }
-            
             rand = floor(random(40964096))
-            //drooping leaves
             for(var x=-2; x<3; x++){
               for(var z=-2; z<3; z++){
                 place = x===2 || x===-2 || z===2 || z==-2
@@ -8470,7 +8306,7 @@ class Generator {
                 if(place){
                   var h = rand & 4 && rand & 8 ? rand & 3 : 0
                   if(h){
-                    world.spawnBlock(wx + x, top - 1, wz + z, leaf) //to make sure removed ones are put back
+                    world.spawnBlock(wx + x, top - 1, wz + z, leaf)
                     for(var y=0; y<h; y++){
                       world.spawnBlock(wx + x, top - 2 - y, wz + z, leaf)
                     }
@@ -8478,10 +8314,8 @@ class Generator {
                 }
               }
             }
-            
             if(nb === 2){
               rand = floor(random(40964096))
-              //vines
               for(var x=-2; x<3; x++){
                 for(var z=-2; z<3; z++){
                   place = x===2 || x===-2 || z===2 || z==-2
@@ -8489,7 +8323,7 @@ class Generator {
                   if(place){
                     var h = (rand & 4 && rand & 8) ? (rand & (tall-2)) - 1 : 0
                     if(h){
-                      world.spawnBlock(wx + x, top - 1, wz + z, leaf) //to make sure removed ones are put back
+                      world.spawnBlock(wx + x, top - 1, wz + z, leaf)
                       for(var y=0; y<h; y++){
                         world.spawnBlock(wx + x, top - 2 - y, wz + z, blockIds.weepingVinesPlant)
                       }
@@ -8499,13 +8333,10 @@ class Generator {
                 }
               }
             }
-            
           }
-          //cows
           if (random() < 0.0 && this.getBlock(i, ground, k) === blockIds.grass) {
           world.entities.push(new Cow(wx, ground+1, wz))
           }
-          //flowers and vines
           if (random() < 0.05 && this.getBlock(i, ground, k) === blockIds.grass) {
             var flower = flowers[Math.round(random(flowers.length-1))]
             world.spawnBlock(wx, ground+1, wz, flower);
@@ -8518,8 +8349,6 @@ class Generator {
               world.spawnBlock(wx, ground+1, wz, blockIds.warpedRoots);
             }
           }
-          
-          //lava rivers
           if(random() < 0.005 && world.getBlock(i,ground,k) && this.type==="nether"){
             let it = 0
             let x=wx, y=ground, z=wz
@@ -8584,7 +8413,6 @@ class Generator {
               if(world.getBlock(x,y-1,z) === blockIds.Lava) break
             }
           }
-
           if(this.type === "nether"){
             let l
             if(random() < 0.005){
@@ -8598,7 +8426,6 @@ class Generator {
                 world.spawnBlock(x,y,z, blockIds.glowstone)
               }
             }
-            
             for(l=0; l<16; l++){
               let x = random(0, 16)
               let y = random(10, 177)
@@ -8607,7 +8434,6 @@ class Generator {
                 world.setBlock(wx+x,y,wz+z, blockIds.netherQuartzOre)
               }
             }
-            
             for(l=0; l<10; l++){
               let x = random(0, 16)
               let y = random(10, 177)
@@ -8617,15 +8443,7 @@ class Generator {
               }
             }
           }else{
-            // Blocks of each per chunk in Minecraft
-            // Coal: 185.5
-            // Iron: 111.5
-            // Gold: 10.4
-            // Redstone: 29.1
-            // Diamond: 3.7
-            // Lapis: 4.1
             ground -= 4
-
             if (random() < 3.7 / 256) {
               let y = random() * 16 | 0 + 1
               y = y < ground ? y : ground
@@ -8633,7 +8451,6 @@ class Generator {
                 this.setBlock(i, y < ground ? y : ground, k, blockIds.diamondOre)
               }
             }
-
             if (random() < 111.5 / 256) {
               let y = random() * 64 | 0 + 1
               y = y < ground ? y : ground
@@ -8641,7 +8458,6 @@ class Generator {
                 this.setBlock(i, y < ground ? y : ground, k, blockIds.ironOre)
               }
             }
-
             if (random() < 185.5 / 256) {
               let y = random() * ground | 0 + 1
               y = y < ground ? y : ground
@@ -8649,7 +8465,6 @@ class Generator {
                 this.setBlock(i, y < ground ? y : ground, k, blockIds.coalOre)
               }
             }
-
             if (random() < 10.4 / 256) {
               let y = random() * 32 | 0 + 1
               y = y < ground ? y : ground
@@ -8657,7 +8472,6 @@ class Generator {
                 this.setBlock(i, y < ground ? y : ground, k, blockIds.goldOre)
               }
             }
-
             if (random() < 29.1 / 256) {
               let y = random() * 16 | 0 + 1
               y = y < ground ? y : ground
@@ -8674,7 +8488,6 @@ class Generator {
               }
             }
 				  }
-          
         }
 			}
 
@@ -8693,7 +8506,6 @@ class Generator {
 				this.buffer = gl.createBuffer()
 			}
 			let data = barray.slice(0, index)
-
 			let maxY = 0
 			let minY = 255
 			let y = 0
@@ -8735,13 +8547,12 @@ class Generator {
 			let chunkX = this.x >> 4
 			let chunkZ = this.z >> 4
 			let load = null
-			
 			for (let i = 0; i < world.loadFrom.length; i++) {
 				load = world.loadFrom[i]
 				if (load.x === chunkX && load.z === chunkZ) {
 					let y = load.y * 16
 					for (let j in load.blocks) {
-            if(blockData[load.blocks[j]]){ // if a block doesn't exsist, they won't be generated
+            if(blockData[load.blocks[j]]){
 						  world.setBlock((j >> 8 & 15) + this.x, (j >> 4 & 15) + y, (j & 15) + this.z, load.blocks[j])
             }
 					}
@@ -8751,7 +8562,6 @@ class Generator {
 			this.loaded = true
 		}
 	}
-
 	class Contacts {
 		constructor() {
 			this.array = []
@@ -8772,7 +8582,6 @@ class Generator {
 			this.size = 0
 		}
 	}
-
 	class Entity {
 		constructor(x, y, z, pitch, yaw, velx, vely, velz, width, height, depth, vertices, texture, faces, despawns) {
 			this.x = x
@@ -8822,7 +8631,6 @@ class Generator {
 		updateVelocity(now) {
 			let dt = (now - this.lastUpdate) / 33
 			dt = dt > 2 ? 2 : dt
-
       this.standingOn = world.getBlock(this.x, round(this.y-this.height-1), this.z)
       if (this.liquid){
         this.gravityStength = -0.01
@@ -8838,10 +8646,8 @@ class Generator {
       if(blockData[this.standingOn].slide) drag = blockData[this.standingOn].slide
 			this.velz += (this.velz * 0.9 - this.velz) * dt
 			this.velx += (this.velx * 0.9 - this.velx) * dt
-			// this.vely += (this.vely * 0.9 - this.vely) * dt
 		}
 		collided(x, y, z, vx, vy, vz, block) {
-    
 			let verts = blockData[block].shape.verts
 			let px = roundBits(this.x - this.width / 2 - x)
 			let py = roundBits(this.y - this.height / 2 - y)
@@ -8850,8 +8656,6 @@ class Generator {
 			let pyy = roundBits(this.y + this.height / 2 - y)
 			let pzz = roundBits(this.z + this.depth / 2 - z)
 			let minX, minY, minZ, maxX, maxY, maxZ, min, max
-
-			//Top and bottom faces
 			let faces = verts[0]
 			if (vy <= 0) {
 				faces = verts[1]
@@ -8878,8 +8682,6 @@ class Generator {
 				}
 				return false
 			}
-
-			//West and East faces
 			if (vx < 0) {
 				faces = verts[4]
 			} else if (vx > 0) {
@@ -8908,8 +8710,6 @@ class Generator {
         console.log("col")
         }
 			}
-
-			//South and North faces
 			if (vz < 0) {
 				faces = verts[2]
 			} else if (vz > 0) {
@@ -8943,7 +8743,6 @@ class Generator {
 			let pminZ = floor(this.z - this.depth / 2)
 			let pmaxZ = ceil(this.z + this.depth / 2)
 			let block = null
-
       this.liquid = false
 			for (let x = pminX; x <= pmaxX; x++) {
 				for (let y = pminY; y <= pmaxY; y++) {
@@ -8960,15 +8759,12 @@ class Generator {
 			}
 			let dt = (now - this.lastUpdate) / 33
 			dt = dt > 2 ? 2 : dt
-
 			this.previousX = this.x
 			this.previousY = this.y
 			this.previousZ = this.z
-
 			this.canStepX = false
 			this.canStepY = false
 			this.onGround = false
-			//Check collisions in the Y direction
 			this.y += this.vely * dt
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -8978,13 +8774,10 @@ class Generator {
 					break
 				}
 			}
-
 			if (this.y === this.previousY) {
 				this.canStepX = true
 				this.canStepZ = true
 			}
-
-			//Check collisions in the X direction
 			this.x += this.velx * dt
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -8997,8 +8790,6 @@ class Generator {
 					break
 				}
 			}
-
-			//Check collisions in the Z direction
 			this.z += this.velz * dt
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9011,7 +8802,6 @@ class Generator {
 					break
 				}
 			}
-
 			this.lastUpdate = now
 			this.contacts.clear()
 		}
@@ -9039,7 +8829,6 @@ class Generator {
 			modelViewProjectionMatrix.mult(projectionMatrix)
 			modelViewProjectionMatrix.mult(viewMatrix)
 			modelViewProjectionMatrix.mult(modelMatrix.elements)
-			// row major to column major
 			modelViewProjectionMatrix.transpose()
 			const x = round(this.x)
 			const y = round(this.y)
@@ -9056,7 +8845,6 @@ class Generator {
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
 		}
 	}
-
 	class Item extends Entity {
 		constructor(x, y, z, velx, vely, velz, blockID, autoSetVel) {
 			const block = blockData[blockID]
@@ -9092,7 +8880,6 @@ class Generator {
 			super(x, y, z, 0, 0, velx, vely, velz, 0.25, 0.25, 0.25, new Float32Array(shapeVerts.flat(Infinity)), new Float32Array(texture), size, 1500000)
       this.block = blockID
       this.type = "Item"
-      
       if(autoSetVel){
         this.velx = (Math.random()-0.5) * 0.2
         this.vely = Math.random() * 0.2
@@ -9105,10 +8892,8 @@ class Generator {
       if(this.yaw > Math.PI*2){
         this.yaw -= Math.PI*2
       }
-      
 			this.updateVelocity(now)
 		  this.move(now)
-      
       let xDist = this.x - p.x
       let yDist = this.y - p.y
       let zDist = this.z - p.z
@@ -9117,17 +8902,14 @@ class Generator {
         var dist = dist2(this.x, this.z, p.x, p.z)
         pickup = (1 >= dist) && (dist >= -1)
       }
-      
 			if (now - this.spawn > this.despawns) {
 				this.canDespawn = true
-        
 			}
       if(pickup && newInvItem(this.block)){
         this.canDespawn = true
         updateHUD = true
         playSound("entity.item.pickup")
       }
-      
       this.offsetY = -0.1 * cos((performance.now() - this.spawn) * 0.0015) + 0.15
     }
 	}
@@ -9169,7 +8951,6 @@ class Generator {
       this.type = "BlockEntity"
       this.solidOnGround = solidOnGround
       this.cacheBlocks = cacheBlocks
-      
       if(cacheBlocks){
         this.cached = {}
         this.cached[blockID] = this.vao
@@ -9210,29 +8991,23 @@ class Generator {
 				}
 				texNum++
 			}
-      
       var vertices = new Float32Array(shapeVerts.flat(Infinity)),
           faces = size
       texture = new Float32Array(texture),
-      
       this.vao = glExtensions.vertex_array_object.createVertexArrayOES()
 			const verticesBuffer = gl.createBuffer()
 			const textureBuffer = gl.createBuffer()
 			glExtensions.vertex_array_object.bindVertexArrayOES(this.vao)
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aVertexEntity, 3, gl.FLOAT, false, 0, 0)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, texture, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aTextureEntity, 2, gl.FLOAT, false, 0, 0)
-			
 			gl.enableVertexAttribArray(glCache.aVertexEntity)
 			gl.enableVertexAttribArray(glCache.aTextureEntity)
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
-      
       if(this.cacheBlocks){
         this.cached[blockID] = this.vao
       }
@@ -9244,7 +9019,6 @@ class Generator {
 			if (now - this.spawn > this.despawns) {
 				this.canDespawn = true
 			}
-      
       if(this.onGround && this.solidOnGround){
         var x = round(this.x), y = round(this.y), z = round(this.z)
         var b = world.getBlock(x, y-1, z)
@@ -9252,7 +9026,6 @@ class Generator {
           world.setBlock(x,y,z, this.block)
           blockSound(this.block, "land", x,y,z)
         }else{
-          // non cube block breaks falling blocks
           world.addEntity(new Item(x,y,z, 0,0,0, this.block))
         }
         this.canDespawn = true
@@ -9289,7 +9062,6 @@ class Generator {
 				}
 			}
       super(x, y, z, 0, 0, 0, 0, 0, 1.1, 1.1, 1.1, new Float32Array(shapeVerts.flat(Infinity)), new Float32Array(texture), size, Infinity)
-      
       this.cached = {}
     }
     cacheTexture(tex){
@@ -9319,29 +9091,23 @@ class Generator {
 					index += 8
 				}
 			}
-      
       var vertices = new Float32Array(shapeVerts.flat(Infinity)),
           faces = size
       texture = new Float32Array(texture)
-      
       this.vao = glExtensions.vertex_array_object.createVertexArrayOES()
 			const verticesBuffer = gl.createBuffer()
 			const textureBuffer = gl.createBuffer()
 			glExtensions.vertex_array_object.bindVertexArrayOES(this.vao)
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aVertexEntity, 3, gl.FLOAT, false, 0, 0)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, texture, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aTextureEntity, 2, gl.FLOAT, false, 0, 0)
-			
 			gl.enableVertexAttribArray(glCache.aVertexEntity)
 			gl.enableVertexAttribArray(glCache.aTextureEntity)
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
-      
       this.cached[tex] = this.vao
     }
     changeTexture(tex){
@@ -9362,7 +9128,6 @@ class Generator {
 			modelViewProjectionMatrix.mult(projectionMatrix)
 			modelViewProjectionMatrix.mult(viewMatrix)
 			modelViewProjectionMatrix.mult(modelMatrix.elements)
-			// row major to column major
 			modelViewProjectionMatrix.transpose()
 			const x = round(this.x)
 			const y = round(this.y)
@@ -9378,8 +9143,6 @@ class Generator {
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
     }
   }
-  
-  //character is seen in 3rd person mode
   class Character extends Entity{
     constructor(blockID){
       const block = blockData[blockID & 255]
@@ -9448,32 +9211,26 @@ class Generator {
 				}
 				texNum++
 			}
-      
       var vertices = new Float32Array(shapeVerts.flat(Infinity)),
           faces = size
       texture = new Float32Array(texture),
-      
       this.vao = glExtensions.vertex_array_object.createVertexArrayOES()
 			const verticesBuffer = gl.createBuffer()
 			const textureBuffer = gl.createBuffer()
 			glExtensions.vertex_array_object.bindVertexArrayOES(this.vao)
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aVertexEntity, 3, gl.FLOAT, false, 0, 0)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, texture, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aTextureEntity, 2, gl.FLOAT, false, 0, 0)
-			
 			gl.enableVertexAttribArray(glCache.aVertexEntity)
 			gl.enableVertexAttribArray(glCache.aTextureEntity)
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
     }
   }
   window.Player = Character
-  
   class PlayerHand extends Entity{
     constructor(blockID){
 			const tex = "orangeConcrete"
@@ -9506,7 +9263,6 @@ class Generator {
 				texNum++
 			}
 			super(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, new Float32Array(shapeVerts.flat(Infinity)), new Float32Array(texture), size, Infinity)
-      
       this.cached = {}
       this.cached.hand = this.vao
     }
@@ -9545,25 +9301,20 @@ class Generator {
 				}
 				texNum++
 			}
-      
       var vertices = new Float32Array(shapeVerts.flat(Infinity)),
           faces = size
       texture = new Float32Array(texture),
-      
       this.vao = glExtensions.vertex_array_object.createVertexArrayOES()
 			const verticesBuffer = gl.createBuffer()
 			const textureBuffer = gl.createBuffer()
 			glExtensions.vertex_array_object.bindVertexArrayOES(this.vao)
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aVertexEntity, 3, gl.FLOAT, false, 0, 0)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, texture, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aTextureEntity, 2, gl.FLOAT, false, 0, 0)
-			
 			gl.enableVertexAttribArray(glCache.aVertexEntity)
 			gl.enableVertexAttribArray(glCache.aTextureEntity)
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
@@ -9592,7 +9343,6 @@ class Generator {
 			modelViewProjectionMatrix.mult(projectionMatrix)
 			modelViewProjectionMatrix.mult(viewMatrix)
 			modelViewProjectionMatrix.mult(modelMatrix.elements)
-			// row major to column major
 			modelViewProjectionMatrix.transpose()
 			const x = p2.x
 			const y = p2.y
@@ -9612,7 +9362,6 @@ class Generator {
   function dist(x1, y1, x2, y2){
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 };
-  //world.entities.push(new Cow(p2.x, p2.y, p2.z))
   class Cow extends Entity{
     constructor(x, y, z){
 			const tex = ["blackConcrete","blackConcrete","blackConcrete","blackConcrete","blackConcrete","blackConcrete"]
@@ -9644,23 +9393,18 @@ class Generator {
 				}
 				texNum++
 			}
-      
       super(x, y, z, 0, 0, 0, 0, 0, 1, 1, 1, new Float32Array(shapeVerts.flat(Infinity)), new Float32Array(texture), size, 1500000)
-      
       this.moveTime = 0
       this.dirx = 0
       this.dirz = 0
     }
     AI(now){
-    
     let dt = (now - this.lastUpdate) / 33
 			dt = dt > 2 ? 2 : dt
       var d = dist(this.x, this.z, p.x, p.z);
-            var diff = Math.min(0.1/2, d);//the number value is the speed
-
+            var diff = Math.min(0.1/2, d);
             if(diff > 0){
                 this.yaw = -Math.atan2(p.z - this.z, p.x - this.x);
-                
                 this.x += Math.cos(-this.yaw) * diff;
                 this.z += Math.sin(-this.yaw) * diff;
             }
@@ -9690,15 +9434,12 @@ class Generator {
 			}
 			let dat = (now - this.lastUpdate) / 33
 			dat = dat > 2 ? 2 : dat
-
 			this.previousX = this.x
 			this.previousY = this.y
 			this.previousZ = this.z
-
 			this.canStepX = false
 			this.canStepY = false
 			this.onGround = false
-			//Check collisions in the Y direction
 			this.y += this.vely * dat
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9708,13 +9449,10 @@ class Generator {
 					break
 				}
 			}
-
 			if (this.y === this.previousY) {
 				this.canStepX = true
 				this.canStepZ = true
 			}
-
-			//Check collisions in the X direction
 			this.x += this.velx * dat
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9728,8 +9466,6 @@ class Generator {
 					break
 				}
 			}
-
-			//Check collisions in the Z direction
 			this.z += this.velz * dat
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9743,10 +9479,8 @@ class Generator {
 					break
 				}
 			}
-
 			this.lastUpdate = now
 			this.contacts.clear()
-
     }
     update() {
 			let now = performance.now()
@@ -9759,7 +9493,6 @@ class Generator {
 		}
   }
   win.Cow = Cow
-  
   class Particle {
 		constructor(x, y, z, pitch, yaw, velx, vely, velz, width, height, depth, vertices, texture, faces, despawns) {
 			this.x = x
@@ -9791,15 +9524,12 @@ class Generator {
 			const textureBuffer = gl.createBuffer()
 			glExtensions.vertex_array_object.bindVertexArrayOES(this.vao)
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aVertexParticle, 3, gl.FLOAT, false, 0, 0)
-
 			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer)
 			gl.bufferData(gl.ARRAY_BUFFER, texture, gl.STATIC_DRAW)
 			gl.vertexAttribPointer(glCache.aTextureParticle, 2, gl.FLOAT, false, 0, 0)
-			
 			gl.enableVertexAttribArray(glCache.aVertexParticle)
 			gl.enableVertexAttribArray(glCache.aTextureParticle)
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
@@ -9811,11 +9541,9 @@ class Generator {
 			if (this.vely < -1.5) {
 				this.vely = -1.5
 			}
-
       let drag = this.onGround ? 0 : 0.9
 			this.velz += (this.velz * drag - this.velz) * dt
 			this.velx += (this.velx * drag - this.velx) * dt
-			// this.vely += (this.vely * 0.9 - this.vely) * dt
 		}
 		collided(x, y, z, vx, vy, vz, block) {
 			let verts = blockData[block].shape.verts
@@ -9826,8 +9554,6 @@ class Generator {
 			let pyy = roundBits(this.y + this.height / 2 - y)
 			let pzz = roundBits(this.z + this.depth / 2 - z)
 			let minX, minY, minZ, maxX, maxY, maxZ, min, max
-
-			//Top and bottom faces
 			let faces = verts[0]
 			if (vy <= 0) {
 				faces = verts[1]
@@ -9853,8 +9579,6 @@ class Generator {
 				}
 				return false
 			}
-
-			//West and East faces
 			if (vx < 0) {
 				faces = verts[4]
 			} else if (vx > 0) {
@@ -9874,13 +9598,10 @@ class Generator {
 							this.canStepX = false
 						}
 						col = true
-            
 					}
 				}
 				return col
 			}
-
-			//South and North faces
 			if (vz < 0) {
 				faces = verts[2]
 			} else if (vz > 0) {
@@ -9900,7 +9621,6 @@ class Generator {
 							this.canStepZ = false
 						}
 						col = true
-            
 					}
 				}
 				return col
@@ -9914,7 +9634,6 @@ class Generator {
 			let pminZ = floor(this.z - this.depth / 2)
 			let pmaxZ = ceil(this.z + this.depth / 2)
 			let block = null
-
 			for (let x = pminX; x <= pmaxX; x++) {
 				for (let y = pminY; y <= pmaxY; y++) {
 					for (let z = pminZ; z <= pmaxZ; z++) {
@@ -9927,15 +9646,12 @@ class Generator {
 			}
 			let dt = (now - this.lastUpdate) / 33
 			dt = dt > 2 ? 2 : dt
-
 			this.previousX = this.x
 			this.previousY = this.y
 			this.previousZ = this.z
-
 			this.canStepX = false
 			this.canStepY = false
 			this.onGround = false
-			//Check collisions in the Y direction
 			this.y += this.vely * dt
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9945,13 +9661,10 @@ class Generator {
 					break
 				}
 			}
-
 			if (this.y === this.previousY) {
 				this.canStepX = true
 				this.canStepZ = true
 			}
-
-			//Check collisions in the X direction
 			this.x += this.velx * dt
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9965,8 +9678,6 @@ class Generator {
           alert("aaa")
 				}
 			}
-
-			//Check collisions in the Z direction
 			this.z += this.velz * dt
 			for (let i = 0; i < this.contacts.size; i++) {
 				block = this.contacts.array[i]
@@ -9980,7 +9691,6 @@ class Generator {
           alert("aaa")
 				}
 			}
-
 			this.lastUpdate = now
 			this.contacts.clear()
 		}
@@ -9991,7 +9701,6 @@ class Generator {
 			if (now - this.spawn > this.despawns) {
 				this.canDespawn = true
 			}
-      
       this.yaw = atan2(p.z - this.z,p.x-this.x)
       this.pitch = atan(p.y - this.y)
 		}
@@ -10011,7 +9720,6 @@ class Generator {
 			modelViewProjectionMatrix.mult(projectionMatrix)
 			modelViewProjectionMatrix.mult(viewMatrix)
 			modelViewProjectionMatrix.mult(modelMatrix.elements)
-			// row major to column major
 			modelViewProjectionMatrix.transpose()
 			const x = round(this.x)
 			const y = round(this.y)
@@ -10028,11 +9736,10 @@ class Generator {
 			glExtensions.vertex_array_object.bindVertexArrayOES(null)
 		}
 	}
-  
   class BlockParticle extends Particle{
     constructor(tex, x,y,z){
       let s=4/16
-      let bs = 3/16 //particle size
+      let bs = 3/16
       let p=1/(16+4)
       let offX = random(p), offY = random(p)
       let velx = (Math.random()-0.5) * 0.3,
@@ -10068,7 +9775,6 @@ class Generator {
     }
   }
   win.BlockParticle = BlockParticle
-
 	let analytics = {
 		totalTickTime: 0,
 		worstFrameTime: 0,
@@ -10097,7 +9803,7 @@ class Generator {
 		}
 		return Math.sqrt(dx * dx + dz * dz)
 	}
-	function sortChunks(c1, c2) { //Sort the list of chunks based on distance from the player
+	function sortChunks(c1, c2) {
 		let dx1 = p.x - c1.x - 8
 		let dy1 = p.z - c1.z - 8
 		let dx2 = p.x - c2.x - 8
@@ -10105,7 +9811,6 @@ class Generator {
 		return dx1 * dx1 + dy1 * dy1 - (dx2 * dx2 + dy2 * dy2)
 	}
 	function fillReqs(x, z) {
-		// Chunks must all be loaded first.
 		var done = true
 		for (let i = x - 3; i <= x + 3; i++) {
 			for (let j = z - 3; j <= z + 3; j++) {
@@ -10147,7 +9852,6 @@ class Generator {
 			console.log(message, ellapsed.toFixed(2), "milliseconds")
 		}
 	}
-  
   function login(){
     return new Promise((resolve, reject) => {
       var w = open("https://www.thingmaker.repl.co/website/login.html", "_blank","width=100")
@@ -10166,7 +9870,6 @@ class Generator {
       window.addEventListener("message", onmsg);
     })
   }
-
   var achexUsername = "player"+Date.now()
   win.username = ""
   async function loggedIn(){
@@ -10204,23 +9907,6 @@ class Generator {
       if(players[i].username === username) return true
     }
   }
-  /*const hub = "Minekhan"
-  function sendHub(obj){
-    let str = JSON.stringify({
-      "toH": hub,
-      "msg": JSON.stringify(obj)
-    })
-    multiplayer.send(str)
-    return str
-  }
-  function sendUser(user, obj){
-    let str = JSON.stringify({
-      "to": user,
-      "msg": JSON.stringify(obj)
-    })
-    multiplayer.send(str)
-    return str
-  }*/
   function send(msg, to){
     msg.FROM = achexUsername
     msg.USER = username
@@ -10236,17 +9922,9 @@ class Generator {
       target = world.id || 0
       host = true
     }
-    players = {} //empty
+    players = {}
     multiplayer = new WebSocket("wss://server.thingmaker.repl.co/ws?target="+target)
     multiplayer.onopen = e => {
-			/*multiplayer.send(JSON.stringify({
-        "auth": achexUsername,
-        "passwd":"none"
-      }))
-      multiplayer.send(JSON.stringify({
-        "joinHub":hub,
-        "passwd":"none"
-      }))*/
       send({
         "type":"connect",
         username: username,
@@ -10261,19 +9939,16 @@ class Generator {
       send({
         "type":"getSave"
       })
-
       multiplayer.pos = setInterval(() => {
         if(world){
           send({type:"pos", data:p3, dimension: world.type})
-          //if(host)send({type:"entityPos", data: world.getEntities(), dimension: world.type})
         }
       }, 500)
 		}
 		multiplayer.onmessage = msg => {
 			let packet = JSON.parse(msg.data)
-			var author = packet.FROM //should be the id
+			var author = packet.FROM
       var data = packet//.msg ? JSON.parse(packet.msg) : {}
-      
       if(data.type === "getSave" && host){
         if(ban.includes(data.USER)){
           send({
@@ -10296,9 +9971,7 @@ class Generator {
           nether: new World("nether")
         }
         world = dimensions.overworld
-
         world.id = data.id
-
         if (data.data) {
           try {
             world.loadSave(data.data)
@@ -10354,19 +10027,7 @@ class Generator {
         }else{
           blockSound(prevBlock, "dig", pos.x, pos.y, pos.z)
         }
-      }/*else if(data.type === "entityPos"){
-        if(data.data){
-          for(var i=0; i<data.data.length; i++){
-            world.posEntity(data.data[i])
-          }
-        }else{
-          world.posEntity(data)
-        }
-        //still needs to position it in the right dimension, not the current one
-        //server needs to pass these to other players
-      }else if(data.type === "entityDelete"){
-        world.deleteEntity(data.id, true)
-      }*/else if(data.type === "kill"){
+      }else if(data.type === "kill"){
         die()
       }else if(data.type === "message"){
         Messages.write(data.data, data.username)
@@ -10374,7 +10035,6 @@ class Generator {
         alert(data.data)
       }
 		}
-
 		multiplayer.onclose = () => {
 			alert("Connection lost!")
       clearInterval(multiplayer.pos)
@@ -10383,7 +10043,6 @@ class Generator {
 		multiplayer.onerror = () => {
       multiplayer.close()
     }
-    
     win.ban = username => {
       if(!host) return alert("Only the host can ban")
       send({
@@ -10393,7 +10052,6 @@ class Generator {
       if(!ban.includes(username)) ban.push(username)
     }
   }
-  
   function getNetherBiome(biome) {
     if(biome > 0.4 && biome < 0.5){
       return 1
@@ -10418,7 +10076,6 @@ class Generator {
       return "overworld"
     }else return world.type
   }
-
   let skyLight = 0
 	let fogDist = 16
 	class World {
@@ -10426,15 +10083,12 @@ class Generator {
 			generatedChunks = 0
 			fogDist = 16
 			p.y = superflat ? 6 : (round(noiseProfile.noise(8 * generator.smooth, 8 * generator.smooth) * generator.height) + 2 + generator.extra)
-
       this.type = type || ""
       this.spawnPoint = {
         x: 0,
         y: p.y,
         z: 0
       }
-
-			//Initialize the world's arrays
 			this.chunks = []
 			this.loaded = []
 			this.sortedChunks = []
@@ -10451,7 +10105,6 @@ class Generator {
 			this.entities = []
       this.particles = []
 			this.lastChunk = ","
-      
       this.edited = false
       this.saveStr = null
 		}
@@ -10468,13 +10121,11 @@ class Generator {
 			let smoothness = generator.smooth
 			let hilliness = generator.height
       let biomeSmooth = generator.biomeSmooth
-      //{ for the nether terrain
-      const biomeSize = 1//0.001 // smaller = bigger
-			const flatness = 40 // bigger = flatter
-			const overhang = 3 // bigger = more overhang; flatter = less overhang
-			const bottom = 4 // Minimum height of the ground
-			const hillSize = 0.006 // smaller = bigger; 0.005 to 0.01 seems the be a reasonable range
-      //}
+      const biomeSize = 1
+			const flatness = 40
+			const overhang = 3
+			const bottom = 4
+			const hillSize = 0.006
 			let gen = 0
 			for (let i = 0; i < 16; i++) {
 				for (let k = 0; k < 16; k++) {
@@ -10502,19 +10153,14 @@ class Generator {
                 solid = true
               } else if (solid) {
                 chunk.setBlock(i, j - 1, k, block)
-                /*if (chunk.getBlock(i, j - 2, k)) chunk.setBlock(i, j - 2, k, block)
-                if (chunk.getBlock(i, j - 3, k)) chunk.setBlock(i, j - 3, k, block)
-                if (chunk.getBlock(i, j - 4, k)) chunk.setBlock(i, j - 4, k, block)*/
                 solid = false
               } else if(j < 80){
                 chunk.setBlock(i, j-1, k, blockIds.Lava)
                 if(chunk.getBlock(i, j - 2, k) === block) chunk.setBlock(i, j-2, k, blockIds.netherrack)
               }
             }
-
             chunk.tops[k * 16 + i] = top
             chunk.setBlock(i, 0, k, blockIds.bedrock)
-            
             block = blockIds.netherrack
             for(let j=1; j<gen; j++){
               chunk.setBlock(i, maxHeight - 50 - j, k, block)
@@ -10558,7 +10204,6 @@ class Generator {
             }
           } else if(superflat){
             chunk.tops[k * 16 + i] = gen;
-
             chunk.setBlock(i, gen, k, blockIds.grass);
             chunk.setBlock(i, gen - 1, k, blockIds.dirt);
             chunk.setBlock(i, gen - 2, k, blockIds.dirt);
@@ -10568,7 +10213,6 @@ class Generator {
             var b = getBiome(biome)
             if(b === "desert"){
               chunk.tops[k * 16 + i] = gen;
-
               chunk.setBlock(i, gen, k, blockIds.sand);
               chunk.setBlock(i, gen - 1, k, blockIds.sand);
               chunk.setBlock(i, gen - 2, k, blockIds.sand);
@@ -10588,10 +10232,8 @@ class Generator {
                   chunk.setBlock(i, gen, k, blockIds.sand);
               }
             }
-
             if(b === "field"){
               chunk.tops[k * 16 + i] = gen;
-
               chunk.setBlock(i, gen, k, blockIds.grass);
               chunk.setBlock(i, gen - 1, k, blockIds.dirt);
               chunk.setBlock(i, gen - 2, k, blockIds.dirt);
@@ -10605,15 +10247,12 @@ class Generator {
                   chunk.setBlock(i, gen - 3, k, blockIds.gravel);
               }
             }
-            
             if(b === "jungle" || b === "giantJungle"){
               chunk.tops[k * 16 + i] = gen;
-
               chunk.setBlock(i, gen, k, blockIds.greenWool);
               chunk.setBlock(i, gen - 1, k, blockIds.dirt);
               chunk.setBlock(i, gen - 2, k, blockIds.dirt);
               chunk.setBlock(i, gen - 3, k, blockIds.dirt);
-              
               if(gen<60) {
                 chunk.setBlock(i, 60, k, blockIds.Water | SLAB);
                 for(var y=59; y>=gen; y--){
@@ -10694,7 +10333,6 @@ class Generator {
 			}
       if(y < 1) return
 			let chunk = this.chunks[x >> 4][z >> 4]
-
 			let xm = x & 15
 			let zm = z & 15
 			if (blockID) {
@@ -10710,15 +10348,12 @@ class Generator {
 					this.updateLight(x, y, z, false, data.lightLevel)
 				}
 			}
-
 			if (lazy) {
 				return
 			}
       if(multiplayer && !remote){
         send({type:"setBlock", data:{x:x, y:y, z:z, block:blockID, dimension:getDimension()}})
       }
-
-			//Update the 6 adjacent blocks and 1 changed block
 			if (xm && xm !== 15 && zm && zm !== 15) {
 				chunk.updateBlock(xm - 1, y, zm, this, lazy)
 				chunk.updateBlock(xm + 1, y, zm, this, lazy)
@@ -10735,15 +10370,11 @@ class Generator {
 				this.updateBlock(x, y, z - 1, lazy)
 				this.updateBlock(x, y, z + 1, lazy)
 			}
-
 			chunk.updateBlock(xm, y, zm, this, lazy, leaveSelf)
-
-			// Update the corner chunks so shadows in adjacent chunks update correctly
 			if (xm | zm === 0) { this.updateBlock(x - 1, y, z - 1, lazy); }
 			if (xm === 15 && zm === 0) { this.updateBlock(x + 1, y, z - 1, lazy); }
 			if (xm === 0 && zm === 15) { this.updateBlock(x - 1, y, z + 1, lazy); }
 			if (xm & zm === 15) { this.updateBlock(x + 1, y, z + 1, lazy); }
-      
       this.edited = true
 		}
 		getLight(x, y, z, blockLight = 0) {
@@ -10772,9 +10403,8 @@ class Generator {
 			let south = this.getLight(x, y, z-1)
 			let east = this.getLight(x+1, y, z)
 			let west = this.getLight(x-1, y, z)
-
 			let spread = []
-			if (!place) { // Block was removed; increase light levels
+			if (!place) {
 				if ((up & 15) === 15) {
 					for (let i = y; i > 0; i--) {
 						if (blockData[chunk.getBlock(cx, i, cz)].transparent) {
@@ -10794,8 +10424,6 @@ class Generator {
 						chunk.spreadLight(spread, center - 1, true)
 					}
 				}
-
-				// Block light levels
 				if (!blockLight || blockLight < blight) {
 					spread.length = 0
 					up = this.getLight(x, y+1, z, 1)
@@ -10819,8 +10447,6 @@ class Generator {
 				chunk.setLight(cx, y, cz, 0, 0)
 				chunk.setLight(cx, y, cz, 0, 1)
 				spread.push(x, y, z)
-
-				// Sky light
 				if (center === 15) {
 					for (let i = y-1; i > 0; i--) {
 						if (blockData[chunk.getBlock(cx, i, cz)].transparent) {
@@ -10833,8 +10459,6 @@ class Generator {
 				}
 				chunk.unSpreadLight(spread, center - 1, respread)
 				chunk.reSpreadLight(respread)
-
-				// Block light
 				if (blight) {
 					respread.length = 0
 					for (let i = 0; i <= 15/*blight + 1*/; i++) respread[i] = []
@@ -10844,13 +10468,12 @@ class Generator {
 					chunk.reSpreadLight(respread, 1)
 				}
 			}
-			if (place && blockLight) { // Light block was placed
+			if (place && blockLight) {
 				this.setLight(x, y, z, blockLight, 1)
 				spread.length = 0
 				spread.push(x, y, z)
 				chunk.spreadLight(spread, blockLight - 1, true, 1)
-
-			} else if (!place && blockLight) { // Light block was removed
+			} else if (!place && blockLight) {
 				this.setLight(x, y, z, 0, 1)
 				spread.push(x, y, z)
 				let respread = []
@@ -10860,12 +10483,9 @@ class Generator {
 			}
 		}
 		spawnBlock(x, y, z, blockID) {
-			//Sets a block anywhere without causing block updates around it. Only to be used in world gen.
-      
       if(blockData[blockID].crossShape) blockID |= CROSS
       if(blockData[blockID].tallcrossShape) blockID |= TALLCROSS
       if(blockData[blockID].cactus) blockID |= CACTUS
-      
 			let chunkX = x >> 4
 			let chunkZ = z >> 4
 			if (!this.chunks[chunkX]) {
@@ -10877,7 +10497,6 @@ class Generator {
 				this.chunks[chunkX][chunkZ] = chunk
 			}
 			if (chunk.buffer) {
-				//Only used if spawning a block post-gen
 				this.setBlock(x, y, z, blockID, true)
 			} else if (!chunk.getBlock(x & 15, y, z & 15)) {
 				chunk.setBlock(x & 15, y, z & 15, blockID)
@@ -10909,7 +10528,7 @@ class Generator {
       }
       this.entities.splice(i, 1)
     }
-    posEntity(d){ //for multiplayer.onmessage only
+    posEntity(d){
       let p = d.pos
       var i = this.getEntity(d.id)
       var ent
@@ -10956,7 +10575,6 @@ class Generator {
 				this.loadChunks()
 				this.chunkGenQueue.sort(sortChunks)
 			}
-
 			if (Key.leftMouse && !Key.control && p.lastBreak < Date.now() - 250 && screen === "play" && !survival) { // if survival breaking isn't instant
 				changeWorldBlock(0)
 			}
@@ -10969,11 +10587,9 @@ class Generator {
       if ((Key.rightMouse || Key.leftMouse && Key.control) && p.autoBuild) {
 				newWorldBlock()
 			}
-
 			for (let i = 0; i < this.sortedChunks.length; i++) {
 				this.sortedChunks[i].tick()
 			}
-
 			for (let i = this.entities.length - 1; i >= 0; i--) {
 				const entity = this.entities[i]
 				entity.update()
@@ -10994,12 +10610,10 @@ class Generator {
           players[i].update()
         }
       }
-
 			do {
 				let doneWork = false
 				debug.start = performance.now()
 				if (this.meshQueue.length) {
-					// Update all chunk meshes.
 					let len = this.meshQueue.length - 1
 					do {
 						this.meshQueue.pop().genMesh()
@@ -11007,7 +10621,6 @@ class Generator {
 					doneWork = true
 					debug("Meshes")
 				}
-
 				if (this.generateQueue.length && !doneWork) {
 					let chunk = this.generateQueue.pop()
 					this.genChunk(chunk)
@@ -11024,7 +10637,6 @@ class Generator {
 					}
 					doneWork = true
 				}
-
 				if (this.loadQueue.length && !doneWork) {
 					this.loadQueue.pop().load()
 					doneWork = true
@@ -11036,7 +10648,6 @@ class Generator {
 					this.lightingQueue.pop().fillLight()
 					doneWork = true
 				}
-
 				if (this.chunkGenQueue.length && !doneWork) {
 					let chunk = this.chunkGenQueue[0]
 					if (!fillReqs(chunk.x >> 4, chunk.z >> 4)) {}
@@ -11067,9 +10678,7 @@ class Generator {
         gl.clearColor(sky[0] * skyLight, sky[1] * skyLight, sky[2] * skyLight, 1)
       }
 			gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
-
 			renderedChunks = 0
-
 			let dist = (settings.renderDistance) * 16
 			if (this.chunkGenQueue.length) {
 				this.chunkGenQueue.sort(sortChunks)
@@ -11083,21 +10692,14 @@ class Generator {
 			}
 			gl.uniform3f(glCache.uPos, p.x, p.y, p.z)
 			gl.uniform1f(glCache.uDist, fogDist)
-			// this is interesting because uTime is not actually based on time
-			// if you are going to change this to use actual time change line 4487 as well
-			// since it depends on it
 			gl.uniform1f(glCache.uTime, skyLight)
       gl.uniform3f(glCache.skyColor, sky[0], sky[1], sky[2])
-
 			let c = this.sortedChunks
 			for (let chunk of c) {
 				chunk.render()
 			}
-
 			gl.uniform3f(glCache.uPos, 0, 0, 0)
-
 			gl.useProgram(programEntity)
-
 			for (let i = this.entities.length - 1; i >= 0; i--) {
 				const entity = this.entities[i]
 				entity.render()
@@ -11108,7 +10710,6 @@ class Generator {
         }
       }
       renderPlayer()
-
       if(crack.idx > -1 && survival){
         crack.entity.x = crack.pos[0]
         crack.entity.y = crack.pos[1]
@@ -11116,13 +10717,11 @@ class Generator {
         crack.entity.changeTexture(crack.tex)
         crack.entity.render()
       }
-      
       gl.useProgram(programParticle)
       for (let i = this.particles.length - 1; i >= 0; i--) {
 				const particle = this.particles[i]
 				particle.render()
 			}
-      
       gl.useProgram(program3D)
 			if(hitBox.pos) {
 				blockOutlines = true
@@ -11131,7 +10730,6 @@ class Generator {
 				blockOutlines = false
 				blockFill = true
 			}
-      
 		}
 		loadChunks() {
 			let renderDistance = settings.renderDistance + 3
@@ -11143,7 +10741,6 @@ class Generator {
 			let maxChunkX = cx + renderDistance
 			let minChunkZ = cz - renderDistance
 			let maxChunkZ = cz + renderDistance
-
 			this.offsetX = -minChunkX
 			this.offsetZ = -minChunkZ
 			this.lwidth = renderDistance * 2 + 1
@@ -11151,11 +10748,9 @@ class Generator {
 			this.lightingQueue.length = 0
 			this.populateQueue.length = 0
 			this.generateQueue.length = 0
-
 			if (this.loaded.length > this.lwidth * this.lwidth) {
 				this.loaded.length = this.lwidth * this.lwidth
 			}
-
 			let i = 0
 			for (let x = minChunkX; x <= maxChunkX; x++) {
 				for (let z = minChunkZ; z <= maxChunkZ; z++) {
@@ -11182,7 +10777,6 @@ class Generator {
 		}
     getThisSaveString(){
       let world = this
-      
       let edited = []
 			for (let x in this.chunks) {
 				for (let z in this.chunks[x]) {
@@ -11196,7 +10790,6 @@ class Generator {
 					}
 				}
 			}
-
 			let pallete = {}
 			for (let chunks of edited) {
 				let changes = false
@@ -11210,20 +10803,16 @@ class Generator {
 					chunks[0].edited = false
 				}
 			}
-
 			let blocks = Object.keys(pallete).map(n => Number(n))
 			pallete = {}
 			blocks.forEach((block, index) => pallete[block] = index)
-
 			let rnd = round
 			let options = p.flying | (superflat==="island" ? 2 : superflat) << 1 | p.spectator << 3 | caves << 4 | trees << 5 | survival << 6
-
 			let str = world.name + ";" + worldSeed.toString(36) + ";"
 				+ rnd(p.x).toString(36) + "," + rnd(p.y).toString(36) + "," + rnd(p.z).toString(36) + ","
 				+ (p.rx * 100 | 0).toString(36) + "," + (p.ry * 100 | 0).toString(36) + "," + options.toString(36) + ";"
 				+ (this.version || version) + ";"
 				+ blocks.map(b => b.toString(36)).join(",") + ";"
-
 			for (let i = 0; i < edited.length; i++) {
 				if (!edited[i][0].edited) {
 					continue
@@ -11237,24 +10826,21 @@ class Generator {
 						str += (pallete[blocks[j]] << 12 | j).toString(36) + ","
 					}
 				}
-				str = str.substr(0, str.length - 1); //Remove trailing comma
+				str = str.substr(0, str.length - 1);
 				str += ";"
 			}
 			if (str.match(/;$/)) str = str.substr(0, str.length - 1)
-      
 			return str
     }
 		getSaveString() {
       let world = this
-      if(this.type !== "") world = dimensions.overworld //save overworld
-      
+      if(this.type !== "") world = dimensions.overworld
       if(!world.edited && world.saveStr) return world.saveStr
 			return world.getThisSaveString()
 		}
     getNetherSaveString(){
       let world = this
-      if(this.type !== "nether") world = dimensions.nether //save nether
-      
+      if(this.type !== "nether") world = dimensions.nether
       if(!world.edited && world.saveStr) return world.saveStr
 			return world.getThisSaveString()
     }
@@ -11285,7 +10871,6 @@ class Generator {
       return str
     }
     getSurvivStr(){
-      //survival stuff like player health
       let str = ""
       str += p.health + ","
       str += witherEffect + ","
@@ -11296,15 +10881,12 @@ class Generator {
     }
 		loadSave(str) {
       this.saveStr = str
-      
 			let data = str.split(";")
 			if (!str.includes("Alpha")) {
 				return this.loadOldSave(str)
 			}
-
 			this.name = data.shift()
 			setSeed(parseInt(data.shift(), 36))
-
 			let playerData = data.shift().split(",")
 			p.x = parseInt(playerData[0], 36)
 			p.y = parseInt(playerData[1], 36)
@@ -11323,17 +10905,10 @@ class Generator {
 			caves = options >> (3+extra) & 1
 			trees = options >> (4+extra) & 1
       survival = (options >> (5+extra) & 1) ? true : false
-
 			let version = data.shift()
 			this.version = version
-
-			// if (version.split(" ")[1].split(".").join("") < 70) {
-			// 	alert("This save code is for an older version. 0.7.0 or later is needed")
-			// }
-
 			let pallete = data.shift().split(",").map(n => parseInt(n, 36))
 			this.loadFrom = []
-
 			for (let i = 0; data.length; i++) {
 				let blocks = data.shift().split(",")
 				this.loadFrom.push({
@@ -11354,7 +10929,6 @@ class Generator {
       let arr = str.split("|")
       let inv = arr[1].split(",")
       let hotb = arr[0].split(",")
-      
       let len = inventory.hotbar.length
       inventory.hotbar = []
       for(let i=0; i<len*2; i+=2){
@@ -11395,9 +10969,7 @@ class Generator {
 			p.rx = parseInt(playerData[3], 36) / 100;
 			p.ry = parseInt(playerData[4], 36) / 100;
 			let editCount = parseInt(data.shift(), 36);
-
 			this.loadFrom = [];
-
 			let coords = data.shift().split(",").map(function(n) {
 				return parseInt(n, 36);
 			});
@@ -11409,7 +10981,6 @@ class Generator {
 					blocks: [],
 				})
 			}
-
 			for (let i = 0; data.length > 0; i++) {
 				let blocks = data.shift().split(",");
 				for (let j = 0; j < blocks.length; j++) {
@@ -11422,10 +10993,7 @@ class Generator {
 		}
 	}
   win.World = World
-
-	// Mouse sensitivity variable, used for the settings buttons and in the "mmoved" function
 	let mouseS = 300
-
 	class Slider {
 		constructor(x, y, w, h, scenes, label, min, max, settingName, callback) {
 			this.x = x
@@ -11445,8 +11013,6 @@ class Generator {
 				return
 			}
 			let current = (settings[this.name] - this.min) / (this.max - this.min)
-
-			// Outline
 			ctx.beginPath()
 			strokeWeight(2)
 			stroke(0)
@@ -11454,15 +11020,11 @@ class Generator {
 			ctx.rect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h)
 			ctx.stroke()
 			ctx.fill()
-
-			// Slider bar
 			let value = round(settings[this.name])
 			ctx.beginPath()
 			fill(130)
 			let x = this.x - (this.w - 10) / 2 + (this.w - 10) * current - 5
 			ctx.fillRect(x, this.y - this.h / 2, 10, this.h)
-
-			//Label
 			fill(255, 255, 255)
 			textSize(16)
 			ctx.textAlign = 'center'
@@ -11472,7 +11034,6 @@ class Generator {
 			if (!mouseDown || !this.scenes.includes(screen)) {
 				return false
 			}
-
 			if (mouseX > this.x - this.w / 2 && mouseX < this.x + this.w / 2 && mouseY > this.y - this.h / 2 && mouseY < this.y + this.h / 2) {
 				let current = (mouseX - this.x + this.w / 2) / this.w
 				if (current < 0) current = 0
@@ -11487,7 +11048,6 @@ class Generator {
 			if (!this.sliding || !this.scenes.includes(screen)) {
 				return false
 			}
-
 			let current = (mouseX - this.x + this.w / 2) / this.w
 			if (current < 0) current = 0
 			if (current > 1) current = 1
@@ -11497,7 +11057,6 @@ class Generator {
 		release() {
 			this.sliding = false
 		}
-
 		static draw() {
 			for (let slider of Slider.all) {
 				slider.draw()
@@ -11538,7 +11097,6 @@ class Generator {
 			this.labels = Array.isArray(labels) ? labels : [labels]
 			this.callback = callback
 		}
-
 		mouseIsOver() {
 			return mouseX >= this.x - this.w / 2 && mouseX <= this.x + this.w / 2 && mouseY >= this.y - this.h / 2 && mouseY <= this.y + this.h / 2
 		}
@@ -11549,10 +11107,7 @@ class Generator {
 			let hovering = this.mouseIsOver()
 			let disabled = this.disabled()
 			let hoverText = this.hoverText()
-
-			// Outline
 			ctx.beginPath()
-			
 			strokeWeight(6)
       stroke(80)
 			if (disabled) {
@@ -11568,10 +11123,8 @@ class Generator {
     		}
 			}
 			ctx.rect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h)
-			
 			ctx.stroke()
 			ctx.fill()
-			
 			ctx.beginPath()
 			stroke(200)
 			if (hovering && !disabled)stroke(200, 200, 255);
@@ -11587,19 +11140,15 @@ class Generator {
     			ctx.lineTo(this.x + (this.w / 2)+1, this.y - this.h / 2-2)
 			}
 			ctx.stroke()
-
             stroke(0)
             strokeWeight(1)
             ctx.strokeRect(this.x-this.w/2-4, this.y-this.h/2-4, this.w+8, this.h+8)
-
-			//Label
 			textSize(16)
 			ctx.textAlign = 'center'
 			fill(0)
 			text(this.labels[this.index], this.x +2, this.y + this.h / 8 +2)
 			disabled ? fill(255) : (hovering ? fill(255,255,0) : fill(255) )
 			text(this.labels[this.index], this.x, this.y + this.h / 8)
-			
 			if (hovering && hoverText) {
 				hoverbox.innerText = hoverText
 				hoverbox.classList.remove("hidden")
@@ -11630,7 +11179,6 @@ class Generator {
 				return true
 			}
 		}
-
 		static draw() {
 			hoverbox.classList.add("hidden")
 			for (let button of Button.all) {
@@ -11658,16 +11206,12 @@ class Generator {
 		Slider.all = []
 		const nothing = () => false
 		const always = () => true
-
-		// Main menu buttons
 		Button.add(width / 2, height / 2 - 20, 400, 40, "Singleplayer", "main menu", r => changeScene("loadsave menu"))
 		Button.add(width / 2, height / 2 + 35, 400, 40, "Multiplayer", "main menu", r => {
       changeScene("multiplayer menu")
     }, null, "If you want multiplayer, why don't you head over to willard.fun/minekhan?")
 		Button.add(width / 2, height / 2 + 90, 400, 40, "Options", "main menu", r => changeScene("options"))
     Button.add(width / 2, height / 2 + 145, 400, 40, "Marketplace", "main menu", r => changeScene("marketplace"))
-
-		// Creation menu buttons
 		Button.add(width / 2, 135, 300, 40, ["World Type: Normal", "World Type: Superflat", "World Type: Island"], "creation menu", r => {superflat = r === "World Type: Superflat"; if(r==="World Type: Island")superflat="island"})
 		Button.add(width / 2, 185, 300, 40, ["Trees: On", "Trees: Off"], "creation menu", r => trees = r === "Trees: On", function() {
 			if (superflat === true) {
@@ -11717,8 +11261,6 @@ class Generator {
 			changeScene("loading")
 		})
 		Button.add(width / 2, height - 40, 300, 40, "Cancel", "creation menu", r => changeScene(previousScreen))
-
-		// Loadsave menu buttons
 		const selected = () => !selectedWorld || !worlds[selectedWorld]
 		let w4 = min(width / 4 - 10, 220)
 		let x4 = w4 / 2 + 5
@@ -11744,7 +11286,6 @@ class Generator {
         nether: new World("nether")
       }
 			world = dimensions.overworld
-
 			let code
       let inv
       let surviv
@@ -11767,7 +11308,6 @@ class Generator {
           }catch(e){console.log("error loading mod: "+e)}
 				}
 			}
-			
 			if (code) {
 				try {
 					world.loadSave(code)
@@ -11799,8 +11339,6 @@ class Generator {
       changeScene("loading")
 		}, () => !(!selectedWorld && boxCenterTop.value) && !worlds[selectedWorld])
 		Button.add(mid + x2, height - 75, w2, 40, "Create New World", "loadsave menu", r => changeScene("creation menu"))
-
-    // Edit world menu
 		Button.add(mid, height / 2, w2, 40, "Save", "editworld", r => {
 			let w = worlds[selectedWorld]
 			w.name = boxCenterTop.value.replace(/;/g, "\u037e")
@@ -11813,20 +11351,14 @@ class Generator {
 			}).catch(e => console.error(e))
 		})
 		Button.add(mid, height / 2 + 50, w2, 40, "Back", "editworld", r => changeScene(previousScreen))
-    
-    // Multiplayer buttons
 		Button.add(mid + 3 * x4, height - 30, w4, 40, "Cancel", "multiplayer menu", r => changeScene("main menu"))
 		Button.add(mid - x2, height - 75, w2, 40, "Play Selected World", "multiplayer menu", async() => {
       initMultiplayer(servers[selectedWorld].id)
     }, () => !servers[selectedWorld])
-
-    //play buttons
     if(touchScreen){
       Button.add(mid-14, 14, 20,20, "/", "play", Messages.showInput)
       Button.add(mid+14, 14, 20,20, "❚❚", "play", r => changeScene("pause"))
     }
-
-		// Pause buttons
 		Button.add(width / 2, 225, 300, 40, "Resume", "pause", play)
 		Button.add(width / 2, 275, 300, 40, "Options", "pause", r => changeScene("options"))
 		Button.add(width / 2, 325, 300, 40, "Save", "pause", save, nothing, () => `Save the world to your computer/browser. Doesn't work in incognito.\n\nLast saved ${timeString(Date.now() - world.edited)}.`)
@@ -11848,20 +11380,11 @@ class Generator {
 			  initMultiplayer()
       }
 		}, () => multiplayer)
-    
-    // You Died buttons
     Button.add(width / 2, 225, 300, 40, "Respawn", "dead", r => {
       let spawn = world.spawnPoint
-      
       p.x = spawn.x
       p.z = spawn.z
-      /*p.y = 0
-      while(world.getBlock(0, p.y, 0)){
-        p.y ++;
-        if(p.y > maxHeight) break;
-      }*/
       p.y = spawn.y
-      
       p.health = 18
       p.oxygen = 18
       witherEffect = 0
@@ -11871,25 +11394,15 @@ class Generator {
       updateHUD = true
       play()
     })
-		
-		// Options buttons
 		Button.add(width / 2, 430, width / 3, 40, ["Reach distance: "+normReach, "Reach distance: "+bigReach], "options", r => {
       if(r === "Reach distance: "+normReach){
         reach = normReach
       }else reach = bigReach
     })
-
-    //Button.add(width / 2, 570, width / 3, 40, "Controls", "options", r => changeScene("controls"));
     Button.add(width / 2, 570/*640*/, width / 3, 40, "Back", "options", r => changeScene(previousScreen))
-    
-    // Marketplace buttons
     Button.add(60, 40, 80, 30, "Back", "marketplace", r => changeScene(previousScreen))
 		Button.add(mid - x2, height - 75, w2, 40, "Download", "marketplace", saveFromMarketplace, () => !marketplace[selectedWorld])
-    
-		// Comingsoon menu buttons
 		Button.add(width / 2, 395, width / 3, 40, "Back", "comingsoon menu", r => changeScene(previousScreen))
-
-		// Settings Sliders
 		Slider.add(width/2, 245, width / 3, 40, "options", "Render Distance", 1, 32, "renderDistance", val => settings.renderDistance = round(val))
 		Slider.add(width/2, 305, width / 3, 40, "options", "FOV", 30, 110, "fov", val => {
 			p.FOV(val)
@@ -11909,7 +11422,6 @@ class Generator {
 		let texturePixels = new Uint8Array(textureSize * textureH * 4)
 		textureMap = {}
 		textureCoords = []
-
 		setPixel = function(textureNum, x, y, r, g, b, a) {
 			let texX = textureNum & 15
 			let texY = textureNum >> 4
@@ -11920,8 +11432,6 @@ class Generator {
 			texturePixels[offset + 3] = a !== undefined ? a : 255
 		}
 		getPixels = function(str) {
-			// var w = parseInt(str.substr(0, 2), 36)
-			// var h = parseInt(str.substr(2, 2), 36)
 			var colors = []
 			var pixels = []
 			var dCount = 0
@@ -11937,14 +11447,10 @@ class Generator {
 			}
 			return pixels
 		};
-
 		{
-      //get amount of textures
       var t = 0
       for(var i in textures) t++
       t = Math.ceil(t / 16) * 16
-      
-			// Specify the texture coords for each index
 			const s = scale, sh = scaleH
 			for (let i = 0; i < t; i++) {
 				let texX = i & 15
@@ -11953,8 +11459,6 @@ class Generator {
 				let offsetY = texY * sh
 				textureCoords.push(new Float32Array([ offsetX, offsetY, offsetX + s, offsetY, offsetX + s, offsetY + sh, offsetX, offsetY + sh ]))
 			}
-
-			// Set all of the textures into 1 big tiled texture
 			let n = 0
 			for (let i in textures) {
 				if (typeof textures[i] === "function") {
@@ -11968,8 +11472,6 @@ class Generator {
 				textureMap[i] = n
 				n++
 			}
-
-			//Set the hitbox texture to 1 pixel
 			let arr = new Float32Array(192)
 			for (let i = 0; i < 192; i += 2) {
 				arr[i] = textureCoords[textureMap.hitbox][0] + 0.01
@@ -11977,8 +11479,6 @@ class Generator {
 			}
 			textureCoords[textureMap.hitbox] = arr
 		}
-
-		// Big texture with everything in it
 		textureAtlas = gl.createTexture()
 		gl.activeTexture(gl.TEXTURE0)
 		gl.bindTexture(gl.TEXTURE_2D, textureAtlas)
@@ -11989,8 +11489,6 @@ class Generator {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 		gl.uniform1i(glCache.uSampler, 0)
-
-		// Dirt texture for the background
 		let dirtPixels = new Uint8Array(getPixels(textures.dirt))
 		dirtTexture = gl.createTexture()
 		gl.activeTexture(gl.TEXTURE1)
@@ -12001,8 +11499,6 @@ class Generator {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-    
-    // Netherrack texture for the background
 		let netherPixels = new Uint8Array(getPixels(textures.netherrack))
 		netherTexture = gl.createTexture()
 		gl.activeTexture(gl.TEXTURE2)
@@ -12013,17 +11509,14 @@ class Generator {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
-
 		genIcons()
 	}
 	function drawIcon(x, y, id) {
     if(!blockIcons[id]) return
-    
 		id = id < isCube ? (id | blockMode) : id
 		x =  x / (3 * height) - 0.1666 * width / height
 		y = y / (3 * height) - 0.1666
 		initModelView(null, x, y, 0, 0, 0)
-
 		let buffer = blockIcons[id]
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
 		gl.vertexAttribPointer(glCache.aVertex, 3, gl.FLOAT, false, 24, 0)
@@ -12035,11 +11528,9 @@ class Generator {
 		gl.vertexAttrib1f(glCache.aBlocklight, 1.0)
 		gl.drawElements(gl.TRIANGLES, blockIcons.lengths[id], gl.UNSIGNED_INT, 0)
 	}
-
 	function hotbar() {
 		FOV(90)
     let s = inventory.size
-
     ctx2.fillStyle = "white"
     ctx2.font = "14px VT323"
     ctx2.textAlign = "right"
@@ -12056,17 +11547,12 @@ class Generator {
 		if (p.spectator) {
 			return
 		}
-
 		hotbar()
-
 		let s = inventory.size
 		let x = width / 2 + 0.5
 		let y = height / 2 + 0.5
     let maxX = width / 2 - inventory.hotbar.length / 2 * s + 9.5 * s + 25
-    
     textSize(10)
-
-		// Crosshair
 		if (!p.spectator) {
 			ctx.lineWidth = 1
 			ctx.strokeStyle = "white"
@@ -12077,11 +11563,8 @@ class Generator {
 			ctx.lineTo(x, y + 10)
 			ctx.stroke()
 		}
-
-		//Hotbar
 		x = width / 2 - 9 / 2 * s + 0.5 + 25
 		y = height - s * 1.5 + 0.5
-
 		ctx.strokeStyle = "black"
 		ctx.lineWidth = 2
 		ctx.beginPath()
@@ -12094,18 +11577,14 @@ class Generator {
 			ctx.lineTo(x + i * s, y + s)
 		}
 		ctx.stroke()
-
 		ctx.strokeStyle = "white"
 		ctx.lineWidth = 2
 		ctx.beginPath()
-
 		ctx.strokeRect(width / 2 - 9 / 2 * s + inventory.hotbarSlot * s + 25, height - s * 1.5, s, s)
-
     if(survival){
       var iw = 18
       var iw2 = iw/2
       var iy = y-iw-4
-      //Health bar
       var outline = (healEffect < 40 && healEffect > 30) || (healEffect < 20 && healEffect > 10)
       var heartNum = Math.ceil(p.health)
       let wither = witherEffect > 0
@@ -12128,7 +11607,6 @@ class Generator {
           ctx.drawImage(images.whiteHeart, heartX, iy, iw, iw);
         }
       }
-      //Oxygen bar
       if(p.oxygen !== 18){
         for(i=0; i<p.oxygen; i+=2){
           var bubbleX = (maxX - (iw*10)) + (i * iw2)
@@ -12140,9 +11618,7 @@ class Generator {
         }
       }
     }
-    
     ctx.fillStyle = "white"
-
 		let str = "Average Frame Time: " + analytics.displayedFrameTime + "ms\n"
 		+ "Worst Frame Time: " + analytics.displayedwFrameTime + "ms\n"
 		+ "Render Time: " + analytics.displayedRenderTime + "ms\n"
@@ -12150,7 +11626,6 @@ class Generator {
 		+ "Rendered Chunks: " + renderedChunks.toLocaleString() + " / " + world.loaded.length + "\n"
 		+ "Generated Chunks: " + generatedChunks.toLocaleString() + "\n"
 		+ "FPS: " + analytics.fps
-
 		if (p.autoBreak) {
 			text("Super breaker enabled", 5, height - 89, 12)
 		}
@@ -12175,13 +11650,10 @@ class Generator {
       if(closest === 0) info = "Right here"
 			text(`Closest player: ${cname} (${info})`, 5, height - 113, 12)
 		}
-
 		ctx.textAlign = 'right'
 		text(p2.x + ", " + p2.y + ", " + p2.z, width - 10, 15, 0)
 		ctx.textAlign = 'left'
 		text(str, 5, height - 77, 12)
-    
-    
 	}
   window.invScroll = 0;
   let draggingInvBar = false
@@ -12195,14 +11667,12 @@ class Generator {
 		let s = inventory.size
 		let s2 = s / 2
 		let perRow = 13
-
 		gl.clearColor(0, 0, 0, 0)
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
 		ctx.fillStyle = "rgb(127, 127, 127)"
 		ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx2.clearRect(0, 0, canvas.width, canvas.height)
 		FOV(90)
-
     let count = 1;
     if(survival){
       count = invLength
@@ -12213,8 +11683,6 @@ class Generator {
     }
     invHeight = (Math.ceil(count / perRow) * s)
     let invWinH = s * 9;
-
-    // Scrollbar
     barH = height * (invWinH/invHeight);
     if(draggingInvBar){
       invScroll = map(mouseY-invBarOffset, (barH/2), height-(barH/2), 0, invHeight);
@@ -12227,8 +11695,6 @@ class Generator {
     ctx.fillRect(width-barW-2, 0, barW+2, height)
     fill(200)
     ctx.fillRect(width-barW, barTop, barW-2, barH)
-
-		// Draw the grid
     ctx.translate(0, -(invScroll % s))
 		ctx.lineWidth = 1
 		ctx.strokeStyle = "black"
@@ -12243,8 +11709,6 @@ class Generator {
 			ctx.lineTo(50.5 - s2 + s * x, 50.5 - s2 + y * s)
 		}
     ctx.translate(0, invScroll % s)
-
-		// Hotbar
 		x = width / 2 - inventory.hotbar.length / 2 * s + 0.5 + 25
 		y = height - s * 1.5 + 0.5
 		ctx.moveTo(x, y)
@@ -12256,7 +11720,6 @@ class Generator {
 			ctx.lineTo(x + i * s, y + s)
 		}
 		ctx.stroke()
-
 		let overHot = (mouseX - x) / s | 0
 		if (mouseX < x + 9 * s && mouseX > x && mouseY > y && mouseY < y + s) {
 			x += s * overHot
@@ -12265,8 +11728,6 @@ class Generator {
 			ctx.beginPath()
 			ctx.strokeRect(x, y, s, s)
 		}
-    
-		//Box highlight in inv
 		let overInv = Math.round(((mouseY + invScroll) - 50) / s) * perRow + Math.round((mouseX - 50) / s)
 		if (overInv >= 0 && overInv < count - (survival?0:1) && mouseX < 50 - s2 + perRow * s && mouseX > 50 - s2) {
 			x = overInv % perRow * s + 50 - s2
@@ -12279,11 +11740,9 @@ class Generator {
         ctx.strokeRect(x, y, s, s)
       }
 		}
-
 		if (inventory.holding && inventory.holding.id) {
 			drawIcon(mouseX, mouseY, inventory.holding.id)
 		}
-    
     if(survival){
       ctx2.fillStyle = "white"
       ctx2.font = "14px VT323"
@@ -12303,7 +11762,6 @@ class Generator {
         if(blockData[i].hidden){
           while(blockData[i].hidden) i++
         }
-
         x = (invIdx - 1) % perRow * s + 50
         y = ((invIdx - 1) / perRow | 0) * s + 50
         y -= invScroll
@@ -12312,16 +11770,11 @@ class Generator {
         }
       }
     }
-    
 		hotbar()
-		//hud()
 		ctx.drawImage(gl.canvas, 0, 0)
-    
-    // show block name on hover
     if (overInv >= 0 && overInv < count - (survival?0:1) && mouseX < 50 - s2 + perRow * s && mouseX > 50 - s2) {
 			x = overInv % perRow
 			y = (overInv / perRow | 0)
-      
       var wrongidx = x+(y*perRow)+1;
       var idx=1;
       if(survival){
@@ -12330,11 +11783,6 @@ class Generator {
         for(var i=1; i<wrongidx; i++){
           idx++;
           if(blockData[i+1] && blockData[i+1].hidden){
-            /*let i2 = idx
-            while(blockData[i2] && blockData[i2].hidden){
-              i2++
-              idx++
-            }*/
             idx++
           }
         }
@@ -12351,12 +11799,10 @@ class Generator {
         var w = ctx.measureText(name).width;
         fill(0)
         ctx.fillRect(mouseX, mouseY, w+20, 20);
-        
         fill(255);
         ctx.fillText(name, mouseX+10, mouseY+13+2);
       }
 		}
-    
     if(!nodraw)ctx.drawImage(canvas2, 0,0)
 	}
 	function clickInv(dontRedraw) {
@@ -12364,24 +11810,18 @@ class Generator {
 		let s2 = s / 2
 		let perRow = 13
 		let over = Math.round((mouseY + invScroll - 50) / s) * perRow + Math.round((mouseX - 50) / s)
-    
     if(!survival){
       var idx = 0;
       for(var i=1; i<over+1; i++){
         if(!blockData[i]) break;
-
         idx ++;
         if(blockData[i+1] && blockData[i+1].hidden)idx++;
       }
       over = idx;
     }
-    
     let count = survival ? invLength : BLOCK_COUNT - 1
-    
-    //for crafting
     let offX = width - s*4
     let offY = s * 2
-    
 		let x = width / 2 - 9 / 2 * s + 25
 		let y = height - s * 1.5
 		let overHot = (mouseX - x) / s | 0
@@ -12393,7 +11833,7 @@ class Generator {
       if(survival){
         if(invItems[over] && invItems[over].id){
           let temp = inventory.holding
-          if(temp.amount < 64 && invItems[over].amount < 64 && temp.id === invItems[over].id){ //stacking together
+          if(temp.amount < 64 && invItems[over].amount < 64 && temp.id === invItems[over].id){
             while(temp.amount > 0){
               temp.amount--
               invItems[over].amount ++
@@ -12426,21 +11866,17 @@ class Generator {
     }else{
 			inventory.holding = 0
 		}
-
 		if(!dontRedraw)drawScreens.inventory()
 	}
-
   function drawCrafting() {
     drawInv(true)
     let s = inventory.size
     let s2 = s/2
-    
+   
     gl.clearColor(0, 0, 0, 0)
-		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
-    
+		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT) 
     let offX = width - s*4
     let offY = s * 2
-    //draw grid
     ctx.lineWidth = 1
 		ctx.strokeStyle = "black"
 		ctx.beginPath()
@@ -12456,8 +11892,6 @@ class Generator {
       ctx.lineTo(x, y*s+offY)
     }
     ctx.stroke()
-    
-    //icons
     ctx2.font = "14px VT323"
     ctx2.textAlign = "right"
     ctx2.fillStyle = "white"
@@ -12471,7 +11905,6 @@ class Generator {
         }
       }
     }
-    
     x = Math.floor((mouseX - offX) / s)
     y = Math.floor((mouseY - offY) / s)
     let over = (y * 3) + x
@@ -12482,7 +11915,6 @@ class Generator {
       ctx.strokeStyle = "white"
       ctx.strokeRect(x*s+offX, y*s+offY, s,s)
     }
-    
     x = offX + (s)
     y = offY + (s*4)
     over = mouseX>x && mouseX<x+s && mouseY>y && mouseY<y+s
@@ -12496,9 +11928,7 @@ class Generator {
       ctx2.fillStyle = "white"
       ctx2.fillText(inventory.craftingRes.amount, x+s, y+s)
     }
-    
     ctx.drawImage(gl.canvas,0,0)
-    
     if(inventory.craftingRes && inventory.craftingRes.id){
       let name = blockData[inventory.craftingRes.id].name
       if(name !== "" && over){
@@ -12507,23 +11937,18 @@ class Generator {
         var w = ctx.measureText(name).width;
         fill(0)
         ctx.fillRect(mouseX, mouseY, w+20, 20);
-        
         fill(255);
         ctx.fillText(name, mouseX+10, mouseY+13+2);
       }
     }
-    
     ctx.drawImage(canvas2,0,0)
   }
-  
   function clickCrafting() {
     clickInv(true)
-    
     let s = inventory.size
     let s2 = s/2
     let offX = width - s*4
     let offY = s * 2
-    
     let x = offX + (s)
     let y = offY + (s*4)
     let over = mouseX>x && mouseX<x+s && mouseY>y && mouseY<y+s
@@ -12537,23 +11962,19 @@ class Generator {
         }
       }
     }
-    
     let arr = []
     inventory.crafting.forEach((v) => arr.push(v?v.id:0))
     let recipe = inventory.craftingStr = arr.join(",")
     if(crafts[recipe]){
       inventory.craftingRes = crafts[recipe]
     }else inventory.craftingRes = 0
-    
     drawScreens.crafting()
   }
-
 	let unpauseDelay = 0
 	function mmoved(e) {
 		let mouseS = settings.mouseSense / 30000
 		p.rx -= e.movementY * mouseS
 		p.ry += e.movementX * mouseS
-
 		while(p.ry > Math.PI*2) {
 			p.ry -= Math.PI*2
 		}
@@ -12581,9 +12002,6 @@ class Generator {
 		}
 	}
 	document.onmousemove = trackMouse
-  
-  //added by me from mobile test minekhan
-	//https://www.khanacademy.org/computer-programming/mobile-test-minekhan/5100360783052800
 	let pTouch = {x: -100, y: 0};
 	canvas.addEventListener("touchstart", function(e) {
 	    pTouch.x = e.changedTouches[0].pageX;
@@ -12597,13 +12015,11 @@ class Generator {
 	    mmoved(e);
 	    e.preventDefault();
 	}, false);
-	//end added part
 	canvas.addEventListener("touchstart",function(){
 	    mouseDown=true
 	})
 	canvas.addEventListener("touchend",() => mouseDown=false)
   canvas.addEventListener("touchcancel",() => mouseDown=false)
-  
 	document.onpointerlockchange = function() {
 		if (doc.pointerLockElement === canvas) {
 			doc.onmousemove = mmoved
@@ -12672,7 +12088,6 @@ class Generator {
       if(screen === "crafting")clickCrafting()
         else clickInv()
 		}
-
 		Button.click()
 		Slider.click()
 	}
@@ -12690,10 +12105,8 @@ class Generator {
 		}
 		mouseDown = false
 		Slider.release()
-    
     draggingInvBar = false
 	}
-  
   for(var onscreencontrol in onscreenControls){
 	    var onscreencontrolElement = onscreenControls[onscreencontrol]
 	    onscreencontrolElement.value = onscreencontrol
@@ -12708,7 +12121,7 @@ class Generator {
       onscreencontrolElement.addEventListener("touchcancel",onscreencontrolElement.onmouseup)
 	}
 	onscreenControls[" "].addEventListener("click",function(){
-    if (!survival && !p.spectator) {//fly toggle
+    if (!survival && !p.spectator) {
 			if (Date.now() < p.lastJump + 400) {
 				p.flying ^= true
 			} else {
@@ -12738,14 +12151,11 @@ class Generator {
 	onscreenControls[" "].addEventListener("touchend",function(){
 	    Key[" "]=false
 	})
-	
   onscreenControl_Element.onclick = e => {mouseX = e.x; mouseY = e.y}
-  
   let changeSlot = () => {
     for(let i = 0; i < inventory.hotbar.length; i ++) {
       let x = width / 2 - inventory.hotbar.length / 2 * inventory.size + (i + 0.5) * inventory.size + 25
 		  let y = height - inventory.size
-      
       x -= inventory.size/2
 		  y -= inventory.size/2
 			if((mouseX>x)&&(mouseY>y)&&(mouseX < x+inventory.size)&&(mouseY < y+inventory.size)){
@@ -12757,7 +12167,6 @@ class Generator {
   }
 	onscreenControl_Element.addEventListener("click",changeSlot)
 	onscreenControl_Element.addEventListener("touchend",changeSlot)
-  
 	canvas.onkeydown = function(e) {
 		let k = e.key.toLowerCase()
 		if (e.preventDefault && k === " ") {
@@ -12767,22 +12176,18 @@ class Generator {
 			return
 		}
 		Key[k] = true
-
 		if (k === "t") {
 			initTextures()
 		}
-
 		if (k === "enter") {
 			blockMode = blockMode === CUBE ? SLAB : (blockMode === SLAB ? STAIR : (blockMode === STAIR ? FENCE : (blockMode === FENCE ? WALLPOST : (blockMode === WALLPOST ? WALL : (blockMode === WALL ? WALLU : (blockMode === WALLU ? FENCQ : CUBE))))))
 			updateHUD = true
 		}
-
 		if (screen === "play") {
 			if(k === "p") {
 				releasePointer()
 				changeScene("pause")
 			}
-
 			if(k === "b") {
 				p.autoBreak = !p.autoBreak
 				updateHUD = true
@@ -12793,7 +12198,6 @@ class Generator {
 				updateHUD = true
         if(survival) p.autoBuild = false
 			}
-
 			if (k === " " && !p.spectator) {
 				if (Date.now() < p.lastJump + 400) {
 					p.flying ^= true
@@ -12802,11 +12206,9 @@ class Generator {
 					p.lastJump = Date.now()
 				}
 			}
-
 			if (k === "z") {
 				p.FOV(10, 300)
 			}
-
 			if (k === "shift" && !p.flying) {
 				p.sneaking = true
 				if (p.sprinting) {
@@ -12816,7 +12218,6 @@ class Generator {
 				p.speed = 0.03
 				p.bottomH = 1.32
 			}
-
 			if (k === "l" && !survival) {
 				p.spectator = !p.spectator
 				p.flying = true
@@ -12826,21 +12227,17 @@ class Generator {
       if (k === "o"){
         p.thirdPerson = !p.thirdPerson
       }
-
 			if (k === "e") {
 				changeScene("inventory")
 				releasePointer()
 			}
-
 			if (k === ";") {
 				releasePointer()
 				freezeFrame = true
 			}
-      
       if(k === "/"){
         Messages.showInput()
       }
-
 			if (Key.backspace && inventory.hotbar[inventory.hotbarSlot] && inventory.hotbar[inventory.hotbarSlot].id) {
 				let d = p.direction
         let block = holding || inventory.hotbar[inventory.hotbarSlot].id
@@ -12851,7 +12248,6 @@ class Generator {
           updateHUD = true
         }
 			}
-
 			if(Number(k)) {
 				inventory.hotbarSlot = Number(k) - 1
 				holding = inventory.hotbar[inventory.hotbarSlot].id
@@ -12889,12 +12285,10 @@ class Generator {
 			if (k === "z") {
 				p.FOV(settings.fov, 300)
 			}
-
 			if (k === "shift" && p.sneaking) {
 				p.sneaking = false
 				p.speed = 0.075
 				p.bottomH = 1.62
-				// p.y += 0.3
 			}
 		}
 	}
@@ -12929,11 +12323,10 @@ class Generator {
 		} else if (inventory.hotbarSlot < 0) {
 			inventory.hotbarSlot = 8
 		}
-
 		updateHUD = true
 		holding = inventory.hotbar[inventory.hotbarSlot].id
 	}
-	document.onwheel = e => {} // Shouldn't do anything, but it helps with a Khan Academy bug somewhat
+	document.onwheel = e => {}
 	window.onresize = e => {
 		width = window.innerWidth
 		height = window.innerHeight
@@ -12950,7 +12343,6 @@ class Generator {
 		genIcons()
 		use3d()
 		p.FOV(p.currentFov + 0.0001)
-
 		if (screen === "play") {
 			play()
 		} else {
@@ -12959,7 +12351,6 @@ class Generator {
 			Slider.draw()
 		}
 	}
-
 	function use2d() {
 		gl.disableVertexAttribArray(glCache.aTexture)
 		gl.disableVertexAttribArray(glCache.aShadow)
@@ -12967,7 +12358,6 @@ class Generator {
 		gl.disableVertexAttribArray(glCache.aSkylight)
 		gl.disableVertexAttribArray(glCache.aBlocklight)
 		gl.useProgram(program2D)
-		
 		gl.enableVertexAttribArray(glCache.aVertex2)
 		gl.enableVertexAttribArray(glCache.aTexture2)
 		gl.enableVertexAttribArray(glCache.aShadow2)
@@ -12977,17 +12367,14 @@ class Generator {
 		gl.disableVertexAttribArray(glCache.aShadow2)
 		gl.disableVertexAttribArray(glCache.aVertex2)
 		gl.useProgram(program3D)
-		
 		gl.enableVertexAttribArray(glCache.aVertex)
 		gl.enableVertexAttribArray(glCache.aTexture)
 		gl.enableVertexAttribArray(glCache.aShadow)
 		gl.enableVertexAttribArray(glCache.aSkylight)
 		gl.enableVertexAttribArray(glCache.aBlocklight)
 	}
-
 	let maxLoad = 1
 	function startLoad() {
-		// Runs when the loading screen is opened; cache the player's position
 		p2.x = p.x
 		p2.y = p.y
 		p2.z = p.z
@@ -13021,11 +12408,9 @@ class Generator {
 		} else {
 			gl = win.gl
 		}
-
 		if (!document.body.contains(gl.canvas)) {
 			document.body.append(gl.canvas)
 		}
-
 		modelView = new Float32Array(16)
 		glCache = {}
 		win.glCache = glCache
@@ -13033,27 +12418,23 @@ class Generator {
 		program2D = createProgramObject(gl, vertexShaderSrc2D, fragmentShaderSrc2D)
 		programEntity = createProgramObject(gl, vertexShaderSrcEntity, fragmentShaderSrcEntity)
     programParticle = createProgramObject(gl, vertexShaderSrcParticle, fragmentShaderSrcParticle)
-		
 		gl.useProgram(program2D)
 		glCache.uSampler2 = gl.getUniformLocation(program2D, "uSampler")
 		glCache.aTexture2 = gl.getAttribLocation(program2D, "aTexture")
 		glCache.aVertex2 = gl.getAttribLocation(program2D, "aVertex")
 		glCache.aShadow2 = gl.getAttribLocation(program2D, "aShadow")
-
 		gl.useProgram(programEntity)
 		glCache.uSamplerEntity = gl.getUniformLocation(programEntity, "uSampler")
 		glCache.uLightLevelEntity = gl.getUniformLocation(programEntity, "uLightLevel")
 		glCache.uViewEntity = gl.getUniformLocation(programEntity, "uView")
 		glCache.aTextureEntity = gl.getAttribLocation(programEntity, "aTexture")
 		glCache.aVertexEntity = gl.getAttribLocation(programEntity, "aVertex")
-    
     gl.useProgram(programParticle)
 		glCache.uSamplerParticle = gl.getUniformLocation(programParticle, "uSampler")
 		glCache.uLightLevelParticle = gl.getUniformLocation(programParticle, "uLightLevel")
 		glCache.uViewParticle = gl.getUniformLocation(programParticle, "uView")
 		glCache.aTextureParticle = gl.getAttribLocation(programParticle, "aTexture")
 		glCache.aVertexParticle = gl.getAttribLocation(programParticle, "aVertex")
-
 		gl.useProgram(program3D)
 		glCache.uSampler = gl.getUniformLocation(program3D, "uSampler")
 		glCache.uPos = gl.getUniformLocation(program3D, "uPos")
@@ -13065,14 +12446,9 @@ class Generator {
 		glCache.aTexture = gl.getAttribLocation(program3D, "aTexture")
 		glCache.aVertex = gl.getAttribLocation(program3D, "aVertex")
     glCache.skyColor = gl.getUniformLocation(program3D, "skyColor")
-
 		gl.uniform1f(glCache.uDist, 1000)
-
-		//Send the block textures to the GPU
 		initTextures()
     initShapes()
-
-		// These buffers are only used for drawing the main menu blocks
 		sideEdgeBuffers = {}
 		for (let side in shapes.cube.verts) {
 			let edgeBuffer = gl.createBuffer()
@@ -13087,16 +12463,11 @@ class Generator {
 			gl.bufferData(gl.ARRAY_BUFFER, textureCoords[t], gl.STATIC_DRAW)
 			texCoordsBuffers.push(buff)
 		}
-
-		//Bind the Vertex Array Object (VAO) that will be used to draw everything
 		indexBuffer = gl.createBuffer()
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexOrder, gl.STATIC_DRAW)
-
-		//Tell it not to render the insides of blocks
 		gl.enable(gl.CULL_FACE)
 		gl.cullFace(gl.BACK)
-
 		gl.lineWidth(2)
 		blockOutlines = false
 		gl.enable(gl.POLYGON_OFFSET_FILL)
@@ -13105,7 +12476,6 @@ class Generator {
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
 	}
 	function initBackgrounds() {
-		// Home screen background
     const HALF_PI = Math.PI / 2
     const blocks = [
       7, 4, 1, 7,
@@ -13325,7 +12695,7 @@ class Generator {
       -8, -2, 6, 1,
       -8, -2, 7, 1,
       -8, -2, 8, 1,
-      -8, -1, 8, 33,//birch tree
+      -8, -1, 8, 33,
       -8, 0, 8, 33,
       -9, 1, 10, 7,
       -8, 1, 10, 7,
@@ -13369,7 +12739,7 @@ class Generator {
       -9, 2, 6, 7,
       -8, 2, 6, 7,
       -7, 2, 6, 7,
-      -7, 3, 8, 7,//topper leaves
+      -7, 3, 8, 7,
       -9, 3, 8, 7,
       -8, 3, 7, 7,
       -8, 3, 9, 7,
@@ -13377,7 +12747,7 @@ class Generator {
       -9, 4, 8, 7,
       -8, 4, 7, 7,
       -8, 4, 9, 7,
-      3, 1, 8, 141,//cactus
+      3, 1, 8, 141,
       3, 2, 8, 141,
     ];
     var mainBG = document.createElement("canvas");
@@ -13389,7 +12759,6 @@ class Generator {
       if(mainBGRot > Math.PI*2){
         mainBGRot = 0;
       }
-      
       use3d()
       gl.clearColor(sky[0], sky[1], sky[2], 1.0)
       gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
@@ -13401,18 +12770,14 @@ class Generator {
       gl.vertexAttrib1f(glCache.aShadow, 1.0)
       gl.vertexAttrib1f(glCache.aSkylight, 1.0)
       gl.vertexAttrib1f(glCache.aBlocklight, 1.0)
-
       gl.uniform3f(glCache.skyColor, sky[0], sky[1], sky[2])
       for (let i = 0; i < blocks.length; i += 4) {
         block2(blocks[i + 0], blocks[i + 1], blocks[i + 2], blocks[i + 3])
       }
-
       gl.enableVertexAttribArray(glCache.aShadow)
       gl.enableVertexAttribArray(glCache.aSkylight)
       gl.enableVertexAttribArray(glCache.aBlocklight)
     }
-
-		// Dirt background
 		use2d()
 		let aspect = width / height
 		let stack = height / 96
@@ -13440,8 +12805,6 @@ class Generator {
 		gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
 		dirtbg = ctx.createImageData(width, height)
 		dirtbg.data.set(pixels)
-    
-    // Netherrack background
 		bright = 0.4
 		if (netherBuffer) {
 			gl.deleteBuffer(netherBuffer)
@@ -13455,7 +12818,7 @@ class Generator {
 			-1, 1, 0, 0, bright
 		])
 		gl.bufferData(gl.ARRAY_BUFFER, bgCoords, gl.STATIC_DRAW)
-		gl.uniform1i(glCache.uSampler2, 2) //netherrack textures uses TEXTURE2 so the number is 2
+		gl.uniform1i(glCache.uSampler2, 2)
 		gl.clearColor(0, 0, 0, 1)
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
 		gl.vertexAttribPointer(glCache.aVertex2, 2, gl.FLOAT, false, 20, 0)
@@ -13499,11 +12862,10 @@ class Generator {
 		p.spectator = false
     p.health = 18
     p.oxygen = 18
-    p.lastY = 0 //y the last time it touched the ground
+    p.lastY = 0
     p.character = new Character(1)
     p.thirdPerson = false
     p.hand = new PlayerHand()
-		
 		win.player = p
 		win.p2 = p2
 	}
@@ -13513,14 +12875,12 @@ class Generator {
 		}
 		selectedWorld = 0
 		window.boxCenterTop.value = ""
-
 		const deselect = () => {
 			let elem = document.getElementsByClassName("selected")
 			if (elem && elem[0]) {
 				elem[0].classList.remove("selected")
 			}
 		}
-
 		function addWorld(name, version, size, id, edited) {
 			let div = doc.createElement("div")
 			div.className = "world"
@@ -13532,7 +12892,6 @@ class Generator {
 			let br = "<br>"
 			div.id = id
 			div.innerHTML = "<strong>" + name + "</strong>" + br
-			
 			if (edited){
 				let str = (new Date(edited).toLocaleDateString(undefined, {
 					year: "numeric",
@@ -13545,10 +12904,8 @@ class Generator {
 			}
 			div.innerHTML += version + br
 			div.innerHTML += `${size.toLocaleString()} bytes used`
-			
 			window.worlds.appendChild(div)
 		}
-
 		worlds = {}
 		if (loadString) {
 			try {
@@ -13575,7 +12932,6 @@ class Generator {
 					res.splice(index, 1)
 				}
 			}
-			
 			if (res && res.length) {
 				res = res.map(d => d.data).filter(d => d && d.code).sort((a, b) => b.edited - a.edited)
 				for (let data of res) {
@@ -13586,7 +12942,6 @@ class Generator {
 			window.worlds.onclick = Button.draw
 			window.boxCenterTop.onkeyup = Button.draw
 		}).catch(e => console.error(e))
-
 		superflat = false
 		trees = true
 		caves = true
@@ -13598,14 +12953,12 @@ class Generator {
 			window.servers.removeChild(window.servers.firstChild)
 		}
 		selectedWorld = null
-
 		const deselect = () => {
 			let elem = document.getElementsByClassName("selected")
 			if (elem && elem[0]) {
 				elem[0].classList.remove("selected")
 			}
 		}
-
 		function addWorld(name, id, host, players) {
 			let div = doc.createElement("div")
 			div.className = "world"
@@ -13619,7 +12972,6 @@ class Generator {
 			div.innerHTML = "<strong>" + name + "</strong>" + br
       div.innerHTML += "Hosted by "+host + br
       div.innerHTML += players.length+" player"+(players.length===1 ? "" : "s")+" online"
-			
       servers[id] = {
         id:id,
         name:name,
@@ -13627,13 +12979,10 @@ class Generator {
       }
 			window.servers.appendChild(div)
 		}
-
 		var worlds;
     await getWorlds().then(r => worlds=r)
     worlds.forEach(r => addWorld(r.name, r.id, r.host, r.players))
-    
 		window.servers.onclick = Button.draw
-
 		superflat = false
 		trees = true
 		caves = true
@@ -13645,7 +12994,6 @@ class Generator {
     await new Promise((resolve, reject) => {
       marketplaceData.text().then(r => {marketplaceData = JSON.parse(r); resolve()})
     })
-    
     marketplace = {}
     window.marketplace.innerHTML = ""
     const deselect = () => {
@@ -13665,7 +13013,6 @@ class Generator {
 			let br = "<br>"
 			div.id = id
 			div.innerHTML = "<strong>" + name + "</strong>" + br
-			
 			if (edited){
 				let str = (new Date(edited).toLocaleDateString(undefined, {
 					year: "numeric",
@@ -13678,9 +13025,7 @@ class Generator {
 			}
 			div.innerHTML += version + br
 			div.innerHTML += `${size.toLocaleString()} bytes used`
-			
 			window.marketplace.appendChild(div)
-      
       superflat = false
       trees = true
       caves = true
@@ -13693,7 +13038,6 @@ class Generator {
         loadString = data.loadString
         mod = data.mod
       }else loadString = data
-      
       tempWorld.loadSave(loadString)
 		  let now = Date.now()
 			addWorld(tempWorld.name, tempWorld.version, loadString.length, now)
@@ -13720,7 +13064,6 @@ class Generator {
     initWorldsMenu()
     changeScene("loadsave menu")
   }
-  
   var sounds = {
     click: "click.ogg",
     damage: {
@@ -14019,7 +13362,6 @@ class Generator {
     },
   }
   var soundVolumes = {
-    
   }
   win.sounds = sounds
   function loadSoundBuffer(url){
@@ -14028,7 +13370,6 @@ class Generator {
       request.open('GET', url, true);
       request.responseType = 'arraybuffer';
       request.onerror = reject
-
       request.onload = function() {
         audioCtx.decodeAudioData(request.response, function(buffer) {
           resolve(buffer)
@@ -14045,7 +13386,6 @@ class Generator {
       alert('Web Audio API is not supported in this browser');
       return
     }
-    
     async function loadSoundsObj(obj){
       for(var i in obj){
         if(typeof obj[i] === "object"){
@@ -14063,13 +13403,12 @@ class Generator {
     }
     loadSoundsObj(sounds)
   }
-  function playSound(name, start, volume){ //from https://www.html5rocks.com/en/tutorials/webaudio/intro/
+  function playSound(name, start, volume){
     if(!soundOn) return
     var sound
     var soundVol
     if(name.includes(".")){
       sound = sounds
-
       soundVol = settings.soundVolume
       name = name.split(".")
       for(var i=0; i<name.length; i++){
@@ -14105,7 +13444,6 @@ class Generator {
   function blockSound(blockID, type, x,y,z){
     var block = blockData[blockID]
     var volume = posSound(x,y,z)
-    
     var sound
     switch(type){
       case "place":
@@ -14152,7 +13490,6 @@ class Generator {
     }
     return volume
   }
-  
   let maxHTTPLoad = 0, loaded = 0
   win.allLoaded = false
   function findObjValueAmount(obj){
@@ -14173,7 +13510,6 @@ class Generator {
       allLoaded = true
     }
   }
-  
   function createNewWorld(){
       dimensions = {
         overworld: new World(),
@@ -14201,23 +13537,16 @@ class Generator {
 			world.name = name.replace(/;/g, "\u037e")
 			world.loadChunks()
 			world.chunkGenQueue.sort(sortChunks)
-
       if(survival) setHotbar([blockIds.craftingTable,0,0,0,0,0,0,0,0])
 			changeScene("loading")
   }
-	
 	function initEverything() {
 		console.log("Initializing world.")
-
 		setSeed(Math.random() * 2000000000 | 0)
     console.log("worldSeed "+worldSeed)
-
     win.islandGenerator = new Generator();
-    
 		generatedChunks = 0
-
     crack.shape = shapes.cube
-
 		initWebgl()
     constVersion(version)
     initPlayer()
@@ -14225,26 +13554,18 @@ class Generator {
       username = r || "You"
       p.character.changeBlock(abs( (r || "").hashCode()) % 80 + 1)
     })
-
 		message.innerHTML = ".>a/<etisbew ym>'oc.lper.rekamgniht.www//:sptth'=ferh a< tuo kcehc oslA>rb<>a/<etisbew s'draliW no nahKeniM ot kniL>'nahkenim/nuf.dralliw//:sptth'=ferh a<>rb<.>a<etisbew s'dralliW>'nuf.dralliw//:sptth'=ferh a< tuo kcehc ot>rb<erus eb ,siht ekil uoy fI>rb<.dralliW yb >a/<nahKeniM>\"wen_\"=tegrat \"8676731005517465/cm/sc/gro.ymedacanahk.www//:sptth\"=ferh a< fo>rb<ffo-nips a si margorp sihT".split("").reverse().join("")
-    
     crack.entity = new crackEntity("crack1",0,0,0)
     for(var i=0; i<crack.length; i++){crack.entity.cacheTexture(crack[i])}
-
 		initBackgrounds()
-		
 		drawScreens[screen]()
 		Button.draw()
 		Slider.draw()
-
 		p.FOV(settings.fov)
 		initWorldsMenu()
     initMarketplace()
 		initButtons()
-    
     initAudioCtx()
-    
-    // See if a user followed a link here.
 		if (urlParams.has("target")) {
 			changeScene("multiplayer menu")
 			initMultiplayer(urlParams.get("target"))
@@ -14253,8 +13574,6 @@ class Generator {
 			changeScene(urlParams.get("changeScene"))
 		}
 	}
-
-	// Define all the scene draw functions
   let clear,dirt,nether
 	(function() {
     var splashs = [
@@ -14333,23 +13652,17 @@ class Generator {
 			let font = "VT323,monospace"
 			strokeWeight(1)
 			ctx.textAlign = 'center'
-
 			ctx.font = "bold 120px " + font
-			fill(/*30*/70)
+			fill(70)
 			text(title, width / 2, 158)
-			//fill(40)
 			text(title, width / 2, 155)
 			ctx.font = "bold 121px " + font
-			//fill(50)
 			text(title, width / 2, 152)
-			//fill(70)
 			text(title, width / 2, 150)
-			//fill(90)
 			ctx.font = "bold 122px " + font
 			text(title, width / 2, 148)
 			fill(110)
 			text(title, width / 2, 145)
-
 			ctx.font = "bold 32px " + font
 			fill(50)
 			text(subtext, width / 2-1, 180)
@@ -14359,7 +13672,6 @@ class Generator {
 			ctx.font = "bold 32px " + font
 			fill(150)
 			text(subtext, width / 2, 180)
-      
       fill(230,220,0)
 			ctx.translate(width/2 + 280,170)
 			ctx.rotate(-Math.PI/8);
@@ -14372,7 +13684,6 @@ class Generator {
     clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
     dirt = () => ctx.putImageData(dirtbg, 0, 0)
     nether = () => ctx.putImageData(netherbg, 0, 0)
-
     var size = 0
     var sizes = 0
     var sizess = 1
@@ -14389,10 +13700,8 @@ class Generator {
 			ctx.textAlign = 'left'
 			text("MineKhan " + version, width - (width - 2), height - 2)
 		}
-
 		drawScreens.play = () => {
       ctx2.clearRect(0,0,width,height)
-      
       for(var i=0; i<9; i++){
         if(inventory.hotbar[i].id && inventory.hotbar[i].amount < 1){
           inventory.hotbar[i] = 0
@@ -14400,12 +13709,9 @@ class Generator {
           updateHUD = true
         }
       }
-      
       standingOn = world.getBlock(p2.x,p2.y-2,p2.z)
-      
 			controls()
 			runGravity()
-      
       if(survival){
         cracks()
       }
@@ -14421,7 +13727,6 @@ class Generator {
           updateHUD = true;
         }
       }
-      
       if(now - lastHeal > healTime) {
         lastHeal = now
         if(p.health < 18){
@@ -14466,7 +13771,6 @@ class Generator {
       if(p.oxygen > 18) {
 			  p.oxygen = 18;
 			}
-      
       if(harmEffect > 0){
         harmEffect --
         updateHUD = true
@@ -14475,9 +13779,7 @@ class Generator {
         healEffect --
         updateHUD = true
       }
-      
 			resolveContactsAndUpdatePosition(now)
-
 			if (updateHUD) {
 				clear()
 				gl.clearColor(0, 0, 0, 0)
@@ -14490,7 +13792,6 @@ class Generator {
 				gl.clearColor(sky[0], sky[1], sky[2], 1.0)
 			}
 			defineWorld()
-      
       if(harmEffect > 0){
         fill(255,0,0, harmEffect)
         ctx.fillRect(0,0,width,height)
@@ -14501,7 +13802,6 @@ class Generator {
         updateHUD = true
         portalEffect --
       }
-      
       if(mouseDown && touchScreen){
 			  ctx.beginPath()
         fill(255)
@@ -14510,17 +13810,13 @@ class Generator {
         ctx.stroke()
         updateHUD=true
       }
-      
       if(survival)ctx.drawImage(canvas2,0,0)
-      
       if(p.health < 1){
         die()
-        
         drawScreens.dead()
         Button.draw()
         Slider.draw()
       }
-      
       if(titleOpacity > 0){
         titleOpacity --
         let alpha = titleOpacity/100
@@ -14536,7 +13832,6 @@ class Generator {
         ctx.globalAlpha = 1
         updateHUD = true
       }
-      
       if((Key.w || Key.a || Key.s || Key.d) && p.onGround){
         let limit = 500
         if(p.sprinting) limit = 350
@@ -14546,26 +13841,19 @@ class Generator {
         }
       }
 		}
-
     drawScreens.dead = () => {
       ctx.drawImage(gl.canvas, 0, 0)
-      
       ctx.fillStyle = "rgba(255,0,0,50%)"
       ctx.fillRect(0,0,width,height)
-      
       fill(0)
       ctx.font = "50px Arial"
       ctx.textAlign = "center"
       ctx.fillText("You died", width/2, 100)
-      
       ctx.font = "20px Arial"
       ctx.fillText(dieMessage, width/2, 140)
     }
-    
 		drawScreens.loading = () => {
       world = dimensions.overworld
-			// This is really stupid, but it basically works by teleporting the player around to each chunk I'd like to load.
-			// If chunks loaded from a save aren't generated, they're deleted from the save, so this loads them all.
 			let frameStart = win.performance.now()+1
 			let sub = maxLoad - world.loadFrom.length - 9
             if (superflat === "island") {
@@ -14586,10 +13874,8 @@ class Generator {
         				p.x = p2.x
         				p.y = p2.y
         				p.z = p2.z
-        
         				let cx = p.x >> 4
         				let cz = p.z >> 4
-        
         				for (let x = cx - 1; x <= cx + 1; x++) {
         					for (let z = cz - 1; z <= cz + 1; z++) {
         						if (!world.chunks[x] || !world.chunks[x][z] || !world.chunks[x][z].buffer) {
@@ -14600,7 +13886,6 @@ class Generator {
         					}
         				}
         			}
-        
         			if (standing) {
         				play()
         				return
@@ -14619,10 +13904,8 @@ class Generator {
     				p.x = p2.x
     				p.y = p2.y
     				p.z = p2.z
-    
     				let cx = p.x >> 4
     				let cz = p.z >> 4
-    
     				for (let x = cx - 1; x <= cx + 1; x++) {
     					for (let z = cz - 1; z <= cz + 1; z++) {
     						if (!world.chunks[x] || !world.chunks[x][z] || !world.chunks[x][z].buffer) {
@@ -14633,17 +13916,14 @@ class Generator {
     					}
     				}
     			}
-    
     			if (standing) {
     				play()
     				return
     			}
 		        world.tick()
           }
-
 			let progress = Math.round( (superflat==="island"?50:100) * sub / maxLoad)
 			if(superflat === "island")progress += Math.round((win.islandGenerator.stage/9.0+win.islandGenerator.h/win.islandGenerator.size*3/9)*50)
-			
 			dirt()
 			fill(255)
 			textSize(30)
@@ -14665,10 +13945,8 @@ class Generator {
         p.x = p2.x
         p.y = p2.y
         p.z = p2.z
-
         let cx = p.x >> 4
         let cz = p.z >> 4
-
         for (let x = cx - 1; x <= cx + 1; x++) {
           for (let z = cz - 1; z <= cz + 1; z++) {
             if (!world.chunks[x] || !world.chunks[x][z] || !world.chunks[x][z].buffer) {
@@ -14679,37 +13957,29 @@ class Generator {
           }
         }
       }
-
       if (standing) {
         play()
         return
       }
       world.tick()
-
 			let progress = Math.round(100 * sub / maxLoad)
-			
 			nether()
 			fill(255)
 			textSize(30)
 			ctx.textAlign = "center"
 			text(`Loading... ${progress}% complete (${sub} / ${maxLoad})`, width / 2, height / 2)
 		}
-
 		drawScreens.inventory = drawInv
-    
     drawScreens.crafting = drawCrafting
-
 		drawScreens.pause = () => {
 			strokeWeight(1)
 			clear()
 			ctx.drawImage(gl.canvas, 0, 0)
-
 			textSize(60)
 			fill(0, 0, 0)
 			ctx.textAlign = 'center'
 			text("Paused", width / 2, 60)
 		}
-
 		drawScreens.options = () => {
 			clear()
 		}
@@ -14743,14 +14013,11 @@ class Generator {
 			text("Marketplace", width / 2, 20)
     }
 	})()
-
-	// Give the font time to load and redraw the homescreen
 	setTimeout(e => {
 		drawScreens[screen]()
 		Button.draw()
 		Slider.draw()
 	}, 100)
-
 	let debugMenu = false
 	function gameLoop() {
 		let frameStart = performance.now()
@@ -14758,7 +14025,6 @@ class Generator {
 			initEverything()
 			releasePointer()
 		}
-
     if(allLoaded){
       if(screen === "options"){
         if(previousScreen === "main menu"){
@@ -14771,13 +14037,11 @@ class Generator {
         Button.draw()
         Slider.draw()
       }
-      
       if (screen === "play" || screen === "loading" || screen === "netherLoading") {
         drawScreens[screen]()
         if(touchScreen && screen === "play") Button.draw()
       }
     }
-
 		if (Date.now() - analytics.lastUpdate > 500 && analytics.frames) {
 			analytics.displayedTickTime = (analytics.totalTickTime / analytics.frames).toFixed(1)
 			analytics.displayedRenderTime = (analytics.totalRenderTime / analytics.frames).toFixed(1)
@@ -14792,7 +14056,6 @@ class Generator {
 			analytics.lastUpdate = Date.now()
 			updateHUD = true
 		}
-
 		analytics.frames++
 		analytics.totalFrameTime += performance.now() - frameStart
 		analytics.worstFrameTime = max(performance.now() - frameStart, analytics.worstFrameTime)
@@ -14800,17 +14063,13 @@ class Generator {
 	}
 	return gameLoop
 }
-
 var init = MineKhan()
 if (window.parent.raf) {
 	window.cancelAnimationFrame(window.parent.raf)
 	console.log("Canceled", window.parent.raf)
 }
 init()
-
-
 	</script>
-    
     <script>
 function hcyl(bottom, height, radius, id) {
     let radsq = radius * radius
@@ -14827,7 +14086,6 @@ function hcyl(bottom, height, radius, id) {
         }
     }
 }
-
 function cyl(bottom, height, radius, id) {
     let radsq = radius * radius
     height += bottom
@@ -14842,7 +14100,6 @@ function cyl(bottom, height, radius, id) {
         }
     }
 }
-
 function sphereoid(w, h, d, id) {
     let w2 = w * w
     let h2 = h * h
@@ -14850,7 +14107,6 @@ function sphereoid(w, h, d, id) {
     let w3 = (w - 1.5) * (w - 1.5)
     let h3 = (h - 1.5) * (h - 1.5)
     let d3 = (d - 1.5) * (d - 1.5)
-
     for (let y = -h; y < h; y++) {
         for (let x = -w; x <= w; x++) {
             for (let z = -d; z <= d; z++) {
@@ -14863,7 +14119,6 @@ function sphereoid(w, h, d, id) {
         }
     }
 }
-
 function sphereoidAt(X,Y,Z,w, h, d, id) {
     let w2 = w * w
     let h2 = h * h
@@ -14871,7 +14126,6 @@ function sphereoidAt(X,Y,Z,w, h, d, id) {
     let w3 = (w - 1.5) * (w - 1.5)
     let h3 = (h - 1.5) * (h - 1.5)
     let d3 = (d - 1.5) * (d - 1.5)
-
     for (let y = -h; y < h; y++) {
         for (let x = -w; x <= w; x++) {
             for (let z = -d; z <= d; z++) {
@@ -14888,7 +14142,6 @@ function ball(X,Y,Z,w, h, d, id) {
     let w2 = w * w
     let h2 = h * h
     let d2 = d * d
-
     for (let y = -h; y < h; y++) {
         for (let x = -w; x <= w; x++) {
             for (let z = -d; z <= d; z++) {
@@ -14900,13 +14153,7 @@ function ball(X,Y,Z,w, h, d, id) {
         }
     }
 }
-
 function explode(x,y,z, r){
-  /*world.setBlock(x,y,z,blockIds.air);
-  for(var i=radius; i>0; i--){
-    sphereoidAt(x,y,z,i,i,i, blockIds.air)
-  }*/
-  //ball(x,y,z,r,r,r,0)
   world.setBlock(x,y,z, 0)
   let w2 = r * r
   let h2 = w2
@@ -14945,7 +14192,6 @@ function fall(x,y,z,b){
 function blockParticles(block,x,y,z,amount){
   for(var i=0; i<amount; i++) world.particles.push(new BlockParticle(blockData[block].textures[2], x,y,z))
 }
-
 if (("serviceWorker" in navigator) && location.origin === "https://minekhan.thingmaker.repl.co") {
   window.addEventListener("load", function() {
     navigator.serviceWorker
