@@ -1,7 +1,7 @@
 # Cool Website Full Of Math
 
 - Has math
-- Blocked 0 times so far
+- Blocked 1 time so far
 - No games here
 
 # Link To Website
