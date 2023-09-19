@@ -122,7 +122,7 @@ ScoreTracker.prototype.updateScore = function(config) {
     // apply the lines cleared
     this.linesRemaining -= linesCleared;    
     if (this.linesRemaining <= 0) {
-	if (this.level < 15) {
+	if (this.level < 1000) {
 	    this.level += 1;
 	    this.linesRemaining = ScoreTracker.levelLines(this.level);
 	} else {
