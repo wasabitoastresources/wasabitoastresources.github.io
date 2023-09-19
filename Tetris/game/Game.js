@@ -219,9 +219,9 @@ Game.prototype.update = function(time) {
 	} else {
 	    this.bottomTimer -= dTime;
 	    
-	    //if (this.bottomTimer <= 0 || this.slideCount >= 15) {
-		//this.lockBlocks();
-	    //}
+	    if (this.bottomTimer <= 0 || this.slideCount >= 15) {
+		this.lockBlocks();
+	    }
 	}
 	this.lastBottomedState = true;
     }
