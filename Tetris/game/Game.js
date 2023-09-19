@@ -213,7 +213,7 @@ Game.prototype.update = function(time) {
 	this.applyGravity(dTime);
 
     } else {
-	// if it has just touched hte bottom
+	// if it has just touched the bottom
 	if (!this.lastBottomedState) {
 	    this.resetLockCounter(false);
 	} else {
