@@ -1,10 +1,14 @@
 html{
     font-family:sans-serif;
+    font-size:10px;
 }
 body{
     margin:0
     padding-top:50px;
     background-color: #202124;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:14px;
+    line-height:1.42857143;
 }
 h1,h2,h3,h4,h5,h6,p{
     color:#b0b0b0;
@@ -40,7 +44,7 @@ img{
     max-width:100%;
     height:auto
 }
-.col-md-2,.col-xs-6{
+.col-md-2,.col-xs-6,.col-lg-12{
     position:relative;
     min-height:1px;
     padding-right:15px;
@@ -55,4 +59,13 @@ img{
         width:16.66666667%
         float:left
     }
+    .col-lg-12{
+        width:100%
+        float:left
+    }
+}
+.page-header{
+    padding-bottom:9px;
+    margin:40px 0 20px;
+    border-bottom:1px solid #eee
 }
