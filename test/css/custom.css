@@ -85,7 +85,8 @@ img{
     display:block;
     max-width:100%;
     height:auto;
-    border:0
+    border:0;
+    margin-top:20px;
 }
 .img-rounded{
     border-radius:6px
