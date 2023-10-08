@@ -44,6 +44,9 @@ h6{
 p{
     margin:0 0 10px
 }
+br{
+    margin-bottom:50px;
+}
 article{
     display:block;
     margin-bottom:25px;
