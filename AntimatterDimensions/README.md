@@ -1,3 +1,2 @@
-# IvarK.github.io
-
-This is the old repository of the web game Antimatter Dimensions. The new source code is located in https://github.com/IvarK/AntimatterDimensionsSourceCode.
+# Antimatter Dimensions - Aarex's Modifications
+This site is just Antimatter Dimensions, but contains a lot of interesting mods, like NG+3. Many mods are ported into this site: NG++, NG--, NG+3C, and few more!

@@ -113,12 +113,20 @@ input {
 }
 
 .eternitybtn {
-    color: #673AB7 !important;
-    border: 1px solid #673AB7 !important;
+    color: #7744C7 !important;
+    border: 1px solid #7744C7 !important;
 }
 
 .eternitybtn:hover {
     background: white !important;
+}
+
+.quantumbtn {
+    background: #0a640a !important;
+}
+
+.quantumbtn:hover {
+    background: #32c832 !important;
 }
 
 .eternitytabbtn {
@@ -535,6 +543,27 @@ input {
 
 #dilatedTimeAmount, #dilatedTimePerSecond, #galaxyThreshold, #dilatedGalaxies {
     color: #64DD17 !important;
+}
+
+#metaAntimatterAmount, #metaAntimatterBest, #metaAntimatterPower, #metaAntimatterEffect {
+    color: #2682ca !important
+}
+
+.red {
+	color: #ff3f3f
+}
+.lime {
+	color: #9fff3f
+}
+.green {
+	color: #3fff3f
+}
+.blue {
+	color: #3f3fff
+}
+
+#replicantAmountED {
+	color: #757575 !important
 }
 
 @keyframes metroStudyGlowIn {
