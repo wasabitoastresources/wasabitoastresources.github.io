@@ -6,4 +6,8 @@
 
 # Link To Website
 
-https://funschoolmath.github.io
+Credits to: https://funschoolmath.github.io
+
+# Use for Wasabi Toast
+
+Wasabi toast is unblocked games and we need something other than funschool math!
