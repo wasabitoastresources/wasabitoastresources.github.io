@@ -1,0 +1,25 @@
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <style>
+      body {
+        background-color: #989430;
+        color: black
+      }
+    </style>
+    <dialog open>
+      <h1 id="messagetitle">womp womp</h1>
+      <p id="messagetext">An Error occurred thats why u r seeing this!</p>
+    </dialog>
+    <script>
+      var params = new URLSearchParams(document.location.search);
+      var messagetitle = document.getElementById("messagetitle")
+      var messagetext = document.getElementById("messagetext")
+      messagetitle.innerHTML = params.get("messagetitle")
+      messagetext.innerHTML = params.get("messagetext")
+
+    </script>
+  </body>
+</html>
