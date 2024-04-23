@@ -7,7 +7,7 @@
       var params = new URLSearchParams(document.location.search);
       var audiofile = params.get('file')
       var audioplayeri;
-      if (file=='PlaceholderFile') {
+      if (audiofile=='PlaceholderFile') {
         audioplayeri = new Audio('thong.mp3')
         audioplayeri.play()
       }
